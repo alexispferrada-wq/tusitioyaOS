@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuSitioYa - Diseño Web Profesional en Chile</title>
+    <meta name="description" content="Páginas web profesionales sin mensualidades. Diseño + Hosting + Dominio .CL incluido.">
+    <!-- Favicon integrado como Emoji (Sin archivo externo) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Librería AOS para animaciones al hacer scroll -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Comfortaa', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            primary: '#2563eb', // Azul Royal
+                            accent: '#10b981',  // Verde WhatsApp
+                        },
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" },
+                        }
+                    }
+                }
+            },
+            plugins: [
+                function({ addUtilities }) {
+                    addUtilities({
+                        '.animation-delay-2000': { 'animation-delay': '2s' },
+                        '.animation-delay-4000': { 'animation-delay': '4s' },
+                    })
+                }
+            ]
+        }
+    </script>
+</head>
+<body class="bg-transparent text-white font-sans antialiased relative">
+
+    <!-- Video de Fondo Optimizado -->
+    <div class="fixed inset-0 z-[-1] w-full h-full overflow-hidden bg-brand-dark">
+        <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="absolute top-0 left-0 w-full h-full object-cover opacity-50">
+            <source src="https://cdn.pixabay.com/video/2020/03/29/34956-402489370_large.mp4" type="video/mp4">
+        </video>
+        <div class="absolute top-0 left-0 w-full h-full bg-[#0f172a]/85 backdrop-blur-[2px]"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 bg-white/5 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-laptop-code text-brand-primary text-2xl"></i>
+                    <span class="font-bold text-xl tracking-tight">TuSitioYa</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#inicio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Inicio</a>
+                        <a href="#planes" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Planes</a>
+                        <a href="#portafolio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Portafolio</a>
+                        <a href="#nosotros" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Nosotros</a>
+                        <a href="https://wa.me/56992818104?text=Hola,%20quiero%20cotizar%20una%20web" class="bg-brand-accent hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold transition flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp"></i> Cotizar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+                Tu Página Web Profesional 🚀<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-accent">Sin Mensualidades</span>
+            </h1>
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-8">
+                Deja de perder ventas con sitios lentos. En TuSitioYa programamos a mano cada línea de código para garantizar velocidad máxima, seguridad bancaria y posicionamiento en Google. Sin constructores pesados, solo rendimiento puro.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-3 mb-10">
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-code text-blue-400 mr-2"></i> 100% Código Manual
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-ban text-red-400 mr-2"></i> No usamos WordPress
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-server text-green-400 mr-2"></i> Servidores VPS Propios
+                </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#planes" class="px-8 py-4 bg-brand-primary hover:bg-blue-600 rounded-lg font-bold text-lg transition shadow-lg shadow-blue-500/30">
+                    Ver Ofertas
+                </a>
+                <a href="https://wa.me/56992818104?text=Hola,%20tengo%20dudas%20sobre%20las%20paginas" class="px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 rounded-lg font-bold text-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-brand-accent"></i> Hablar con Experto
+                </a>
+            </div>
+        </div>
+        <div class="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full z-0 opacity-20 pointer-events-none">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-screen filter blur-3xl animate-blob"></div>
+            <div class="absolute top-20 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
+        </div>
+    </section>
+
+    <section id="planes" class="py-20" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">Nuestros Planes ⚡</h2>
+                <p class="mt-4 text-gray-400">Precios transparentes. Pago único. <span class="text-red-400 font-bold">¡Oferta 20% OFF por tiempo limitado!</span></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 relative border-brand-accent transform hover:-translate-y-2 transition duration-300" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 bg-brand-accent text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg text-white">MÁS VENDIDO</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Emprendedor</h3>
+                    <p class="text-gray-400 text-sm mb-6">Ideal para servicios y oficios.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$72.000</span>
+                        <div class="ml-3 flex flex-col items-start">
+                            <span class="text-sm text-gray-500 line-through">$90.000</span>
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse shadow-lg shadow-red-500/50">20% OFF</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Landing Page (One Page)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Diseño Móvil (Responsive)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> 2 Correos Corporativos</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Botón WhatsApp Flotante</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Hosting + Dominio .CL Gratis (1 año)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($45.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-brand-accent mr-2"></i> Entrega: 48 Horas Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-brand-accent mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Emprendedor%20de%2072mil" class="block w-full text-center bg-brand-accent hover:bg-green-600 text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 transform hover:-translate-y-2 transition duration-300" data-aos="zoom-in" data-aos-delay="200">
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Pyme Pro</h3>
+                    <p class="text-gray-400 text-sm mb-6">Para empresas que buscan seriedad.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$144.000</span>
+                        <div class="ml-3 flex flex-col items-start">
+                            <span class="text-sm text-gray-500 line-through">$180.000</span>
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse shadow-lg shadow-red-500/50">20% OFF</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Sitio Multi-Página (Hasta 5)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Formulario de Contacto Pro</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> 20 Correos Corporativos</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Certificado SSL (Candado)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Hosting + Dominio .CL Gratis</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($90.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-brand-primary mr-2"></i> Entrega: 5 a 7 Días Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-brand-primary mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Pyme%20Pro" class="block w-full text-center bg-brand-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 transform hover:-translate-y-2 transition duration-300 border-gray-700" data-aos="zoom-in" data-aos-delay="300">
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Catálogo / Sistema</h3>
+                    <p class="text-gray-400 text-sm mb-6">Autoadministrable con Base de Datos.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$280.000</span>
+                        <div class="ml-3 flex flex-col items-start">
+                            <span class="text-sm text-gray-500 line-through">$350.000</span>
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse shadow-lg shadow-red-500/50">20% OFF</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Panel de Administración</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Gestión de Productos/Stock</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Base de Datos (SQL)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Desarrollo en Python/Django</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Servidor VPS Optimizado</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($175.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-purple-500 mr-2"></i> Entrega: 10 a 15 Días Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-purple-500 mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Sistema" class="block w-full text-center border border-white hover:bg-white hover:text-brand-dark text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Urgencia / Cupos -->
+    <section class="py-12 bg-gradient-to-r from-red-900/40 to-brand-dark border-y border-red-500/20 relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-red-600/5 blur-3xl -z-10"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <div class="inline-flex items-center bg-red-600/20 border border-red-500 text-red-400 font-bold px-4 py-1 rounded-full text-sm mb-6 animate-pulse">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i> ALTA DEMANDA DETECTADA
+            </div>
+            <h3 class="text-2xl md:text-4xl font-bold text-white mb-4">
+                ¡Atención! Los cupos de <span id="mes-actual" class="capitalize">este mes</span> se están agotando 📉
+            </h3>
+            <p class="text-gray-300 mb-8 text-lg max-w-2xl mx-auto">
+                Debido a la oferta especial del <span class="text-yellow-400 font-bold">20% OFF</span>, nuestra capacidad de desarrollo está al límite. Solo aceptamos un número limitado de proyectos para garantizar la máxima calidad.
+            </p>
+            <div class="bg-gray-800/50 border border-gray-700 rounded-full h-8 w-full max-w-lg mx-auto mb-3 relative overflow-hidden shadow-inner">
+                <div id="barra-progreso" class="bg-gradient-to-r from-orange-500 to-red-600 h-full rounded-full transition-all duration-1000 relative" style="width: 65%"></div>
+                <p class="absolute inset-0 flex items-center justify-center text-sm font-bold text-white drop-shadow-md tracking-wide">
+                    <span id="cupos-vendidos">13</span> / 20 Cupos Vendidos
+                </p>
+            </div>
+            <p class="text-red-400 font-bold text-xl mb-8">
+                ¡Solo quedan <span id="cupos-restantes" class="text-3xl underline decoration-red-500 decoration-4 underline-offset-4">7</span> cupos disponibles!
+            </p>
+            <a href="https://wa.me/56992818104?text=Hola,%20quiero%20reservar%20mi%20cupo%20antes%20que%20se%20agoten" class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-lg shadow-red-600/40 border border-red-500">
+                <i class="fa-solid fa-lock mr-3"></i> Reservar mi Cupo Ahora
+            </a>
+            <p class="text-gray-500 text-xs mt-4">* Los cupos se asignan por orden de llegada.</p>
+        </div>
+    </section>
+
+    <section id="portafolio" class="py-20 bg-black/20" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">Casos de Éxito 🏆</h2>
+                <p class="mt-4 text-gray-400">Proyectos reales funcionando con nuestra tecnología.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- EntradasYa -->
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-brand-primary transition duration-300 group">
+                    <div class="h-48 bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center group-hover:scale-105 transition duration-500">
+                        <i class="fa-solid fa-ticket text-6xl text-white/20"></i>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-white mb-2">EntradasYa.cl</h3>
+                        <p class="text-gray-400 text-sm mb-6">Plataforma de venta de tickets y gestión de eventos. Alta concurrencia y pagos seguros.</p>
+                        <a href="https://entradasya.cl" target="_blank" class="inline-flex items-center text-brand-primary font-bold hover:text-blue-400 transition">
+                            Visitar Sitio <i class="fa-solid fa-arrow-up-right-from-square ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- TurboPOS -->
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden hover:border-brand-accent transition duration-300 group">
+                    <div class="h-48 bg-gradient-to-br from-green-900 to-teal-900 flex items-center justify-center group-hover:scale-105 transition duration-500">
+                        <i class="fa-solid fa-cash-register text-6xl text-white/20"></i>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold text-white mb-2">TurboPOS.cl</h3>
+                        <p class="text-gray-400 text-sm mb-6">Sistema de Punto de Venta (POS) rápido y eficiente para el comercio moderno.</p>
+                        <a href="https://turbopos.cl" target="_blank" class="inline-flex items-center text-brand-accent font-bold hover:text-green-400 transition">
+                            Visitar Sitio <i class="fa-solid fa-arrow-up-right-from-square ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nosotros" class="py-20" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-6">¿Por qué elegir TuSitioYa?</h2>
+                    <p class="text-gray-400 mb-6">
+                        A diferencia de las agencias tradicionales, nosotros somos desarrolladores. No usamos plantillas lentas. Programamos soluciones a medida enfocadas en vender.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-500 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-check text-xs text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-white">Sin Mensualidades</h4>
+                                <p class="text-gray-400 text-sm">Pagas una vez y la web es tuya. Renovación anual al 50%.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 h-6 w-6 rounded-full bg-blue-500 flex items-center justify-center mt-1">
+                                <i class="fa-solid fa-bolt text-xs text-white"></i>
+                            </div>
+                            <div class="ml-4">
+                                <h4 class="text-lg font-bold text-white">Velocidad Extrema</h4>
+                                <p class="text-gray-400 text-sm">Servidores optimizados y código limpio para posicionar en Google.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-2xl">
+                    <div class="text-center mb-6">
+                        <i class="fa-brands fa-python text-5xl text-yellow-400 mx-2"></i>
+                        <i class="fa-brands fa-html5 text-5xl text-orange-500 mx-2"></i>
+                        <i class="fa-solid fa-cloud text-5xl text-blue-400 mx-2"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-4 text-center">Stack Tecnológico Completo</h3>
+                    <p class="text-gray-300 mb-4 text-sm leading-relaxed">
+                        <strong>Programación Real + Infraestructura Cloud.</strong><br>
+                        No elegimos entre calidad y velocidad; te damos ambas. Tu sitio se programa a mano en <strong>Python & HTML5</strong> y se aloja en una arquitectura moderna de alto rendimiento.
+                    </p>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="flex items-start"><i class="fa-solid fa-check text-brand-accent mt-1 mr-2"></i> <span><strong>Core:</strong> Python (Django) + HTML5. Código limpio, seguro y sin plugins.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-brand-accent mt-1 mr-2"></i> <span><strong>Render:</strong> Hosting Cloud de nivel empresarial con SSL incluido.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-brand-accent mt-1 mr-2"></i> <span><strong>Neon Tech:</strong> Base de datos PostgreSQL Serverless ultrarrápida.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-check text-brand-accent mt-1 mr-2"></i> <span><strong>Cloudinary:</strong> CDN que optimiza tus imágenes automáticamente.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-black py-10 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h3 class="text-xl font-bold text-white mb-4">TuSitioYa</h3>
+            <p class="text-gray-500 text-sm mb-6">Impulsando Pymes en Chile con tecnología de verdad.</p>
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fa-brands fa-linkedin"></i></a>
+            </div>
+            <p class="text-gray-600 text-xs">&copy; 2026 TuSitioYa - Desarrollado por Aexon.</p>
+        </div>
+    </footer>
+
+    <!-- Inicialización de AOS (Animaciones) -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+
+        // Lógica de Escasez / Cupos
+        document.addEventListener('DOMContentLoaded', function() {
+            const total = 20;
+            const today = new Date();
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('mes-actual').innerText = meses[today.getMonth()];
+
+            // Ciclo de 7 días: empieza en 13, sube 1 por día
+            const dayIndex = today.getDate() % 7; 
+            let vendidos = 13 + dayIndex;
+            if (vendidos >= total) vendidos = total - 1;
+            
+            document.getElementById('cupos-vendidos').innerText = vendidos;
+            document.getElementById('cupos-restantes').innerText = total - vendidos;
+            document.getElementById('barra-progreso').style.width = (vendidos / total * 100) + '%';
+        });
+    </script>
+</body>
+</html>
