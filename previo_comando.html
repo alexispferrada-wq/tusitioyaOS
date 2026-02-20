@@ -1641,7 +1641,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                                     <p class="text-xs text-indigo-900 italic leading-relaxed">"${analisisObj.texto_cierre}"</p>
                                 </div>
                                 <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
-                                    <div class="flex justify-between items-center mb-2">
+                                  <div class="flex justify-between items-center mb-2">
                                         <p class="text-[10px] font-bold text-emerald-600 uppercase">RESPUESTA RÁPIDA (3 LÍNEAS)</p>
                                         <div class="flex gap-2">
                                             <button onclick="navigator.clipboard.writeText('${(analisisObj.texto_cierre_corto || '').replace(/'/g, "\\'")}')" class="text-[10px] text-emerald-600 hover:text-emerald-800 font-bold" title="Copiar"><i class="fa-regular fa-copy"></i></button>
