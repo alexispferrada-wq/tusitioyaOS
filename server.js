@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
   // Redirigir a la página principal de la aplicación para una mejor experiencia de usuario.
   res.redirect('/previo_comando.html');
 });
-
+ 
 // Fix para móviles: Redirigir rutas sin extensión a la vista correcta
 app.get('/previo_comando', (req, res) => {
   res.redirect('/previo_comando.html');
