@@ -136,6 +136,12 @@
             margin-top: 10px; 
         }
 
+        .support-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
         button { 
             width: 100%; 
             background: linear-gradient(90deg, #2563eb, #3b82f6); 
@@ -173,57 +179,65 @@
         <input type="hidden" name="cliente_id" id="idInput">
 
         <div class="step">
-            <div class="step-title"><span class="step-num">1</span>Identidad Profesional</div>
-            <label>Nombre completo o marca</label>
-            <input type="text" name="Nombre_Profesional" placeholder="Ej: Ps. Patricia Calderón L." required>
-            <label>Especialidad principal</label>
-            <input type="text" name="Especialidad" placeholder="Ej: Hipnosis Ericksoniana" required>
+            <div class="step-title"><span class="step-num">1</span>Contacto de Soporte</div>
+            <div class="whatsapp-note support-box">
+                <b>📞 Soporte Rápido:</b> Necesitamos un número con WhatsApp para contactarte si tenemos dudas urgentes durante el diseño.
+            </div>
+            <br>
+            <label>Tu WhatsApp de Contacto</label>
+            <input type="text" name="whatsapp_soporte" placeholder="+56 9..." required>
         </div>
 
         <div class="step">
-            <div class="step-title"><span class="step-num">2</span>Tu Sello Personal</div>
-            <label>¿Qué define tu trato amable y carisma?</label>
-            <textarea name="Sello_Personal" placeholder="¿Cómo quieres que se sientan tus pacientes?" required></textarea>
-        </div>
-
-        <div class="step">
-            <div class="step-title"><span class="step-num">3</span>Tu Paciente Ideal</div>
-            <label>¿A qué perfil de personas atiendes?</label>
-            <textarea name="Paciente_Ideal" placeholder="Ej: Adultos con estrés, parejas, etc." required></textarea>
-        </div>
-
-        <div class="step">
-            <div class="step-title"><span class="step-num">4</span>Servicios y Modalidad</div>
-            <label>Servicios principales</label>
-            <input type="text" name="Servicios" placeholder="Ej: Terapia Individual, Online, Talleres" required>
-            <select name="Modalidad">
-                <option value="Ambos">Modalidad: Presencial y Online</option>
-                <option value="Online">Solo Online</option>
-                <option value="Presencial">Solo Presencial</option>
+            <div class="step-title"><span class="step-num">2</span>Objetivo del Sitio</div>
+            <label>¿Cuál es la meta principal de tu nueva web?</label>
+            <select name="objetivo" required>
+                <option value="Vender productos (E-commerce)">Vender productos (E-commerce)</option>
+                <option value="Generar Leads/Contactos">Generar Leads/Contactos (Cotizaciones)</option>
+                <option value="Presencia de Marca">Presencia de Marca / Portafolio</option>
+                <option value="Blog/Noticias">Blog / Noticias</option>
             </select>
         </div>
 
         <div class="step">
-            <div class="step-title"><span class="step-num">5</span>Contacto y Ubicación</div>
-            <label>Dirección física (opcional)</label>
-            <input type="text" name="Direccion" placeholder="Ej: Av. Providencia 1476">
-            <label>WhatsApp para pacientes</label>
-            <input type="text" name="WhatsApp_Pacientes" placeholder="+56 9 XXXX XXXX" required>
+            <div class="step-title"><span class="step-num">3</span>Público Objetivo</div>
+            <label>¿A quién le vendes? (Edad, intereses, ubicación)</label>
+            <textarea name="publico" placeholder="Ej: Mujeres de 25-40 años en Santiago interesadas en moda..." required></textarea>
         </div>
 
         <div class="step">
-            <div class="step-title"><span class="step-num">6</span>Imagen y Colores</div>
-            <label>Colores preferidos</label>
-            <input type="text" name="Colores_Preferidos" placeholder="Ej: Azul pastel y gris suave">
-            <div class="whatsapp-note">
-                <b>📌 Importante:</b> Al terminar, envía tu logo y fotos por WhatsApp indicando tu número de orden.
-            </div>
+            <div class="step-title"><span class="step-num">4</span>Referentes de Diseño</div>
+            <label>Pega aquí links de webs que te gusten (Tu competencia o inspiración)</label>
+            <input type="text" name="referentes" placeholder="Ej: apple.com, nike.com, lawebdemivecino.cl" required>
         </div>
 
         <div class="step">
-            <div class="step-title"><span class="step-num">7</span>Tu Nombre Web</div>
-            <label>Dominio .cl deseado</label>
-            <input type="text" name="Dominio_Deseado" placeholder="www.tunombre.cl" required>
+            <div class="step-title"><span class="step-num">5</span>Estilo Visual</div>
+            <label>¿Cómo te imaginas el diseño? (Colores, logo, ambiente)</label>
+            <input type="text" name="estilo" placeholder="Ej: Minimalista, fondo oscuro, colores neón, elegante..." required>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">6</span>Estructura y Secciones</div>
+            <label>¿Qué páginas debe tener el menú?</label>
+            <input type="text" name="secciones" placeholder="Ej: Inicio, Nosotros, Servicios, Galería, Contacto..." required>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">7</span>Funcionalidades Especiales</div>
+            <label>¿Necesitas algo técnico específico?</label>
+            <input type="text" name="funcionalidades" placeholder="Ej: Botón de WhatsApp, Formulario, Mapa, Carrito..." required>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">8</span>Tono de Comunicación</div>
+            <label>¿Cómo quieres que le hablemos a tus clientes?</label>
+            <select name="tono">
+                <option value="Profesional y Serio">Profesional y Serio (Corporativo)</option>
+                <option value="Cercano y Amigable">Cercano y Amigable (Tu a Tu)</option>
+                <option value="Juvenil y Disruptivo">Juvenil y Disruptivo</option>
+                <option value="Lujoso y Exclusivo">Lujoso y Exclusivo</option>
+            </select>
         </div>
 
         <button type="submit">Finalizar y Enviar a Alexis</button>

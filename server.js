@@ -283,7 +283,8 @@ app.put('/api/clientes/:id', async (req, res) => {
   const { 
       monto_total, monto_pagado, whatsapp, nombre, negocio, dominio, 
       fecha_proximo_pago, monto_mantencion, rut, propuesta_text,
-      email, rubro, url // from encuesta_data
+      email, rubro, url, // from encuesta_data
+      respuestas_web // Nuevo campo para la encuesta de 7 preguntas
   } = req.body;
 
   let client;
@@ -310,6 +311,7 @@ app.put('/api/clientes/:id', async (req, res) => {
     if (email !== undefined) encuestaUpdates.email = email;
     if (rubro !== undefined) encuestaUpdates.rubro = rubro;
     if (url !== undefined) encuestaUpdates.url = url;
+    if (respuestas_web !== undefined) encuestaUpdates.respuestas_web = respuestas_web;
 
     if (Object.keys(encuestaUpdates).length > 0) {
         setClauses.push(`encuesta_data = COALESCE(encuesta_data, '{}'::jsonb) || $${paramIndex++}`);
@@ -589,12 +591,27 @@ app.post('/api/encuesta', async (req, res) => {
   let client;
   try {
     client = await pool.connect();
+    
+    // Estructuramos las respuestas específicas de la web para que el Admin las lea fácil
+    const respuestasWeb = {
+        objetivo: formData.objetivo,
+        publico: formData.publico,
+        referentes: formData.referentes,
+        estilo: formData.estilo,
+        secciones: formData.secciones,
+        funcionalidades: formData.funcionalidades,
+        tono: formData.tono
+    };
+
+    // Preparamos el objeto a guardar (mezclando datos de contacto y respuestas web)
+    const datosParaGuardar = { ...formData, respuestas_web: respuestasWeb };
+
     const query = `
       UPDATE clientes
-      SET encuesta_data = $1
+      SET encuesta_data = COALESCE(encuesta_data, '{}'::jsonb) || $1
       WHERE id = $2
     `;
-    await client.query(query, [formData, cliente_id]);
+    await client.query(query, [datosParaGuardar, cliente_id]);
     // Mensaje de éxito para el cliente
     res.send('<div style="font-family: sans-serif; text-align: center; padding-top: 50px;"><h1>¡Gracias! Tu respuesta ha sido guardada.</h1><p>Ya puedes cerrar esta ventana.</p></div>');
   } catch (err) {

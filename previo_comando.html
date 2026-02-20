@@ -124,6 +124,11 @@
         body.zen-mode #sidebar-left { max-width: 400px; }
         body.zen-mode #sidebar-right { max-width: 300px; }
         @media (min-width: 1024px) { body.zen-mode aside { width: auto; } }
+
+        /* Acordeón */
+        .accordion-content { display: none; }
+        .accordion-content.open { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="min-h-screen lg:h-screen flex flex-col lg:flex-row p-2 lg:p-4 gap-4 overflow-y-auto lg:overflow-hidden font-sans text-teal-900 bg-emerald-50">
@@ -229,28 +234,32 @@
                 <div id="list-nuevos" class="accordion-content pl-2 open ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
-                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                <div onclick="App.ui.toggleAccordion('whatsapp_enviado')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
                     <div class="flex items-center gap-2"><span class="text-yellow-500 text-xs">⏳</span><span class="text-xs font-bold text-teal-800">Esperando (Enviado)</span></div>
                     <span id="badge-whatsapp_enviado" class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
+                <div id="list-whatsapp_enviado" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
-                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                <div onclick="App.ui.toggleAccordion('seguimiento')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
                     <div class="flex items-center gap-2"><span class="text-blue-500 text-xs">💬</span><span class="text-xs font-bold text-teal-800">En Conversación</span></div>
                     <span id="badge-seguimiento" class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
+                <div id="list-seguimiento" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
-                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                <div onclick="App.ui.toggleAccordion('sin_respuesta')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
                     <div class="flex items-center gap-2"><span class="text-slate-400 text-xs">👻</span><span class="text-xs font-bold text-teal-800">Sin Respuesta</span></div>
                     <span id="badge-sin_respuesta" class="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
+                <div id="list-sin_respuesta" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
-                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                <div onclick="App.ui.toggleAccordion('cerrados')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
                     <div class="flex items-center gap-2"><span class="text-emerald-500 text-xs">🚀</span><span class="text-xs font-bold text-teal-800">Clientes Activos</span></div>
                     <span id="badge-cerrados" class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
+                <div id="list-cerrados" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
              <div class="group">
                 <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
@@ -533,6 +542,76 @@
                                 <a href="#" onclick="window.open(document.getElementById('ficha-url').value, '_blank')" class="absolute right-2 top-1.5 text-slate-400 hover:text-blue-500"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
                             </div>
                         </div>
+
+                        <!-- SECCIÓN ENCUESTA WEB (NUEVO) -->
+                        <div class="mt-4 bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
+                            <h3 class="text-xs font-bold text-indigo-800 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-laptop-code"></i> Briefing Web</h3>
+                            
+                            <!-- GENERADOR DE LINK (NUEVO) -->
+                            <div class="mb-4 bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Link para el Cliente</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="link-encuesta-cliente" readonly class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] text-slate-600 outline-none font-mono">
+                                    <button onclick="App.cliente.copiarLinkEncuesta()" class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-200 transition-colors" title="Copiar Link"><i class="fa-regular fa-copy"></i></button>
+                                    <button onclick="App.cliente.enviarEncuestaWhatsApp()" class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600 transition-colors" title="Enviar por WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+                                </div>
+                                <p class="text-[9px] text-indigo-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-share-nodes"></i> Envía este link para que llenen el formulario ellos mismos.</p>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">1. Objetivo Principal</label>
+                                    <select id="p1_objetivo" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
+                                        <option value="Vender productos (E-commerce)">Vender productos (E-commerce)</option>
+                                        <option value="Generar Leads/Contactos">Generar Leads/Contactos</option>
+                                        <option value="Presencia de Marca">Presencia de Marca</option>
+                                        <option value="Blog/Noticias">Blog/Noticias</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">2. Público Objetivo</label>
+                                    <input type="text" id="p2_publico" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Mujeres 25-40 años...">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">3. Referentes (URLs)</label>
+                                    <input type="text" id="p3_referentes" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: apple.com, nike.com">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">4. Estilo Visual</label>
+                                    <input type="text" id="p4_estilo" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Minimalista, oscuro...">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">5. Secciones</label>
+                                    <input type="text" id="p5_secciones" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Inicio, Nosotros, Contacto...">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">6. Funcionalidades</label>
+                                    <input type="text" id="p6_funcionalidades" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Chatbot, Reservas...">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">7. Tono Comunicación</label>
+                                    <select id="p7_tono" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
+                                        <option value="Profesional y Serio">Profesional y Serio</option>
+                                        <option value="Cercano y Amigable">Cercano y Amigable</option>
+                                        <option value="Juvenil y Disruptivo">Juvenil y Disruptivo</option>
+                                        <option value="Lujoso y Exclusivo">Lujoso y Exclusivo</option>
+                                    </select>
+                                </div>
+
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="App.cliente.guardarEncuestaWeb()" class="flex-1 bg-indigo-100 text-indigo-700 py-2 rounded-lg text-xs font-bold hover:bg-indigo-200 transition-colors"><i class="fa-solid fa-save"></i> Guardar</button>
+                                    <button onclick="App.cliente.generarPromptWeb()" id="btn-prompt-web" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-500/30"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear Prompt</button>
+                                </div>
+
+                                <!-- Resultado Prompt -->
+                                <div id="container-prompt-web" class="hidden mt-2">
+                                    <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Prompt Generado</label>
+                                    <textarea id="txt-prompt-web" rows="4" class="w-full bg-slate-800 text-green-400 font-mono text-[10px] p-2 rounded-lg mb-1" readonly></textarea>
+                                    <button onclick="navigator.clipboard.writeText(document.getElementById('txt-prompt-web').value); App.ui.notificar('Copiado al portapapeles', 'Copiado', 'exito')" class="w-full text-center text-[10px] text-indigo-600 font-bold hover:underline">Copiar Prompt</button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -1196,6 +1275,22 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         setVal('ficha-url', extra.url);
                         setVal('ficha-notas', extra.notas);
 
+                        // 3.1 Cargar Encuesta Web (Si existe)
+                        const web = extra.respuestas_web || {};
+                        setVal('p1_objetivo', web.objetivo || 'Vender productos (E-commerce)');
+                        setVal('p2_publico', web.publico || '');
+                        setVal('p3_referentes', web.referentes || '');
+                        setVal('p4_estilo', web.estilo || '');
+                        setVal('p5_secciones', web.secciones || '');
+                        setVal('p6_funcionalidades', web.funcionalidades || '');
+                        setVal('p7_tono', web.tono || 'Profesional y Serio');
+                        // Ocultar resultado anterior
+                        document.getElementById('container-prompt-web').classList.add('hidden');
+                        
+                        // 3.2 Generar Link de Encuesta
+                        const linkEncuesta = `${window.location.origin}/encuesta.html?id=${lead.id}`;
+                        setVal('link-encuesta-cliente', linkEncuesta);
+
                         // 4. Estado Táctico (Temperatura)
                         const temp = extra.temperatura || 'frio';
                         if (App.cliente.renderTemperatura) App.cliente.renderTemperatura(temp);
@@ -1367,6 +1462,74 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                             });
                         } catch(e) { console.error("Error guardando campo extendido", e); }
                     }
+                },
+                guardarEncuestaWeb: async () => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    
+                    const respuestas = {
+                        objetivo: document.getElementById('p1_objetivo').value,
+                        publico: document.getElementById('p2_publico').value,
+                        referentes: document.getElementById('p3_referentes').value,
+                        estilo: document.getElementById('p4_estilo').value,
+                        secciones: document.getElementById('p5_secciones').value,
+                        funcionalidades: document.getElementById('p6_funcionalidades').value,
+                        tono: document.getElementById('p7_tono').value
+                    };
+
+                    // Actualizar localmente
+                    if (!lead.encuesta_data) lead.encuesta_data = {};
+                    lead.encuesta_data.respuestas_web = respuestas;
+
+                    try {
+                        await fetch(`/api/clientes/${lead.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ respuestas_web: respuestas })
+                        });
+                        App.ui.notificar("Briefing web guardado correctamente.", "Guardado", "exito");
+                    } catch (e) {
+                        console.error(e);
+                        App.ui.notificar("Error al guardar briefing.", "Error", "error");
+                    }
+                },
+                generarPromptWeb: async () => {
+                    const btn = document.getElementById('btn-prompt-web');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generando...';
+                    btn.disabled = true;
+
+                    const data = App.datos.leads[App.clienteActivoIndex].encuesta_data.respuestas_web || {};
+                    // Recoger valores actuales por si no se ha guardado
+                    data.objetivo = document.getElementById('p1_objetivo').value;
+                    data.publico = document.getElementById('p2_publico').value;
+                    // ... (resto de campos se toman del DOM si se quiere ser estricto, pero asumimos guardado o uso directo)
+                    
+                    const prompt = `Actúa como Arquitecto de Software Senior. Crea un PROMPT TÉCNICO DETALLADO para desarrollar una Landing Page con estas características:\n\n1. Objetivo: ${document.getElementById('p1_objetivo').value}\n2. Público: ${document.getElementById('p2_publico').value}\n3. Referentes: ${document.getElementById('p3_referentes').value}\n4. Estilo: ${document.getElementById('p4_estilo').value}\n5. Secciones: ${document.getElementById('p5_secciones').value}\n6. Funcionalidades: ${document.getElementById('p6_funcionalidades').value}\n7. Tono: ${document.getElementById('p7_tono').value}\n\nSALIDA: Un prompt optimizado para que una IA de código (Cursor/Windsurf) genere el proyecto completo en HTML/Tailwind/JS.`;
+
+                    try {
+                        const res = await fetch('/api/analizar-chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ prompt: prompt }) });
+                        const json = await res.json();
+                        document.getElementById('txt-prompt-web').value = json.analisis;
+                        document.getElementById('container-prompt-web').classList.remove('hidden');
+                    } catch(e) { App.ui.notificar("Error generando prompt", "Error", "error"); }
+                    
+                    btn.innerHTML = originalText; btn.disabled = false;
+                },
+                copiarLinkEncuesta: () => {
+                    const link = document.getElementById('link-encuesta-cliente');
+                    link.select();
+                    navigator.clipboard.writeText(link.value);
+                    App.ui.notificar("Link copiado al portapapeles", "Copiado", "exito");
+                },
+                enviarEncuestaWhatsApp: () => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    const link = document.getElementById('link-encuesta-cliente').value;
+                    const mensaje = `Hola ${lead.nombre || ''}, para avanzar con el diseño de tu web, necesito que completes este breve formulario con tus preferencias: ${link}`;
+                    const fono = App.util.limpiarTelefono(lead.whatsapp);
+                    if(fono) window.open(`https://wa.me/${fono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                    else App.ui.notificar("El cliente no tiene un número válido", "Error", "error");
                 },
                 actualizarDatosContacto: () => {
                     // Esta función es un alias visual para el usuario, ya que los campos se actualizan onchange.
