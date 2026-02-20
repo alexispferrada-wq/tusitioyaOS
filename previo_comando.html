@@ -1,0 +1,2543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuSitioYa | Dashboard High Velocity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s infinite linear',
+                    },
+                    keyframes: {
+                        shimmer: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(100%)' }
+                        }
+                    },
+                    colors: {
+                        neon: '#00e599', // Color Neon DB
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background: #ecfdf5; color: #064e3b; } /* Fondo Emerald-50 y texto verde oscuro */
+        
+        .main-panel {
+            background-color: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255,255,255,0.6);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-white {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.05); /* Sombra verdosa muy sutil */
+            border: 1px solid #d1fae5; /* Borde Emerald-100 */
+        }
+
+        .circular-chart {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: conic-gradient(#10b981 0% 0%, #e2e8f0 0% 100%);
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .circular-chart::before {
+            content: ""; position: absolute; width: 90px; height: 90px;
+            border-radius: 50%; background: #f1f5f9;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .loader { border-top-color: #3b82f6; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Estilo Billete para Dashboard Financiero */
+        #dashboard-panel {
+            background-color: #f0fdf4;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(22, 163, 74, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(22, 163, 74, 0.1) 0px, transparent 50%),
+                repeating-linear-gradient(45deg, rgba(22, 163, 74, 0.03) 0px, rgba(22, 163, 74, 0.03) 2px, transparent 2px, transparent 4px);
+            border: 1px solid #86efac;
+            position: relative;
+        }
+        #dashboard-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a34a' fill-opacity='0.05'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+        #dashboard-panel::after {
+            content: "$";
+            position: absolute;
+            right: 20px;
+            bottom: -35px;
+            font-size: 180px;
+            font-family: 'Times New Roman', serif;
+            font-weight: bold;
+            color: #16a34a;
+            opacity: 0.08;
+            transform: rotate(-15deg);
+            pointer-events: none;
+            z-index: 0;
+        }
+        #dashboard-content, #dashboard-panel > div {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Animación Confeti */
+        @keyframes fall {
+            0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+        }
+        .confetti {
+            position: absolute;
+            width: 6px; height: 6px;
+            top: -10px;
+            animation: fall 3s linear forwards;
+        }
+
+        /* Modo Zen */
+        body.zen-mode .zen-hidden { display: none !important; }
+        body.zen-mode main { display: none !important; }
+        body.zen-mode aside { width: 100%; flex: 1; justify-content: center; }
+        body.zen-mode #sidebar-left { max-width: 400px; }
+        body.zen-mode #sidebar-right { max-width: 300px; }
+        @media (min-width: 1024px) { body.zen-mode aside { width: auto; } }
+    </style>
+</head>
+<body class="min-h-screen lg:h-screen flex flex-col lg:flex-row p-2 lg:p-4 gap-4 overflow-y-auto lg:overflow-hidden font-sans text-teal-900 bg-emerald-50">
+
+    <aside id="sidebar-left" class="w-full lg:w-[300px] flex-shrink-0 main-panel p-4 lg:p-5 z-20 transition-all duration-500 h-auto lg:h-full order-2 lg:order-1">
+        
+        <div class="relative mb-6 p-4 bg-white rounded-xl border border-emerald-100 shadow-sm overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1h2v2H1V1zm4 0h2v2H5V1zm4 0h2v2H9V1z\' fill=\'%2310b981\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
+            <div class="relative z-10 flex justify-between items-center">
+                <h1 class="text-xl font-bold text-teal-700 tracking-tight">TuSitioYa <span class="text-teal-400 text-xs font-normal">OS v2.0</span></h1>
+                <button onclick="App.ui.toggleZenMode()" class="text-teal-400 hover:text-emerald-600 transition-colors" title="Activar Modo Zen">
+                    <i class="fa-solid fa-spa"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="zen-hidden bg-teal-900 rounded-xl p-3 mb-4 shadow-lg shadow-teal-900/20 flex items-center justify-between border border-teal-800 relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 10px 10px;"></div>
+            <div class="flex items-center gap-2">
+                <img src="https://avatars.githubusercontent.com/u/105096363?s=48&v=4" class="w-5 h-5 rounded-full" alt="Neon">
+                <div>
+                    <p class="text-[10px] font-bold text-white uppercase tracking-wider">Neon DB</p>
+                    <p class="text-[9px] text-teal-200 font-mono">Serverless Postgres</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-teal-800 px-2 py-1 rounded-lg border border-teal-700">
+                <div id="neon-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span id="neon-status-text" class="text-[9px] font-bold text-emerald-400">ONLINE</span>
+            </div>
+        </div>
+
+        <div class="zen-hidden bg-white rounded-2xl p-4 shadow-sm mb-4 border border-emerald-100 relative overflow-hidden group">
+            <div class="absolute left-0 top-4 bottom-4 w-1 bg-teal-500 rounded-r-full"></div>
+            <div class="absolute right-0 top-0 text-9xl text-teal-50 opacity-40 pointer-events-none -mr-8 -mt-8 group-hover:opacity-60 transition-opacity animate-[spin_20s_linear_infinite]"><i class="fa-solid fa-microchip"></i></div>
+            <div class="pl-3">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">CEREBRO IA</span>
+                    <div class="flex items-center gap-2">
+                        <span id="ia-capacity-text" class="text-[9px] font-bold text-teal-500">0%</span>
+                        <span id="ia-status-badge" class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1">
+                            READY
+                        </span>
+                    </div>
+                </div>
+                <div class="relative mb-3">
+                    <select id="model-selector" onchange="App.models.analizarEstado()" class="w-full bg-emerald-50 border border-emerald-200 text-xs font-bold text-teal-800 rounded-lg py-2 px-2 focus:ring-2 focus:ring-emerald-200 outline-none cursor-pointer appearance-none">
+                        </select>
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 text-teal-500 pointer-events-none"><i class="fa-solid fa-chevron-down text-xs"></i></div>
+                </div>
+                <div class="w-full bg-emerald-100 h-1 rounded-full overflow-hidden mb-1">
+                    <div id="ia-capacity-bar" class="bg-teal-500 h-full w-[0%] transition-all duration-1000 ease-out"></div>
+                </div>
+                <p id="ia-analysis" class="text-[9px] text-teal-500 font-mono truncate">Sistema Latente...</p>
+            </div>
+        </div>
+
+        <div onclick="App.ui.toggleModal('modal-blacklist', true)" class="zen-hidden bg-red-50 border border-red-100 rounded-2xl p-3 mb-4 flex items-center justify-between cursor-pointer hover:bg-red-100 transition-colors group relative overflow-hidden">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: repeating-linear-gradient(45deg, #ef4444 0, #ef4444 1px, transparent 0, transparent 10px);"></div>
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-lg text-red-500 shadow-sm"><i class="fa-solid fa-ban"></i></div>
+                <div>
+                    <p class="text-[10px] font-bold text-red-400 uppercase">EXCEPCIONES</p>
+                    <p class="text-[9px] text-red-300">Números inválidos</p>
+                    <p id="blacklist-worst-model" class="text-[9px] text-red-600 font-bold mt-1 hidden"></p>
+                </div>
+            </div>
+            <h3 class="text-2xl font-black text-red-500 group-hover:scale-110 transition-transform mr-2"><span id="blacklist-count">0</span></h3>
+        </div>
+
+        <div class="zen-hidden grid grid-cols-3 gap-2 mb-4">
+            <button onclick="App.ui.toggleModal('modal-nuevo-cliente', true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl py-2 text-xs font-bold transition-colors">+ Nuevo</button>
+            <button onclick="App.prospectorIA.abrir()" class="bg-teal-600 hover:bg-teal-700 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-teal-500/30">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> IA
+            </button>
+            <button onclick="App.ui.toggleModal('modal-prospectos', true)" class="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-emerald-500/30">
+                <i class="fa-solid fa-file-import"></i> Importar
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-1">
+            <!-- BOTÓN DISCADOR AUTOMÁTICO -->
+            <div class="mb-3 px-1">
+                <button onclick="App.discador.iniciar()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white p-3 rounded-xl shadow-lg shadow-emerald-500/30 flex items-center justify-between group transition-all transform hover:scale-[1.02]">
+                    <div class="flex items-center gap-2">
+                        <div class="bg-white/20 p-1.5 rounded-lg"><i class="fa-solid fa-headset text-white text-xs"></i></div>
+                        <div class="text-left">
+                            <p class="text-[10px] font-bold text-emerald-100 uppercase tracking-wider">Modo Focus</p>
+                            <p class="text-xs font-bold text-white">Iniciar Discador</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-play text-white group-hover:animate-pulse"></i>
+                </button>
+            </div>
+
+            <!-- BUSCADOR GLOBAL POTENTE -->
+            <div class="mb-4 px-1 sticky top-0 z-10 bg-emerald-50 pb-2 pt-1">
+                <div class="relative group">
+                    <input type="text" id="buscador-global" onkeyup="App.ui.buscar(this.value)" placeholder="Buscar dominio, nombre, fono..." class="w-full bg-white border border-emerald-200 rounded-xl py-2.5 pl-9 pr-3 text-xs font-bold text-teal-800 outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm group-hover:shadow-md">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-teal-400 text-xs group-hover:text-emerald-500 transition-colors"></i>
+                </div>
+            </div>
+
+            <div class="group">
+                <div onclick="App.ui.toggleAccordion('nuevos')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100">
+                    <div class="flex items-center gap-2"><span class="text-orange-500 text-xs">🔥</span><span class="text-xs font-bold text-teal-800">Nuevos Leads</span></div>
+                    <span id="badge-nuevos" class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div id="list-nuevos" class="accordion-content pl-2 open ml-2 border-l-2 border-emerald-100"></div>
+            </div>
+            <div class="group">
+                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                    <div class="flex items-center gap-2"><span class="text-yellow-500 text-xs">⏳</span><span class="text-xs font-bold text-teal-800">Esperando (Enviado)</span></div>
+                    <span id="badge-whatsapp_enviado" class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+            </div>
+            <div class="group">
+                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                    <div class="flex items-center gap-2"><span class="text-blue-500 text-xs">💬</span><span class="text-xs font-bold text-teal-800">En Conversación</span></div>
+                    <span id="badge-seguimiento" class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+            </div>
+            <div class="group">
+                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                    <div class="flex items-center gap-2"><span class="text-slate-400 text-xs">👻</span><span class="text-xs font-bold text-teal-800">Sin Respuesta</span></div>
+                    <span id="badge-sin_respuesta" class="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+            </div>
+            <div class="group">
+                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                    <div class="flex items-center gap-2"><span class="text-emerald-500 text-xs">🚀</span><span class="text-xs font-bold text-teal-800">Clientes Activos</span></div>
+                    <span id="badge-cerrados" class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+            </div>
+             <div class="group">
+                <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
+                    <div class="flex items-center gap-2"><span class="text-red-300 text-xs">🗑️</span><span class="text-xs font-bold text-teal-800">Descartados</span></div>
+                    <span id="badge-descartados" class="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <aside id="sidebar-right" class="w-full lg:w-[260px] flex-shrink-0 main-panel flex flex-col items-center p-4 lg:p-6 text-center transition-all duration-500 h-auto lg:h-full order-3">
+        <div class="zen-hidden w-full text-left mb-4">
+            <h2 class="text-xl font-bold text-teal-700 tracking-tight">Información Operativa</h2>
+        </div>
+        <div class="zen-hidden w-full mb-6 bg-teal-900 rounded-xl p-4 border border-teal-800 shadow-lg relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+            <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+            <div class="absolute bottom-0 right-0 text-6xl text-white opacity-5 pointer-events-none -mb-2 -mr-2"><i class="fa-regular fa-clock"></i></div>
+            <p class="text-[9px] text-teal-200 font-bold uppercase tracking-widest mb-1">INFO DEL RELOJ</p>
+            <div id="reloj-sistema" class="text-3xl font-mono font-black text-white tracking-tight leading-none">00:00:00</div>
+            <div id="fecha-sistema" class="text-[10px] text-teal-400 font-bold uppercase mt-2 border-t border-teal-800 pt-2">Cargando...</div>
+        </div>
+
+        <!-- TARJETA DE METAS DIARIAS -->
+        <div class="w-full bg-white rounded-xl p-4 border border-emerald-100 shadow-sm mb-6 relative overflow-hidden text-left">
+            <div id="confetti-container" class="absolute inset-0 pointer-events-none z-50"></div>
+            <div class="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
+            <div class="absolute -right-6 -top-6 text-8xl text-teal-50 opacity-50 pointer-events-none"><i class="fa-solid fa-crosshairs"></i></div>
+            <h3 class="text-xs font-bold text-teal-800 mb-4 uppercase tracking-wider pl-2">🎯 Metas de Hoy</h3>
+            
+            <!-- Meta Ventas -->
+            <div class="mb-4">
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-[10px] font-bold text-teal-600">Ventas Cerradas</span>
+                    <span class="text-[10px] font-bold text-emerald-600"><span id="meta-ventas-actual">0</span> / <span id="meta-ventas-total">3</span></span>
+                </div>
+                <div class="w-full bg-emerald-100 rounded-full h-1.5">
+                    <div id="barra-meta-ventas" class="bg-emerald-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Meta Leads -->
+             <div>
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-[10px] font-bold text-teal-600">Nuevos Prospectos</span>
+                    <span class="text-[10px] font-bold text-purple-600"><span id="meta-leads-actual">0</span> / <span id="meta-leads-total">10</span></span>
+                </div>
+                <div class="w-full bg-purple-100 rounded-full h-1.5">
+                    <div id="barra-meta-leads" class="bg-purple-500 h-full rounded-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGROS / TROFEOS -->
+        <div class="w-full bg-white rounded-xl p-4 border border-emerald-100 shadow-sm mb-6 relative overflow-hidden text-left group">
+            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+            <div class="absolute -right-6 -top-6 text-8xl text-yellow-50 opacity-50 pointer-events-none"><i class="fa-solid fa-trophy"></i></div>
+            <h3 class="text-xs font-bold text-teal-800 mb-4 uppercase tracking-wider pl-2">🏆 Sala de Trofeos</h3>
+            <div id="logros-container" class="flex justify-between items-center px-2">
+                <!-- JS Generated -->
+            </div>
+        </div>
+
+        <h2 class="zen-hidden text-lg font-bold text-teal-800 mb-1">Conversión Global</h2>
+        <p class="zen-hidden text-[10px] text-teal-500 uppercase tracking-widest mb-4">Efectividad de Cierre</p>
+
+        <div class="zen-hidden mb-2 relative">
+            <div class="circular-chart shadow-inner" id="circular-progress">
+                <span class="relative z-10 text-3xl font-bold text-teal-800" id="percent-text">0%</span>
+            </div>
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 bg-emerald-400 rounded-full"></div>
+            <div class="text-[10px] font-bold text-teal-500 mt-4 uppercase">Conversión Real</div>
+        </div>
+
+        <div class="zen-hidden w-full space-y-3 mt-8">
+            <div class="card-white p-3 flex justify-between items-center">
+                <span class="text-xs font-bold text-teal-600">Leads Totales</span>
+                <span id="metric-total" class="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-1 rounded-md">0</span>
+            </div>
+            <div class="bg-emerald-50 rounded-xl border border-emerald-100 p-3 flex justify-between items-center">
+                <span class="text-xs font-bold text-emerald-600">Contactados</span>
+                <span id="metric-validos" class="bg-emerald-200 text-emerald-800 text-xs font-black px-2 py-1 rounded-md">0</span>
+            </div>
+            <div class="bg-red-50 rounded-xl border border-red-100 p-3 flex justify-between items-center">
+                <span class="text-xs font-bold text-red-500">Inválidos</span>
+                <span id="metric-excepciones" class="bg-red-200 text-red-800 text-xs font-black px-2 py-1 rounded-md">0</span>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col gap-4 w-full h-auto lg:h-full overflow-visible lg:overflow-hidden order-1 lg:order-2">
+        <div class="main-panel p-6 transition-all duration-300" id="dashboard-panel">
+            <div class="flex justify-between items-center cursor-pointer" onclick="App.ui.toggleDashboard()">
+                <h2 class="text-xl font-bold text-blue-700 tracking-tight">Dashboard Financiero</h2>
+                <i id="dashboard-chevron" class="fa-solid fa-chevron-up text-slate-400 transition-transform"></i>
+            </div>
+            <div id="dashboard-content" class="flex flex-col lg:flex-row gap-4 mt-4 overflow-hidden transition-all duration-300">
+                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-emerald-500 relative overflow-hidden hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300">
+                    <div class="absolute right-0 bottom-0 text-7xl text-emerald-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-chart-line"></i></div>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">VENTAS DEL MES</p>
+                    <p id="finanza-ventas-mes" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
+                    <p class="text-[9px] text-emerald-500 font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> <span id="count-ventas-mes">0</span> Cierres</p>
+                </div>
+                <div onclick="App.ui.mostrarEntregasHoy()" class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-blue-500 relative overflow-hidden hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 cursor-pointer">
+                    <div class="absolute right-0 bottom-0 text-7xl text-blue-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-calendar-check"></i></div>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">ENTREGAS HOY</p>
+                    <div class="flex items-baseline gap-1 relative z-10">
+                        <p id="finanza-entregas-hoy" class="text-2xl font-bold text-slate-800">0</p>
+                        <span class="text-xs text-slate-500 font-bold">Proyectos</span>
+                    </div>
+                    <p class="text-[9px] text-blue-400 font-bold">Por cobrar: <span id="finanza-proyeccion">$0</span></p>
+                </div>
+                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-orange-500 relative overflow-hidden hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-300">
+                    <div class="absolute right-0 bottom-0 text-7xl text-orange-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">CAJA REAL</p>
+                    <p id="finanza-caja-real" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
+                    <p class="text-[9px] text-orange-400 font-bold">Recaudado este mes</p>
+                </div>
+                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-purple-500 relative overflow-hidden hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
+                    <div class="absolute right-0 bottom-0 text-7xl text-purple-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-receipt"></i></div>
+                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">TICKET PROMEDIO</p>
+                    <p id="finanza-ticket" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
+                    <p class="text-[9px] text-purple-400 font-bold">Valor medio venta</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-panel flex-1 p-6 relative flex flex-col overflow-hidden">
+            <div class="absolute inset-0 opacity-30 pointer-events-none" style="background-image: linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px); background-size: 40px 40px;"></div>
+            <div class="flex justify-between items-start mb-4 relative z-10">
+                <div><h2 class="text-xl font-bold text-slate-800">Monitor de Proyectos</h2><p class="text-xs text-slate-500">Estado de servidores en tiempo real</p></div>
+                <div class="flex gap-2">
+                    <button onclick="App.calendario.abrir()" class="bg-white text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-slate-200 flex items-center gap-2 hover:bg-slate-50"><i class="fa-regular fa-calendar-days text-purple-500"></i> Calendario</button>
+                    <button onclick="App.monitor.checkAll()" class="bg-white text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-slate-200 flex items-center gap-2 hover:bg-slate-50"><i class="fa-solid fa-arrows-rotate text-blue-500"></i> Refrescar Red</button>
+                </div>
+            </div>
+            <div id="monitor-sites-list" class="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10 flex-1 content-start">
+                <!-- Sites injected here -->
+            </div>
+            <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none"><i class="fa-solid fa-network-wired text-9xl"></i></div>
+        </div>
+    </main>
+
+    <div id="modal-ficha-cliente" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-7xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[95vh] border border-emerald-100">
+            
+            <!-- BARRA DISCADOR (SOLO VISIBLE EN MODO DISCADOR) -->
+            <div id="ficha-discador-bar" class="hidden bg-emerald-600 p-2 px-6 flex justify-between items-center shadow-md z-50">
+                <span class="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div> Modo Discador Automático
+                </span>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono text-emerald-100" id="discador-counter">1 / 10</span>
+                    <button onclick="App.discador.siguiente()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">Saltar <i class="fa-solid fa-forward"></i></button>
+                    <button onclick="App.discador.detener()" class="text-white/60 hover:text-white px-2"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+            </div>
+
+            <div class="bg-teal-900 p-5 text-white flex justify-between items-start shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-center gap-3 mb-1">
+                        <h2 id="header-negocio" class="text-2xl font-bold">...</h2>
+                        <span id="header-dominio" class="bg-teal-800 text-teal-200 px-2 py-0.5 rounded text-xs font-mono">...</span>
+                    </div>
+                    <div class="flex gap-4 text-sm text-slate-400">
+                        <p id="header-nombre"><i class="fa-solid fa-user mr-1"></i> ...</p>
+                        <p id="header-telefono" class="font-mono"><i class="fa-brands fa-whatsapp mr-1"></i> ...</p>
+                    </div>
+                </div>
+                
+                <div id="ficha-financiera" class="hidden mr-6 text-right">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO FINANCIERO</p>
+                    <p class="text-xl font-bold text-emerald-400"><span id="ficha-pagado">$0</span> <span class="text-xs text-slate-500 font-normal">pagado</span></p>
+                    <p class="text-xs text-slate-400">de <span id="ficha-total">$0</span> total</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span id="ficha-estado-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-teal-800 uppercase">...</span>
+                    <button onclick="App.cliente.cerrarFicha()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-hidden flex flex-col lg:flex-row bg-slate-50">
+                
+                <!-- COLUMNA 1: DATOS, TÁCTICA Y FINANZAS (30%) -->
+                <div class="w-full lg:w-[30%] p-5 border-r border-emerald-100 overflow-y-auto bg-white flex flex-col gap-5 custom-scroll">
+                    
+                    <!-- NUEVA SECCIÓN: ESTADO TÁCTICO -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-chess-knight"></i> Estado Táctico</h3>
+                        
+                        <div class="mb-3">
+                            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Temperatura del Lead</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="App.cliente.setTemperatura('frio')" id="btn-temp-frio" class="py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 hover:bg-blue-50 hover:text-blue-500 transition-all">❄️ Frío</button>
+                                <button onclick="App.cliente.setTemperatura('tibio')" id="btn-temp-tibio" class="py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 hover:bg-orange-50 hover:text-orange-500 transition-all">🌤️ Tibio</button>
+                                <button onclick="App.cliente.setTemperatura('caliente')" id="btn-temp-caliente" class="py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all">🔥 Hot</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Notas Rápidas</label>
+                            <textarea id="ficha-notas" onchange="App.cliente.actualizarCampo('notas', this.value)" rows="2" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 resize-none" placeholder="Ej: Hablar con secretaria, llamar martes..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Bloque Financiero -->
+                    <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
+                        <h3 class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Acuerdo Comercial</h3>
+                        
+                        <div class="flex gap-2 mb-1">
+                            <div class="w-1/3">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Valor Plan</label>
+                                <input type="number" id="ficha-monto-total" onchange="App.cliente.actualizarCampo('monto_total', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div class="w-1/3">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Adelanto</label>
+                                <input type="number" id="ficha-monto-pagado" onchange="App.cliente.actualizarCampo('monto_pagado', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-2 text-xs font-bold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            </div>
+                            <div class="w-1/3">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Restante</label>
+                                <input type="text" id="ficha-saldo-pendiente" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-2 py-2 text-xs font-bold text-red-500 outline-none mb-1">
+                                <input type="date" id="ficha-fecha-pago" onchange="App.cliente.actualizarCampo('fecha_proximo_pago', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-emerald-500" title="Fecha Probable de Pago">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloque Contacto (AMPLIADO) -->
+                    <div class="space-y-3 pb-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-address-card"></i> Datos del Cliente</h3>
+                            <button onclick="App.cliente.actualizarDatosContacto()" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100 font-bold transition-colors">Actualizar Datos</button>
+                        </div>
+                        
+                        <!-- Campos Básicos -->
+                        <div class="grid grid-cols-1 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Nombre Negocio</label>
+                                <input type="text" id="ficha-negocio" onchange="App.cliente.actualizarCampo('negocio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-blue-400 focus:bg-blue-50/30 transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Nombre Contacto</label>
+                                <input type="text" id="ficha-nombre" onchange="App.cliente.actualizarCampo('nombre', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-blue-50/30 transition-colors">
+                            </div>
+                        </div>
+
+                        <!-- Campos Nuevos -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">RUT / ID Fiscal</label>
+                                <input type="text" id="ficha-rut" onchange="App.cliente.actualizarCampo('rut', this.value)" placeholder="12.345.678-9" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Rubro / Industria</label>
+                                <input type="text" id="ficha-rubro" onchange="App.cliente.actualizarCampo('rubro', this.value)" placeholder="Ej: Legal, Salud..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Correo Electrónico</label>
+                            <input type="email" id="ficha-email" onchange="App.cliente.actualizarCampo('email', this.value)" placeholder="contacto@empresa.cl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">WhatsApp</label>
+                                <input type="text" id="ficha-whatsapp" onchange="App.cliente.actualizarCampo('whatsapp', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Dominio .CL</label>
+                                <input type="text" id="ficha-dominio" onchange="App.cliente.actualizarCampo('dominio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-indigo-600 font-bold outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">URL Actual / Maps</label>
+                            <div class="relative">
+                                <input type="text" id="ficha-url" onchange="App.cliente.actualizarCampo('url', this.value)" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs text-blue-500 underline cursor-pointer outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                                <a href="#" onclick="window.open(document.getElementById('ficha-url').value, '_blank')" class="absolute right-2 top-1.5 text-slate-400 hover:text-blue-500"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA 2: IA PROTAGONISTA (45%) -->
+                <div class="w-full lg:w-[45%] p-5 bg-white overflow-y-auto flex flex-col border-r border-emerald-100 relative">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+                    
+                    <div class="mb-4 flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="bg-emerald-100 text-emerald-600 p-1.5 rounded-md"><i class="fa-solid fa-brain text-sm"></i></div>
+                                <span class="text-xs font-bold text-emerald-800 uppercase tracking-widest">Análisis Táctico IA</span>
+                            </div>
+                            <button onclick="App.ui.configurarPrompt()" class="text-[10px] text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1"><i class="fa-solid fa-gear"></i> Configurar IA</button>
+                        </div>
+                        
+                        <textarea id="historial-chat-input" onpaste="App.cliente.guardarHistorialPegado(event)" class="w-full h-32 p-4 rounded-xl border border-emerald-100 text-xs focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-emerald-50/30 placeholder-emerald-300 mb-3 font-mono" placeholder="Pega aquí la conversación de WhatsApp..."></textarea>
+                        
+                        <button id="btn-analizar-cierre" onclick="App.cliente.analizarCierre()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar Estrategia de Cierre
+                        </button>
+                        
+                        <div id="analysis-result" class="hidden mt-4 bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm text-slate-600 flex-1 overflow-y-auto"></div>
+                    </div>
+
+                    <div class="border-t border-emerald-100 pt-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-bold text-teal-400 uppercase">Historial de Interacciones</span>
+                        </div>
+                        <div id="ficha-historial" class="space-y-3 pl-2 border-l-2 border-slate-100 ml-1 max-h-40 overflow-y-auto custom-scroll">
+                            <!-- Historial items -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COLUMNA 3: SCRIPT Y ACCIONES (25%) -->
+                <div class="w-full lg:w-[25%] p-5 overflow-y-auto flex flex-col bg-slate-50 border-l border-emerald-100">
+                    
+                    <!-- Script Box (Referencia) -->
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm mb-4 flex flex-col h-48">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">SCRIPT INICIAL</span>
+                            <span class="text-[9px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold">Ref</span>
+                        </div>
+                        <textarea id="ficha-script" class="w-full flex-1 bg-slate-50 border border-slate-100 rounded-lg p-2 text-xs text-slate-500 leading-relaxed resize-none outline-none" readonly></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-1 gap-3 mb-auto">
+                        <button onclick="App.cliente.accion('whatsapp')" class="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 transition-transform hover:scale-[1.01]">
+                            <i class="fa-brands fa-whatsapp text-xl"></i>
+                            <span class="text-sm font-bold">Enviar WhatsApp</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-4">
+                        <button onclick="App.cliente.accion('schedule')" class="py-3 bg-white border border-blue-200 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1">
+                            <i class="fa-regular fa-calendar text-lg"></i>
+                            <span class="text-[10px]">Agendar</span>
+                        </button>
+                        <button onclick="App.cliente.accion('won')" class="py-3 bg-white border border-emerald-200 text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors flex flex-col items-center justify-center gap-1">
+                            <i class="fa-solid fa-trophy text-lg"></i>
+                            <span class="text-[10px]">Cerrar</span>
+                        </button>
+                        <button onclick="App.cliente.accion('lost')" class="py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1 col-span-2">
+                            <i class="fa-solid fa-thumbs-down text-lg"></i>
+                            <span class="text-[10px]">Descartar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-agenda" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[85] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6"><div><h3 class="text-xl font-bold text-indigo-900">Agenda Predictiva</h3><p class="text-xs text-slate-400">Seguimientos para hoy</p></div><button onclick="App.ui.toggleModal('modal-agenda', false)" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+            <div id="agenda-lista" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scroll"></div>
+        </div>
+    </div>
+
+    <div id="modal-entregas-hoy" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div><h3 class="text-xl font-bold text-blue-900">Entregas para Hoy</h3><p class="text-xs text-slate-400">Proyectos con fecha de compromiso hoy</p></div>
+                <button onclick="App.ui.toggleModal('modal-entregas-hoy', false)" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="entregas-hoy-lista" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scroll"></div>
+        </div>
+    </div>
+
+    <div id="modal-calendario" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl p-6 h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-purple-100 text-purple-600 p-2 rounded-lg"><i class="fa-regular fa-calendar-days"></i></div>
+                    <h3 class="text-xl font-bold text-slate-900">Calendario de Operaciones</h3>
+                </div>
+                <button onclick="App.ui.toggleModal('modal-calendario', false)" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="flex justify-between items-center mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <button onclick="App.calendario.cambiarMes(-1)" class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-500"><i class="fa-solid fa-chevron-left"></i> Anterior</button>
+                <h4 id="calendario-titulo" class="text-lg font-bold text-slate-800 capitalize">...</h4>
+                <button onclick="App.calendario.cambiarMes(1)" class="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-500">Siguiente <i class="fa-solid fa-chevron-right ml-1"></i></button>
+            </div>
+
+            <div class="grid grid-cols-7 gap-2 text-center mb-2">
+                <div class="text-xs font-bold text-slate-400 uppercase">Domingo</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Lunes</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Martes</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Miércoles</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Jueves</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Viernes</div>
+                <div class="text-xs font-bold text-slate-400 uppercase">Sábado</div>
+            </div>
+            
+            <div id="calendario-grid" class="grid grid-cols-7 gap-2 flex-1 overflow-y-auto custom-scroll bg-slate-50 p-2 rounded-xl border border-slate-200">
+                <!-- JS Generated -->
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-ia-generador" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-white rounded-2xl flex flex-col shadow-2xl overflow-hidden border border-slate-200 max-h-[95vh]">
+            <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                <div class="flex items-center gap-3"><div class="bg-blue-600 text-white p-2 rounded-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div><h3 class="text-xl font-bold text-slate-900">Prospector IA</h3></div></div><button onclick="App.prospectorIA.cerrar()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+                <div class="w-full lg:w-1/2 flex flex-col p-6 border-b lg:border-b-0 lg:border-r border-slate-100">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Rubro</label><input id="ia-rubro" type="text" placeholder="Ej: Dentistas..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none"></div>
+                        <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Ciudad</label><input id="ia-ciudad" type="text" value="Santiago, Chile" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none"></div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Cantidad</label>
+                        <select id="ia-cantidad" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none appearance-none">
+                            <option>5</option><option>10</option><option>15</option><option>20</option><option>40</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block">Prompt de Prospección</label>
+                        <textarea id="ia-prompt-area" rows="15" class="w-full p-4 bg-slate-100 border border-slate-200 rounded-xl font-mono text-xs outline-none focus:ring-2 focus:ring-blue-500/20 flex-1"></textarea>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 flex flex-col bg-slate-50 p-6">
+                    <div id="ia-loading" class="hidden flex-col items-center justify-center h-full"><div class="loader ease-linear rounded-full border-4 border-t-4 border-blue-500 h-10 w-10 mb-4"></div><p class="text-sm text-slate-500 animate-pulse">Analizando...</p></div>
+                    <div id="ia-results-container" class="hidden flex-1 overflow-y-auto space-y-3 custom-scroll"></div>
+                    <div id="ia-empty-state" class="flex flex-col items-center justify-center h-full text-center opacity-60"><i class="fa-solid fa-magnifying-glass-location text-4xl text-slate-300 mb-3"></i><p class="text-sm text-slate-400">Define los parámetros y genera.</p></div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-slate-100 bg-white flex justify-between items-center">
+                <button onclick="App.prospectorIA.copiarPrompt()" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold text-xs rounded-lg hover:bg-slate-200 flex items-center gap-2"><i class="fa-regular fa-copy"></i> Copiar Prompt</button>
+                <div class="flex gap-3">
+                    <button onclick="App.prospectorIA.buscar()" id="btn-ia-buscar" class="px-6 py-2.5 bg-slate-900 text-white font-bold text-sm rounded-lg shadow-lg hover:bg-black flex items-center gap-2">
+                        <i class="fa-solid fa-brain"></i> Analizar con <span id="ia-model-name-btn" class="font-mono text-xs">...</span>
+                    </button>
+                    <button onclick="App.prospectorIA.guardar()" id="btn-ia-guardar" class="hidden px-6 py-2.5 bg-emerald-500 text-white font-bold text-sm rounded-lg shadow-lg hover:bg-emerald-600">Guardar Resultados</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-cierre-venta" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-emerald-50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-emerald-800"><i class="fa-solid fa-handshake mr-2"></i> Cerrar Venta</h3>
+                <button onclick="App.ui.toggleModal('modal-cierre-venta', false)" class="text-emerald-400 hover:text-emerald-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="App.cliente.confirmarCierre(event)" class="p-6 space-y-4">
+                <input type="hidden" name="cliente_id" id="cierre-cliente-id">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-4">
+                    <p class="text-xs text-slate-500 font-bold uppercase">Cliente</p>
+                    <p id="cierre-cliente-nombre" class="font-bold text-slate-800 text-lg">...</p>
+                    <p id="cierre-cliente-dominio" class="text-xs text-slate-500 font-mono">...</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Monto Total ($)</label>
+                        <input name="monto_total" type="number" required class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 font-bold text-slate-700">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Abono Inicial ($)</label>
+                        <input name="monto_pagado" type="number" required class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 font-bold text-emerald-600">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Comprobante de Pago</label>
+                    <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors cursor-pointer relative">
+                        <input type="file" name="comprobante" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-300 mb-1"></i>
+                        <p class="text-xs text-slate-400 font-bold">Subir imagen o PDF</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-all transform hover:scale-[1.02]">
+                    Confirmar Venta 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-nuevo-cliente" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">Nuevo Lead Manual</h3>
+                <button onclick="App.ui.toggleModal('modal-nuevo-cliente', false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <form onsubmit="App.cliente.guardarManual(event)" class="p-6 space-y-4 overflow-y-auto custom-scroll">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Dominio (ID Único)</label>
+                    <input name="dominio" type="text" required placeholder="ejemplo.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">RUT</label>
+                        <input name="rut" type="text" placeholder="12.345.678-9" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Rubro</label>
+                        <input name="rubro" type="text" placeholder="Ej: Legal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Nombre del Negocio</label>
+                    <input name="negocio" type="text" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Nombre del Dueño</label>
+                    <input name="nombre" type="text" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">WhatsApp</label>
+                        <input name="whatsapp" type="text" required placeholder="+569..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Email</label>
+                        <input name="email" type="email" placeholder="@" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">URL / Maps</label>
+                    <input name="url" type="text" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Propuesta Inicial</label>
+                    <textarea name="propuesta" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">Guardar Lead</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-blacklist" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-red-500">Ranking de Errores (Blacklist)</h3><button onclick="App.ui.toggleModal('modal-blacklist', false)"><i class="fa-solid fa-xmark text-slate-400"></i></button></div>
+            
+            <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Errores por Modelo</p>
+                <div id="blacklist-chart" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-prospectos" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl bg-white rounded-2xl flex flex-col max-h-[90vh] shadow-2xl">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center"><h3 class="text-xl font-bold text-slate-900">Importar Prospectos</h3><button onclick="App.ui.toggleModal('modal-prospectos', false)"><i class="fa-solid fa-xmark text-slate-400"></i></button></div>
+            <div class="p-6 flex flex-col gap-4 overflow-y-auto">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Opción 1: Subir Archivo (CSV/Excel)</label>
+                    <input type="file" class="w-full px-4 py-2 rounded-lg border border-slate-200 text-sm">
+                </div>
+                <div class="flex-1 flex flex-col">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Opción 2: Pegar Código JSON</label>
+                    <textarea id="import-json-area" rows="12" placeholder='[{"nombre": "Juan", "negocio": "Panadería", "whatsapp": "+569...", "propuesta_text": "..."}]' class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                </div>
+            </div>
+            <div class="p-6 border-t border-slate-100 flex justify-end gap-3">
+                <button onclick="App.ui.toggleModal('modal-prospectos', false)" class="px-6 py-2 text-slate-500 font-bold text-sm">Cancelar</button>
+                <button onclick="App.importar.procesarJSON()" class="px-6 py-2 bg-emerald-500 text-white font-bold text-sm rounded-lg shadow-lg hover:bg-emerald-600 transition-all">Procesar e Importar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-motivo-descarte" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">Motivo de Descarte</h3>
+                <button onclick="App.ui.toggleModal('modal-motivo-descarte', false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <p class="text-sm text-slate-500 mb-4">Selecciona por qué no se cerró esta venta:</p>
+            <div class="space-y-2">
+                <button onclick="App.cliente.confirmarDescarte('No le interesa')" class="w-full text-left px-4 py-3 bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 font-medium rounded-xl border border-slate-100 hover:border-red-100 transition-colors flex justify-between items-center group">
+                    <span>No le interesa</span> <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-red-300 text-xs"></i>
+                </button>
+                <button onclick="App.cliente.confirmarDescarte('Presupuesto / Muy caro')" class="w-full text-left px-4 py-3 bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 font-medium rounded-xl border border-slate-100 hover:border-red-100 transition-colors flex justify-between items-center group">
+                    <span>Presupuesto / Muy caro</span> <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-red-300 text-xs"></i>
+                </button>
+                <button onclick="App.cliente.confirmarDescarte('Ya contrató con otro')" class="w-full text-left px-4 py-3 bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 font-medium rounded-xl border border-slate-100 hover:border-red-100 transition-colors flex justify-between items-center group">
+                    <span>Ya contrató con otro</span> <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-red-300 text-xs"></i>
+                </button>
+                <button onclick="App.cliente.confirmarDescarte('No contesta / Ilocalizable')" class="w-full text-left px-4 py-3 bg-slate-50 hover:bg-red-50 text-slate-600 hover:text-red-600 font-medium rounded-xl border border-slate-100 hover:border-red-100 transition-colors flex justify-between items-center group">
+                    <span>No contesta / Ilocalizable</span> <i class="fa-solid fa-chevron-right text-slate-300 group-hover:text-red-300 text-xs"></i>
+                </button>
+            </div>
+            <div class="mt-4 pt-4 border-t border-slate-100">
+                 <button onclick="App.cliente.confirmarDescarteManual()" class="text-xs text-slate-400 hover:text-slate-600 font-bold underline w-full text-center">Escribir otro motivo...</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-notificacion" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div id="notificacion-icono" class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl"></div>
+            <h3 id="notificacion-titulo" class="text-lg font-bold text-slate-800 mb-2"></h3>
+            <p id="notificacion-mensaje" class="text-sm text-slate-500 mb-6 text-left" style="white-space: pre-wrap;"></p>
+            <button id="notificacion-btn-ok" onclick="App.ui.cerrarNotificacion()" class="w-full py-2.5 font-bold rounded-lg text-white">OK</button>
+        </div>
+    </div>
+
+    <div id="modal-confirmacion" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-amber-100 text-amber-500"><i class="fa-solid fa-question"></i></div>
+            <h3 id="confirmacion-titulo" class="text-lg font-bold text-slate-800 mb-2"></h3>
+            <p id="confirmacion-mensaje" class="text-sm text-slate-500 mb-6"></p>
+            <div class="flex gap-3">
+                <button id="confirmacion-btn-cancel" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200">Cancelar</button>
+                <button id="confirmacion-btn-ok" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-prompt" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8">
+            <h3 id="prompt-titulo" class="text-lg font-bold text-slate-800 mb-2"></h3>
+            <p id="prompt-mensaje" class="text-sm text-slate-500 mb-4"></p>
+            <input id="prompt-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none mb-6 focus:ring-2 focus:ring-blue-200">
+            <div class="flex gap-3">
+                <button id="prompt-btn-cancel" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200">Cancelar</button>
+                <button id="prompt-btn-ok" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INTERCEPTOR RESPUESTA -->
+    <div id="modal-interceptor" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-blue-100 text-blue-600 animate-pulse"><i class="fa-solid fa-comments"></i></div>
+            <h3 class="text-xl font-bold text-slate-800 mb-2">¿Te contestó este lead?</h3>
+            <p class="text-sm text-slate-500 mb-6">Ya enviaste el mensaje anteriormente. Necesitamos actualizar el estado.</p>
+            <div class="flex gap-3">
+                <button onclick="App.cliente.procesarRespuesta(false)" class="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200">No, ignorado 👻</button>
+                <button onclick="App.cliente.procesarRespuesta(true)" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30">Sí, contestó 💬</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIGURACIÓN PROMPT IA -->
+    <div id="modal-config-prompt" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh]">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-robot mr-2 text-blue-500"></i> Cerebro de Ventas (Prompt)</h3>
+                <button onclick="App.ui.toggleModal('modal-config-prompt', false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-0 flex-1 relative">
+                <textarea id="config-prompt-input" class="w-full h-full p-6 text-xs font-mono text-slate-700 bg-white outline-none resize-none leading-relaxed" spellcheck="false"></textarea>
+                
+                <!-- Panel de Resultados de Prueba -->
+                <div id="config-prompt-test-result" class="hidden absolute inset-x-0 bottom-0 h-2/5 bg-slate-900/95 backdrop-blur text-slate-300 p-4 overflow-y-auto border-t border-slate-700 transition-all z-10">
+                    <div class="flex justify-between items-start mb-2 sticky top-0 bg-slate-900/95 pb-2 border-b border-slate-700">
+                        <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest"><i class="fa-solid fa-vial"></i> Resultado de Prueba</span>
+                        <button onclick="document.getElementById('config-prompt-test-result').classList.add('hidden')" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div id="test-output" class="text-xs font-mono whitespace-pre-wrap"></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+                <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-purple-100 text-purple-600 text-xs font-bold rounded-lg hover:bg-purple-200 border border-purple-200 transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-flask"></i> Probar con Ejemplo
+                </button>
+                <div class="flex items-center gap-2">
+                    <select id="config-prompt-example-select" class="bg-white border border-slate-200 text-slate-600 text-xs rounded-lg px-2 py-2 outline-none focus:ring-2 focus:ring-purple-200 cursor-pointer font-bold">
+                        <option value="precio">💰 Objeción Precio</option>
+                        <option value="interesado">🚀 Cliente Interesado</option>
+                        <option value="enojado">😡 Cliente Enojado</option>
+                    </select>
+                    <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-purple-100 text-purple-600 text-xs font-bold rounded-lg hover:bg-purple-200 border border-purple-200 transition-colors flex items-center gap-2"><i class="fa-solid fa-flask"></i> Probar</button>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="App.ui.restaurarPrompt()" class="px-4 py-2 text-slate-500 text-xs font-bold hover:text-red-500">Restaurar Original</button>
+                    <button onclick="App.ui.guardarPrompt()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-md">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GEMINI_MODELS = [
+            // --- OPENROUTER FREE TIER ---
+            "openrouter-google/gemma-2-9b-it:free",
+            "openrouter-meta-llama/llama-3.1-8b-instruct:free",
+            "openrouter-mistralai/mistral-7b-instruct:free",
+            "openrouter-microsoft/phi-3-mini-128k-instruct:free",
+            "openrouter-huggingfaceh4/zephyr-7b-beta:free",
+            "openrouter-liquid/lfm-40b:free",
+            // --- GOOGLE GEMINI ---
+            "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-2.0-flash-001",
+            "gemini-2.0-flash-exp-image-generation", "gemini-2.0-flash-lite-001", "gemini-2.0-flash-lite",
+            "gemini-exp-1206", "gemini-2.5-flash-preview-tts", "gemini-2.5-pro-preview-tts",
+            "gemma-3-1b-it", "gemma-3-4b-it", "gemma-3-12b-it", "gemma-3-27b-it", "gemma-3n-e4b-it",
+            "gemma-3n-e2b-it", "gemini-flash-latest", "gemini-flash-lite-latest", "gemini-pro-latest",
+            "gemini-2.5-flash-lite", "gemini-2.5-flash-image", "gemini-2.5-flash-preview-09-2025",
+            "gemini-2.5-flash-lite-preview-09-2025", "gemini-3-pro-preview", "gemini-3-flash-preview",
+            "gemini-3-pro-image-preview", "nano-banana-pro-preview", "gemini-robotics-er-1.5-preview",
+            "gemini-2.5-computer-use-preview-10-2025", "deep-research-pro-preview-12-2025"
+        ];
+
+        const PROMPT_TEMPLATE = `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".
+Tu misión es encontrar clientes REALES y VERIFICABLES mediante una búsqueda exhaustiva en fuentes públicas (Google Maps, Directorios, Redes Sociales).
+OBJETIVO: Generar {cantidad} prospectos del rubro "{rubro}" en "{ciudad}".
+REGLAS ESTRICTAS DE FILTRADO (OBLIGATORIO):
+1. DATOS REALES: Toda la información debe ser de un negocio real y visible públicamente. NO inventes, NO alucines datos.
+2. CONTACTO VÁLIDO: El WhatsApp debe ser un número de celular chileno (+56 9...). DESCARTA números fijos (2...) o números falsos/de ejemplo. Si no hay celular, descarta el prospecto.
+3. UBICACIÓN: Deben estar ubicados en {ciudad}.
+4. ACTIVIDAD: Prioriza negocios con reseñas recientes (idealmente de los últimos 10-30 días) para asegurar que sigan operativos.
+5. RELEVANCIA: Deben tener perfil público con al menos 10 reseñas acumuladas.
+Para cada prospecto, genera un JSON con: nombre, negocio, whatsapp, dominio_sugerido, rut, email, rubro, url, y "propuesta_text".
+REGLAS DE ORO PARA EL MENSAJE (propuesta_text):
+1. 🚫 PROHIBIDO usar "Estimado", "Estimada" o saludos formales anticuados.
+2. 🚫 PROHIBIDO frases de relleno como "Espero que esté bien" o "Vi su rubro...".
+3. ✅ IDENTIDAD: Eres Alexis Ferrada de TuSitioYa.
+4. ✅ SALUDO: Debe ser: "Hola [Nombre] 👋, le saluda Alexis Ferrada de TuSitioYa." (O "Hola [Nombre], un gusto saludarle").
+5. ✅ TONO "PSICÓLOGO": Identifica un dolor real visible en su perfil (ej: no tienen web, web caída, usan Linktree, fotos pixeladas) y ofrece la cura inmediata.
+6. ✅ ESTRUCTURA VISUAL: Usa emojis para los bullets y párrafos cortos.
+ESTRUCTURA DEL MENSAJE A GENERAR:
+1. Saludo directo (Personalizado).
+2. El Gancho (Hook): "Vi sus reseñas en Google y destacan su atención, pero noté que no tiene web/su web falla...".
+3. La Solución (Dominio): "Le ofrezco asegurar hoy mismo [Dominio Sugerido]...".
+4. Lista de Beneficios (4 Bullets con Emojis):
+   - ✅ [Beneficio 1: Estética/Imagen]
+   - ✅ [Beneficio 2: Funcionalidad]
+   - ✅ [Beneficio 3: Contacto/Ventas]
+   - ✅ [Beneficio 4: Propiedad del dominio .cl]
+5. El Cierre (Precio y Pregunta): "Valor único: $72.000 (50% inicio / 50% entrega). ¿Le gustaría ver una demo?"
+Responde SOLO con un objeto JSON que contenga una única clave "prospectos", y su valor debe ser un Array de JSON válido. No incluyas texto adicional ni explicaciones. NO DATOS SIMULADOS.`;
+
+        const DEFAULT_ANALYSIS_PROMPT = `Actúa como Alexis Ferrada, director de ventas de "TuSitioYa". Eres experto en Neuroventas y Cialdini.
+Analiza la conversación adjunta con un prospecto.
+
+OBJETIVO: Generar una estrategia de cierre basada en psicología y detectar el rubro del negocio.
+
+SALIDA REQUERIDA (JSON ESTRICTO):
+{
+  "rubro_detectado": "Rubro o nicho del negocio del cliente (Ej: Clínica Dental, Abogado, Sushi). Si no es claro, deduce el más probable.",
+  "probabilidad_cierre": (Número entero 0-100),
+  "resumen_una_linea": "Resumen ejecutivo de máximo 15 palabras.",
+  "perfil_psicologico": "Identifica el DOLOR PRINCIPAL (Miedo a perder, Estatus, Ahorro, Seguridad) y el TIPO DE COMPRADOR (Analítico, Emocional, Asertivo).",
+  "accion_sugerida": "La mejor acción táctica ahora (Ej: Enviar audio, Agendar Demo, Pedir el 50%).",
+  "texto_cierre": "Script de respuesta persuasiva para WhatsApp. Usa gatillos mentales (Escasez, Autoridad o Prueba Social). Termina con una pregunta de cierre.",
+  "texto_cierre_corto": "Versión resumida del script anterior. OBLIGATORIO: Texto listo para enviar, de MÁXIMO 3 LÍNEAS, directo y al grano. NO uses guiones ni placeholders."
+}
+
+NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere una estrategia de apertura agresiva pero empática.`;
+
+        const EXAMPLE_CONVERSATIONS = {
+            precio: `[10:00] Cliente: Hola, vi su anuncio de páginas web.
+[10:05] Vendedor: Hola! Sí, tenemos planes desde $72.000. Qué negocio tienes?
+[10:10] Cliente: Es una pastelería. Pero ese precio es muy alto para mí ahora. Tienen algo más barato?`,
+            interesado: `[09:00] Cliente: Hola, necesito una web para mi clínica dental.\n[09:05] Vendedor: Hola! Perfecto, tenemos experiencia con clínicas. ¿Buscas algo informativo o con agenda?\n[09:10] Cliente: Con agenda, me urge tenerla lista esta semana. ¿Cuánto sale y cómo pagamos?`,
+            enojado: `[15:00] Cliente: Llevo 3 días esperando respuesta sobre mi soporte.\n[15:05] Vendedor: Hola, disculpa la demora. ¿Cuál era el problema?\n[15:10] Cliente: Mi web sigue caída y estoy perdiendo ventas. Si no se arregla hoy quiero la devolución.`
+        };
+
+        const EXAMPLE_CONVERSATION = EXAMPLE_CONVERSATIONS.precio;
+
+        const App = {
+            datos: { leads: [], blacklist: [] },
+            tempLeads: [],
+            filtroBusqueda: '', // Estado para el buscador
+            clienteActivoIndex: null,
+
+            init: async function() {
+                try {
+                    this.datos.blacklist = JSON.parse(localStorage.getItem('blacklist') || '[]');
+                    this.ui.actualizarBlacklistCount();
+                    this.models.cargarLista();
+                    // Intentar cargar estado visual IA sin bloquear la app si falla
+                    try { this.models.analizarEstado(); } catch(e) { console.warn("UI IA:", e); }
+                    
+                    // Agregamos timestamp para evitar que el navegador use caché
+                    const res = await fetch(`/api/clientes?_=${new Date().getTime()}`);
+                    
+                    if (res.status === 404) {
+                        throw new Error("Ruta API no encontrada (404).\n\n⚠️ CAUSA PROBABLE:\nNo estás ejecutando el servidor Node.js o estás usando 'Live Server'.\n\nSOLUCIÓN:\n1. Abre la terminal.\n2. Ejecuta: node server.js\n3. Entra a: http://localhost:3000");
+                    }
+
+                    if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+                    
+                    const data = await res.json();
+                    if (!Array.isArray(data)) throw new Error("Formato de datos inválido");
+
+                    this.datos.leads = data.map(l => ({
+                        ...l,
+                        estado: this.api.mapEstado(l.estado),
+                        propuesta: l.propuesta_text || ''
+                    }));
+                    document.getElementById('neon-status-text').innerText = "CONECTADO";
+                    document.getElementById('neon-status-dot').className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                } catch (err) {
+                    console.error("Error de conexión:", err);
+                    document.getElementById('neon-status-text').innerText = "OFFLINE";
+                    document.getElementById('neon-status-dot').className = "w-2 h-2 rounded-full bg-red-500";
+                    this.datos.leads = []; // Prevenir errores en renderizado
+                    // Mostrar error visible al usuario para depurar
+                    this.ui.notificar(err.message, "Error de Conexión", "error");
+                }
+                
+                this.ui.renderizarListas();
+                this.ui.actualizarGraficoCircular();
+                this.util.iniciarReloj();
+                this.monitor.init();
+
+                // Listener para cerrar ficha con ESC
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        const modalFicha = document.getElementById('modal-ficha-cliente');
+                        if (!modalFicha.classList.contains('hidden')) App.cliente.cerrarFicha();
+                    }
+                });
+            },
+
+            util: {
+                limpiarTelefono: (fono) => {
+                    if(!fono) return '';
+                    // 1. Convertir a string y eliminar todo lo que no sea número
+                    let limpio = String(fono).trim().replace(/\s+/g, '').replace(/\D/g, '');
+                    
+                    // 2. Lógica estricta para Chile (+569...)
+                    if (limpio.length === 8) limpio = '569' + limpio;
+                    else if (limpio.length === 9 && limpio.startsWith('9')) limpio = '56' + limpio;
+                    
+                    return limpio;
+                },
+                fechaHoy: () => new Date().toISOString().split('T')[0],
+                fechaActualHistorial: () => new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                iniciarReloj: () => {
+                    const update = () => {
+                        const now = new Date();
+                        const time = now.toLocaleTimeString('es-CL', { hour12: false });
+                        const date = now.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+                        document.getElementById('reloj-sistema').innerText = time;
+                        document.getElementById('fecha-sistema').innerText = date;
+                    };
+                    setInterval(update, 1000);
+                    update();
+                }
+            },
+
+            api: {
+                mapEstado: (dbEstado) => {
+                    const map = {
+                        'prospecto': 'nuevos',
+                        'whatsapp_enviado': 'whatsapp_enviado',
+                        'sin_respuesta': 'sin_respuesta',
+                        'contactado': 'seguimiento',
+                        'cliente': 'cerrados',
+                        'no_interesado': 'descartados'
+                    };
+                    return map[dbEstado] || 'nuevos';
+                }
+            },
+
+            models: {
+                cargarLista: () => { document.getElementById('model-selector').innerHTML = GEMINI_MODELS.map(m => `<option value="${m}">${m}</option>`).join(''); },
+                analizarEstado: () => {
+                    const statusBadge = document.getElementById('ia-status-badge');
+                    const bar = document.getElementById('ia-capacity-bar');
+                    const text = document.getElementById('ia-capacity-text');
+                    const analysis = document.getElementById('ia-analysis');
+                    const model = document.getElementById('model-selector').value;
+                    
+                    // Verificación de seguridad para evitar errores de "null"
+                    if (!statusBadge || !bar || !text || !analysis) return;
+
+                    statusBadge.innerHTML = 'CONNECTING...'; statusBadge.className = "bg-slate-100 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold";
+                    bar.style.width = '0%'; text.innerText = 'OFF'; analysis.innerHTML = 'Handshake...';
+
+                    setTimeout(() => {
+                        if (!statusBadge || !bar || !text || !analysis) return; // Doble verificación asíncrona
+                        statusBadge.innerHTML = 'ONLINE <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>';
+                        statusBadge.className = "bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1";
+                        
+                        if (model.includes(':free')) {
+                            // Modelos gratuitos de OpenRouter
+                            bar.style.width = '100%'; text.innerText = '∞';
+                            analysis.innerHTML = 'Modelo Gratuito (OpenRouter)';
+                        } else {
+                            // Simulación para otros modelos
+                            let cap = 90 + Math.floor(Math.random() * 10);
+                            bar.style.width = `${cap}%`; text.innerText = `${cap}%`;
+                            analysis.innerHTML = `Latencia: ${Math.floor(Math.random()*50)+10}ms.`;
+                        }
+                    }, 800);
+                }
+            },
+
+            cliente: {
+                abrir: (index) => {
+                    try {
+                        const lead = App.datos.leads[index];
+                        if (!lead) {
+                            console.error("Lead no encontrado en índice:", index);
+                            return;
+                        }
+                        App.clienteActivoIndex = index;
+
+                        // INTERCEPTOR: Si ya se envió whatsapp, preguntar si contestó
+                        if (lead.estado === 'whatsapp_enviado') {
+                            App.ui.toggleModal('modal-interceptor', true);
+                            return;
+                        }
+
+                        // Helper para setear texto seguro
+                        const setText = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val || ''; };
+                        const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+
+                        // Header Ficha
+                        setText('header-negocio', lead.negocio);
+                        setText('header-nombre', lead.nombre || 'Desconocido');
+                        setText('header-telefono', lead.whatsapp);
+                        setText('header-dominio', lead.dominio || 'Sin dominio');
+
+                        // --- CARGA DE DATOS ---
+                        
+                        // 1. Finanzas
+                        setVal('ficha-monto-total', lead.monto_total || 0);
+                        setVal('ficha-monto-pagado', lead.monto_pagado || 0);
+                        const saldo = Math.max(0, (lead.monto_total || 0) - (lead.monto_pagado || 0));
+                        setVal('ficha-saldo-pendiente', new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo));
+                        setVal('ficha-fecha-pago', lead.fecha_proximo_pago ? lead.fecha_proximo_pago.split('T')[0] : '');
+
+                        // 2. Datos Básicos
+                        setVal('ficha-negocio', lead.negocio);
+                        setVal('ficha-nombre', lead.nombre);
+                        setVal('ficha-whatsapp', lead.whatsapp);
+                        setVal('ficha-dominio', lead.dominio);
+                        setVal('ficha-rut', lead.rut);
+
+                        // 3. Datos Extendidos (Desde encuesta_data o defaults)
+                        const extra = lead.encuesta_data || {};
+                        setVal('ficha-email', extra.email);
+                        setVal('ficha-rubro', extra.rubro);
+                        setVal('ficha-url', extra.url);
+                        setVal('ficha-notas', extra.notas);
+
+                        // 4. Estado Táctico (Temperatura)
+                        const temp = extra.temperatura || 'frio';
+                        if (App.cliente.renderTemperatura) App.cliente.renderTemperatura(temp);
+
+                        // Script (Columna 3 - Referencia)
+                        setVal('ficha-script', lead.propuesta || 'Sin script generado.');
+                        
+                        // Info Financiera
+                        const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
+                        const fichaFinanciera = document.getElementById('ficha-financiera');
+                        if (fichaFinanciera) {
+                            if (lead.estado === 'cerrados') {
+                                fichaFinanciera.classList.remove('hidden');
+                                setText('ficha-total', formatter.format(lead.monto_total || 0));
+                                setText('ficha-pagado', formatter.format(lead.monto_pagado || 0));
+                            } else {
+                                fichaFinanciera.classList.add('hidden');
+                            }
+                        }
+
+                        const badge = document.getElementById('ficha-estado-badge');
+                        if (badge) {
+                            badge.innerText = (lead.estado || '').toUpperCase();
+                            let badgeClass = "bg-slate-700 text-slate-300"; 
+                            if (lead.estado === 'cerrados') badgeClass = "bg-green-100 text-green-700";
+                            else if (lead.estado === 'descartados') badgeClass = "bg-red-100 text-red-700";
+                            else if (lead.estado === 'seguimiento') badgeClass = "bg-blue-100 text-blue-700";
+                            else if (lead.estado === 'whatsapp_enviado') badgeClass = "bg-yellow-100 text-yellow-700";
+                            else if (lead.estado === 'sin_respuesta') badgeClass = "bg-slate-100 text-slate-500";
+                            badge.className = `px-3 py-1 rounded-full text-xs font-bold uppercase ${badgeClass}`;
+                        }
+                        
+                        if (this.renderizarHistorial) this.renderizarHistorial(lead);
+                        
+                        // Reset Analysis View
+                        setVal('historial-chat-input', '');
+                        const analysisResult = document.getElementById('analysis-result');
+                        if (analysisResult) {
+                            analysisResult.classList.add('hidden');
+                            analysisResult.innerHTML = '';
+                        }
+
+                        // Configuración Discador
+                        const discadorBar = document.getElementById('ficha-discador-bar');
+                        if (discadorBar) {
+                            if (App.discador.activo) {
+                                discadorBar.classList.remove('hidden');
+                                setText('discador-counter', `${App.discador.indiceActual + 1} / ${App.discador.cola.length}`);
+                            } else {
+                                discadorBar.classList.add('hidden');
+                            }
+                        }
+                        
+                        App.ui.toggleModal('modal-ficha-cliente', true);
+                    } catch (e) {
+                        console.error("Error al abrir ficha:", e);
+                        App.ui.notificar("Error al abrir la ficha del cliente. Revisa la consola.", "Error", "error");
+                    }
+                },
+                renderizarHistorial: function(lead) {
+                    const histContainer = document.getElementById('ficha-historial');
+                    if (!histContainer) return;
+                    
+                    if (lead.historial && lead.historial.length > 0) {
+                        histContainer.innerHTML = lead.historial.map(h => {
+                            const nota = h.nota ? h.nota.replace(/\n/g, '<br>') : '';
+                            return `<div class="relative pb-4 last:pb-0"><div class="absolute top-1 -left-[13px] w-2 h-2 bg-slate-200 rounded-full border border-white"></div><p class="text-[10px] text-slate-400 font-bold mb-0.5">${h.fecha}</p><p class="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">${nota}</p></div>`;
+                        }).join('');
+                    } else { 
+                        histContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-2">Sin historial.</p>'; 
+                    }
+                },
+                _guardarEncuestaData: async function() {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    try {
+                        if (!lead.encuesta_data) lead.encuesta_data = {};
+                        // Make sure local history is synced to encuesta_data before saving
+                        lead.encuesta_data.historial = lead.historial; 
+                        
+                        const payload = { cliente_id: lead.id, ...lead.encuesta_data };
+                        await fetch('/api/encuesta', { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify(payload) 
+                        });
+                    } catch(e) {
+                        console.error("Error guardando encuesta_data", e);
+                    }
+                },
+                agregarNotaHistorial: async function(nota) {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+
+                    if (!lead.historial) lead.historial = [];
+                    lead.historial.push({ fecha: App.util.fechaActualHistorial(), nota: nota });
+
+                    this.renderizarHistorial(lead);
+                    await this._guardarEncuestaData(); // Save the whole thing
+                },
+                guardarHistorialPegado: async function(event) {
+                    event.preventDefault();
+                    const pastedText = (event.clipboardData || window.clipboardData).getData('text');
+                    if (!pastedText) return;
+                    document.getElementById('historial-chat-input').value = pastedText;
+                    const nota = `📋 Conversación pegada:\n---\n${pastedText}`;
+                    await this.agregarNotaHistorial(nota);
+                    App.ui.notificar("Historial de chat guardado.", "Guardado", "exito", 1500);
+                },
+                renderTemperatura: (temp) => {
+                    // Reset estilos
+                    ['frio', 'tibio', 'caliente'].forEach(t => {
+                        const btn = document.getElementById(`btn-temp-${t}`);
+                        if(btn) btn.className = "py-1.5 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 hover:bg-slate-50 transition-all opacity-50";
+                    });
+                    
+                    // Activar seleccionado
+                    const activeBtn = document.getElementById(`btn-temp-${temp}`);
+                    if (activeBtn) {
+                        let activeClass = "";
+                        if(temp === 'frio') activeClass = "bg-blue-100 text-blue-600 border-blue-200 opacity-100";
+                        if(temp === 'tibio') activeClass = "bg-orange-100 text-orange-600 border-orange-200 opacity-100";
+                        if(temp === 'caliente') activeClass = "bg-red-100 text-red-600 border-red-200 opacity-100";
+                        activeBtn.className = `py-1.5 rounded-lg text-xs font-bold border transition-all shadow-sm transform scale-105 ${activeClass}`;
+                    }
+                },
+                setTemperatura: (temp) => {
+                    App.cliente.renderTemperatura(temp);
+                    App.cliente.actualizarCampo('temperatura', temp);
+                },
+                actualizarCampo: async (campo, valor) => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    
+                    // Campos que van en la raíz de la tabla
+                    const camposRaiz = ['negocio', 'nombre', 'whatsapp', 'dominio', 'monto_total', 'monto_pagado', 'fecha_proximo_pago', 'rut'];
+                    
+                    if (camposRaiz.includes(campo)) {
+                        // Actualizar localmente
+                        lead[campo] = valor;
+                        
+                        // Recalcular saldo visualmente si cambian montos
+                        if (campo === 'monto_total' || campo === 'monto_pagado') {
+                            const total = parseInt(document.getElementById('ficha-monto-total').value) || 0;
+                            const pagado = parseInt(document.getElementById('ficha-monto-pagado').value) || 0;
+                            const saldo = Math.max(0, total - pagado);
+                            document.getElementById('ficha-saldo-pendiente').value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
+                        }
+
+                        // Enviar al servidor (PUT)
+                        try {
+                            const body = {}; body[campo] = valor;
+                            await fetch(`/api/clientes/${lead.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                            if(campo === 'negocio') document.getElementById('header-negocio').innerText = valor;
+                        } catch(e) { console.error("Error guardando campo raíz", e); }
+
+                    } else {
+                        // Campos extra (Email, Rubro, URL, Temperatura, Notas) -> Guardar en encuesta_data
+                        if (!lead.encuesta_data) lead.encuesta_data = {};
+                        lead.encuesta_data[campo] = valor;
+                        
+                        // Usamos el endpoint de encuesta para actualizar el JSONB completo
+                        try {
+                            const payload = { cliente_id: lead.id, ...lead.encuesta_data };
+                            await fetch('/api/encuesta', { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/json' }, 
+                                body: JSON.stringify(payload) 
+                            });
+                        } catch(e) { console.error("Error guardando campo extendido", e); }
+                    }
+                },
+                actualizarDatosContacto: () => {
+                    // Esta función es un alias visual para el usuario, ya que los campos se actualizan onchange.
+                    // Pero podemos usarla para dar feedback explícito.
+                    App.ui.notificar("Los datos se guardan automáticamente al editar.", "Información", "info");
+                },
+                procesarValidacionNumero: async (esValido) => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    App.ui.toggleModal('modal-interceptor', false);
+
+                    if (esValido) {
+                        // Cambiar a seguimiento y abrir ficha
+                        lead.estado = 'seguimiento';
+                        this.agregarNotaHistorial(`💬 Cliente contestó. Pasado a seguimiento.`);
+                        await fetch(`/api/clientes/${lead.id}/estado`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'contactado' }) });
+                        App.ui.renderizarListas();
+                        // Al llamar a abrir de nuevo, ya no entrará en el interceptor porque el estado cambió
+                        App.cliente.abrir(App.clienteActivoIndex); 
+                    } else {
+                        // Número inválido: eliminar y agregar a blacklist
+                        try {
+                            await fetch(`/api/clientes/${lead.id}`, { method: 'DELETE' });
+                            App.datos.blacklist.push(`${lead.whatsapp} (${lead.negocio})`);
+                            localStorage.setItem('blacklist', JSON.stringify(App.datos.blacklist));
+                            App.datos.leads.splice(App.clienteActivoIndex, 1);
+                            App.clienteActivoIndex = null;
+                            App.ui.actualizarBlacklistCount(); 
+                            App.ui.renderizarListas(); 
+                            App.ui.notificar("Número inválido. El cliente ha sido eliminado y agregado a la lista negra.", "Eliminado", "exito");
+                        } catch (e) {
+                            App.ui.notificar("Error al eliminar de la base de datos.", "Error", "error");
+                        }
+                    }
+                },
+                cerrarFicha: () => { if(App.discador.activo) App.discador.detener(); App.ui.toggleModal('modal-ficha-cliente', false); App.clienteActivoIndex = null; },
+                accion: async (tipo) => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    const fonoLimpio = App.util.limpiarTelefono(lead.whatsapp);
+                    switch (tipo) {
+                        case 'whatsapp':
+                            if (!fonoLimpio || fonoLimpio.length < 8) {
+                                App.ui.notificar("El número de teléfono no es válido para WhatsApp.", "Error de Número", "error");
+                                return;
+                            }
+                            
+                            // Lógica de Agendamiento Automático (Mañana, saltando Domingo)
+                            const hoy = new Date();
+                            let nextDate = new Date(hoy);
+                            nextDate.setDate(hoy.getDate() + 1);
+                            if (nextDate.getDay() === 0) { // 0 es Domingo
+                                nextDate.setDate(nextDate.getDate() + 1); // Saltar al Lunes
+                            }
+
+                            // Actualizar Estado y Historial
+                            if (lead.estado === 'nuevos' || lead.estado === 'sin_respuesta') lead.estado = 'whatsapp_enviado';
+                            this.agregarNotaHistorial(`✅ WhatsApp Enviado. Esperando respuesta.`);
+                            
+                            // Persistencia en Segundo Plano (Sin bloquear UI)
+                            fetch(`/api/clientes/${lead.id}/estado`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'whatsapp_enviado' }) }).catch(console.error);
+                            // fetch(`/api/clientes/${lead.id}/agendar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fecha: fechaAgendada }) }).catch(console.error);
+
+                            App.ui.renderizarListas(); // Actualizar UI inmediatamente
+                            
+                            // Si estamos en modo discador, avanzar automáticamente tras un breve delay
+                            if (App.discador.activo) {
+                                window.open(`https://api.whatsapp.com/send?phone=${fonoLimpio}&text=${encodeURIComponent(lead.propuesta)}`, '_blank');
+                                setTimeout(() => App.discador.siguiente(), 1000);
+                            } else {
+                                window.open(`https://api.whatsapp.com/send?phone=${fonoLimpio}&text=${encodeURIComponent(lead.propuesta)}`, '_blank');
+                            }
+                            break;
+                        case 'invalid':
+                            // Eliminación directa sin confirmación
+                            await fetch(`/api/clientes/${lead.id}`, { method: 'DELETE' });
+                            App.datos.blacklist.push(`${lead.whatsapp} (${lead.negocio})`);
+                            localStorage.setItem('blacklist', JSON.stringify(App.datos.blacklist));
+                            App.datos.leads.splice(App.clienteActivoIndex, 1);
+                            App.ui.actualizarBlacklistCount(); 
+                            App.ui.renderizarListas(); 
+                            App.cliente.cerrarFicha();
+                            App.ui.notificar("Cliente eliminado y agregado a la lista negra.", "Eliminado", "exito");
+                            break;
+                        case 'schedule':
+                            const fecha = await App.ui.prompt("Selecciona la fecha de seguimiento:", "Agendar Lead", App.util.fechaHoy(), "date");
+                            if (fecha) { 
+                                lead.estado = 'seguimiento'; 
+                                lead.fecha_agendada = fecha; 
+                                this.agregarNotaHistorial(`📅 Agendado para: ${fecha}`);
+                                App.ui.notificar("Lead agendado con éxito.", "Agendado", "exito"); 
+                            }
+                            break;
+                        case 'won':
+                            // Abrir Modal de Cierre en lugar de confirmar directo
+                            document.getElementById('cierre-cliente-id').value = lead.id;
+                            document.getElementById('cierre-cliente-nombre').innerText = lead.negocio;
+                            document.getElementById('cierre-cliente-dominio').innerText = lead.dominio || 'Sin dominio asignado';
+                            // Pre-llenar montos si existen
+                            document.querySelector('input[name="monto_total"]').value = lead.monto_total || 72000;
+                            document.querySelector('input[name="monto_pagado"]').value = lead.monto_pagado || 0;
+                            
+                            App.ui.toggleModal('modal-cierre-venta', true);
+                            break;
+                        case 'lost':
+                            App.ui.toggleModal('modal-motivo-descarte', true);
+                            break;
+                    }
+                    App.ui.renderizarListas();
+                    if (App.clienteActivoIndex !== null) App.cliente.abrir(App.clienteActivoIndex);
+                },
+                confirmarDescarte: async (motivo) => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    
+                    lead.estado = 'descartados';
+                    this.agregarNotaHistorial(`👎 Descarte: ${motivo}`);
+                    
+                    // Enviar al backend (guardando motivo en encuesta_data para no alterar schema)
+                    try {
+                        await fetch(`/api/clientes/${lead.id}/estado`, { 
+                            method: 'PATCH', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ estado: 'no_interesado', motivo: motivo }) 
+                        });
+                    } catch(e) { console.error(e); }
+
+                    App.ui.toggleModal('modal-motivo-descarte', false);
+                    App.cliente.cerrarFicha();
+                    App.ui.renderizarListas();
+                    App.ui.notificar("Lead descartado y motivo registrado.", "Descarte", "info");
+                },
+                confirmarDescarteManual: async () => {
+                    App.ui.toggleModal('modal-motivo-descarte', false);
+                    const motivo = await App.ui.prompt("Ingresa el motivo del descarte:", "Descartar Lead");
+                    if (motivo) {
+                        App.cliente.confirmarDescarte(motivo);
+                    }
+                },
+                confirmarCierre: async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const id = formData.get('cliente_id');
+                    const montoTotal = parseInt(formData.get('monto_total'));
+                    const montoPagado = parseInt(formData.get('monto_pagado'));
+
+                    try {
+                        // 1. Actualizar Montos
+                        await fetch(`/api/clientes/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ monto_total: montoTotal, monto_pagado: montoPagado })
+                        });
+
+                        // 2. Cambiar Estado a 'cliente' (cerrado)
+                        await fetch(`/api/clientes/${id}/estado`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ estado: 'cliente' }) // 'cliente' mapea a 'cerrados' en UI
+                        });
+
+                        // 3. Actualizar Localmente
+                        const lead = App.datos.leads.find(l => l.id == id);
+                        if (lead) {
+                            lead.estado = 'cerrados';
+                            lead.monto_total = montoTotal;
+                            lead.monto_pagado = montoPagado;
+                            this.agregarNotaHistorial(`🚀 VENTA CERRADA. Total: $${montoTotal} | Pagado: $${montoPagado}`);
+                        }
+
+                        App.ui.toggleModal('modal-cierre-venta', false);
+                        App.cliente.cerrarFicha();
+                        App.ui.renderizarListas();
+                        App.ui.lanzarConfeti();
+                        App.ui.notificar("¡Venta registrada exitosamente!", "Felicidades", "exito");
+                    } catch (err) {
+                        console.error(err);
+                        App.ui.notificar("Error al registrar la venta.", "Error", "error");
+                    }
+                },
+                analizarCierre: async () => {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    const fonoLimpio = App.util.limpiarTelefono(lead.whatsapp);
+                    
+                    const btn = document.getElementById('btn-analizar-cierre');
+                    const resultContainer = document.getElementById('analysis-result');
+                    const inputHistorial = document.getElementById('historial-chat-input');
+                    
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Analizando...';
+                    
+                    try {
+                        let historialTexto = inputHistorial.value.trim();
+                        
+                        if (!historialTexto && lead.historial && lead.historial.length > 0) {
+                            historialTexto = lead.historial.map(h => `[${h.fecha}] ${h.nota}`).join('\n');
+                            inputHistorial.value = historialTexto; // Mostrar lo que se está analizando
+                        } else if (!historialTexto) {
+                            throw new Error("Por favor, pega la conversación en el cuadro de texto.");
+                        }
+
+                        // Obtener el prompt personalizado o el default
+                        const systemPrompt = localStorage.getItem('analysis_prompt') || DEFAULT_ANALYSIS_PROMPT;
+                        const fullPrompt = `${systemPrompt}\n\nCONVERSACIÓN:\n"${historialTexto}"`;
+
+                        const model = document.getElementById('model-selector').value;
+                        const res = await fetch('/api/analizar-chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ prompt: fullPrompt, model: model })
+                        });
+
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            throw new Error(errorData.error || `Error de la API: ${res.statusText}`);
+                        }
+
+                        const data = await res.json();
+                        
+                        // VALIDACIÓN CRÍTICA: Si no hay análisis, lanzar error controlado
+                        if (!data || !data.analisis) {
+                            throw new Error("La IA no devolvió un análisis válido. Intenta con otro modelo.");
+                        }
+
+                        let analisisObj = {};
+                        try { 
+                            // Limpieza extra por si la IA devuelve bloques de código markdown
+                            const cleanJson = data.analisis.replace(/```json/g, '').replace(/```/g, '').trim();
+                            analisisObj = JSON.parse(cleanJson); 
+                        } catch (e) { 
+                            analisisObj = { 
+                                texto_cierre: data.analisis, 
+                                probabilidad_cierre: 50, 
+                                resumen_una_linea: "Análisis básico (formato no JSON)",
+                                perfil_psicologico: "No detectado",
+                                accion_sugerida: "Responder manualmente"
+                            }; 
+                        }
+
+                        const prob = analisisObj.probabilidad_cierre || 0;
+                        let colorProb = 'red';
+                        if(prob > 40) colorProb = 'yellow';
+                        if(prob > 70) colorProb = 'emerald';
+
+                        resultContainer.innerHTML = `
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Oportunidad de Cierre</span>
+                                    <span class="text-xs font-bold text-${colorProb}-600">${prob}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                    <div class="bg-${colorProb}-500 h-full rounded-full transition-all duration-1000" style="width: ${prob}%"></div>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase">RESUMEN</p>
+                                        <span class="text-[9px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">${analisisObj.rubro_detectado || 'General'}</span>
+                                    </div>
+                                    <p class="text-xs text-slate-700 font-medium leading-tight">${analisisObj.resumen_una_linea || '...'}</p>
+                                </div>
+                                <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">PSICOLOGÍA & ESTRATEGIA</p>
+                                    <p class="text-[10px] text-slate-600 mb-1">${analisisObj.perfil_psicologico || '...'}</p>
+                                    <p class="text-[10px] text-blue-600 font-bold"><i class="fa-solid fa-bolt mr-1"></i> Acción: ${analisisObj.accion_sugerida || '...'}</p>
+                                </div>
+                                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="text-[10px] font-bold text-indigo-500 uppercase">RESPUESTA DETALLADA</p>
+                                        <button onclick="navigator.clipboard.writeText('${(analisisObj.texto_cierre || '').replace(/'/g, "\\'")}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold"><i class="fa-regular fa-copy"></i> Copiar</button>
+                                    </div>
+                                    <p class="text-xs text-indigo-900 italic leading-relaxed">"${analisisObj.texto_cierre}"</p>
+                                </div>
+                                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <p class="text-[10px] font-bold text-emerald-600 uppercase">RESPUESTA RÁPIDA (3 LÍNEAS)</p>
+                                        <div class="flex gap-2">
+                                            <button onclick="navigator.clipboard.writeText('${(analisisObj.texto_cierre_corto || '').replace(/'/g, "\\'")}')" class="text-[10px] text-emerald-600 hover:text-emerald-800 font-bold" title="Copiar"><i class="fa-regular fa-copy"></i></button>
+                                            <button onclick="window.open('https://api.whatsapp.com/send?phone=${fonoLimpio}&text=${encodeURIComponent(analisisObj.texto_cierre_corto || '')}', '_blank')" class="text-[10px] bg-emerald-500 text-white px-2 py-1 rounded hover:bg-emerald-600 font-bold flex items-center gap-1 shadow-sm transition-transform hover:scale-105"><i class="fa-brands fa-whatsapp"></i> Enviar</button>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-emerald-900 italic leading-relaxed">"${analisisObj.texto_cierre_corto || '...'}"</p>
+                                </div>
+                            </div>
+                        `;
+                        
+                        resultContainer.classList.remove('hidden');
+                    } catch (e) {
+                        App.ui.notificar(e.message || "Error al analizar el historial.", "Error IA", "error");
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Analizar Historial';
+                    }
+                },
+                guardarManual: async (e) => {
+                    e.preventDefault();
+
+                    const formData = new FormData(e.target);
+                    const rut = formData.get('rut');
+
+                    // Validación de RUT Duplicado
+                    if (rut && App.datos.leads.some(l => l.rut === rut)) {
+                        App.ui.notificar("El RUT ingresado ya existe en la base de datos.", "RUT Duplicado", "error");
+                        return;
+                    }
+
+                    const nuevoLead = {
+                        negocio: formData.get('negocio'),
+                        nombre: formData.get('nombre'),
+                        whatsapp: formData.get('whatsapp'),
+                        propuesta_text: formData.get('propuesta'),
+                        monto_total: 72000,
+                        dominio: formData.get('dominio').toLowerCase(),
+                        rut: rut,
+                        email: formData.get('email'),
+                        rubro: formData.get('rubro'),
+                        url: formData.get('url')
+                    };
+
+                    try {
+                        const res = await fetch('/api/clientes', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(nuevoLead)
+                        });
+                        
+                        if (res.ok) {
+                            const leadGuardado = await res.json();
+                            leadGuardado.estado = 'nuevos';
+                            leadGuardado.propuesta = leadGuardado.propuesta_text || 'Cliente creado manualmente.';
+                            
+                            // 1. Agregar al inicio de la lista
+                            App.datos.leads.unshift(leadGuardado);
+                            // 2. Renderizar para que aparezca en el DOM
+                            App.ui.renderizarListas();
+                            // 3. Cerrar modal de creación
+                            App.ui.toggleModal('modal-nuevo-cliente', false);
+                            // 4. ABRIR LA FICHA INMEDIATAMENTE (Índice 0 porque hicimos unshift)
+                            App.cliente.abrir(0);
+                            e.target.reset();
+                        }
+                    } catch (err) {
+                        console.error("Error guardando lead manual:", err);
+                        App.ui.notificar("No se pudo guardar el lead. Revisa tu conexión a internet.", "Error de Red", "error");
+                    }
+                }
+            },
+            
+            discador: {
+                activo: false,
+                cola: [],
+                indiceActual: 0,
+                iniciar: () => {
+                    // Filtrar leads AGENDADOS (con fecha de seguimiento)
+                    // Ordenados por fecha (los más antiguos/urgentes primero)
+                    App.discador.cola = App.datos.leads
+                        .filter(l => l.fecha_agendada && l.estado !== 'descartados' && l.estado !== 'cerrados')
+                        .sort((a, b) => new Date(a.fecha_agendada) - new Date(b.fecha_agendada));
+
+                    if (App.discador.cola.length === 0) {
+                        App.ui.notificar("No hay leads agendados para procesar.", "Discador", "info");
+                        return;
+                    }
+                    App.discador.activo = true;
+                    App.discador.indiceActual = 0;
+                    App.discador.cargarActual();
+                },
+                cargarActual: () => {
+                    if (App.discador.indiceActual >= App.discador.cola.length) {
+                        App.discador.detener();
+                        App.ui.notificar("¡Has terminado la lista de agendados!", "Discador Finalizado", "exito");
+                        return;
+                    }
+                    const lead = App.discador.cola[App.discador.indiceActual];
+                    const realIndex = App.datos.leads.indexOf(lead);
+                    App.cliente.abrir(realIndex);
+                },
+                siguiente: () => {
+                    App.discador.indiceActual++;
+                    App.discador.cargarActual();
+                },
+                detener: () => {
+                    App.discador.activo = false;
+                    App.ui.toggleModal('modal-ficha-cliente', false);
+                }
+            },
+
+            agenda: {
+                abrir: () => {
+                    const lista = document.getElementById('agenda-lista');
+                    lista.innerHTML = '';
+                    const agendados = App.datos.leads.filter(l => l.estado === 'seguimiento');
+                    if (agendados.length === 0) { lista.innerHTML = '<div class="text-center py-10 text-slate-400">Nada pendiente hoy.</div>'; } 
+                    else {
+                        agendados.forEach((lead) => {
+                            const realIndex = App.datos.leads.indexOf(lead);
+                            const item = document.createElement('div');
+                            item.className = "bg-white p-4 rounded-xl border border-slate-100 flex justify-between items-center shadow-sm mb-2";
+                            item.innerHTML = `<div><h4 class="font-bold text-slate-800">${lead.negocio}</h4><p class="text-xs text-blue-500 font-bold">${lead.fecha_agendada ? '📅 '+lead.fecha_agendada : 'En contacto'}</p></div><button onclick="App.cliente.abrir(${realIndex})" class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg">Ver</button>`;
+                            lista.appendChild(item);
+                        });
+                    }
+                    App.ui.toggleModal('modal-agenda', true);
+                }
+            },
+
+            calendario: {
+                fechaActual: new Date(),
+                abrir: () => {
+                    App.calendario.fechaActual = new Date();
+                    App.calendario.renderizar();
+                    App.ui.toggleModal('modal-calendario', true);
+                },
+                cambiarMes: (delta) => {
+                    App.calendario.fechaActual.setMonth(App.calendario.fechaActual.getMonth() + delta);
+                    App.calendario.renderizar();
+                },
+                renderizar: () => {
+                    const fecha = App.calendario.fechaActual;
+                    const mes = fecha.getMonth();
+                    const anio = fecha.getFullYear();
+                    
+                    const opciones = { month: 'long', year: 'numeric' };
+                    document.getElementById('calendario-titulo').innerText = fecha.toLocaleDateString('es-ES', opciones);
+
+                    const grid = document.getElementById('calendario-grid');
+                    grid.innerHTML = '';
+
+                    const primerDia = new Date(anio, mes, 1);
+                    const ultimoDia = new Date(anio, mes + 1, 0);
+                    const diasEnMes = ultimoDia.getDate();
+                    const diaInicio = primerDia.getDay(); 
+
+                    for (let i = 0; i < diaInicio; i++) {
+                        grid.innerHTML += `<div class="bg-slate-100/50 rounded-lg min-h-[80px]"></div>`;
+                    }
+
+                    for (let dia = 1; dia <= diasEnMes; dia++) {
+                        const fechaStr = `${anio}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+                        const leadsDia = App.datos.leads.filter(l => l.fecha_agendada === fechaStr);
+                        
+                        let contenidoLeads = '';
+                        if (leadsDia.length > 0) {
+                            contenidoLeads = leadsDia.map(l => {
+                                const realIndex = App.datos.leads.indexOf(l);
+                                return `<div onclick="App.cliente.abrir(${realIndex})" class="text-[9px] bg-purple-100 text-purple-700 px-1 py-0.5 rounded mb-1 truncate cursor-pointer hover:bg-purple-200 font-bold border border-purple-200" title="${l.negocio}">${l.negocio}</div>`;
+                            }).join('');
+                        }
+
+                        const esHoy = new Date().toISOString().split('T')[0] === fechaStr ? 'border-blue-500 ring-1 ring-blue-500 bg-blue-50' : 'border-slate-200 bg-white';
+
+                        grid.innerHTML += `
+                            <div class="border ${esHoy} rounded-lg p-1 min-h-[80px] flex flex-col transition-all hover:shadow-md">
+                                <span class="text-xs font-bold text-slate-400 mb-1 text-right block pr-1">${dia}</span>
+                                <div class="flex-1 overflow-y-auto custom-scroll space-y-1">
+                                    ${contenidoLeads}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            },
+
+            prospectorIA: {
+                abrir: () => {
+                    document.getElementById('ia-prompt-area').value = PROMPT_TEMPLATE;
+                    const modelName = document.getElementById('model-selector').value;
+                    document.getElementById('ia-model-name-btn').innerText = modelName;
+
+                    App.ui.toggleModal('modal-ia-generador', true);
+                    document.getElementById('ia-empty-state').classList.remove('hidden');
+                    document.getElementById('ia-results-container').classList.add('hidden');
+                    document.getElementById('ia-results-container').innerHTML = '';
+                    document.getElementById('ia-loading').classList.add('hidden');
+                    document.getElementById('btn-ia-guardar').classList.add('hidden');
+                    App.tempLeads = [];
+                },
+                cerrar: () => App.ui.toggleModal('modal-ia-generador', false),
+                copiarPrompt: () => {
+                    const promptArea = document.getElementById('ia-prompt-area');
+                    let finalPrompt = promptArea.value;
+                    const rubro = document.getElementById('ia-rubro').value || 'negocios';
+                    const ciudad = document.getElementById('ia-ciudad').value || 'Chile';
+                    const cantidad = document.getElementById('ia-cantidad').value || 5;
+                    finalPrompt = finalPrompt.replace(/{rubro}/g, rubro).replace(/{ciudad}/g, ciudad).replace(/{cantidad}/g, cantidad);
+                    navigator.clipboard.writeText(finalPrompt).then(() => App.ui.notificar('El prompt de prospección ha sido copiado.', 'Copiado', 'exito'));
+                },
+                renderResultados: () => {
+                    const container = document.getElementById('ia-results-container');
+                    if (App.tempLeads.length === 0) {
+                        container.innerHTML = '<p class="text-center text-slate-400 text-xs py-4">Sin resultados.</p>';
+                        return;
+                    }
+                    container.innerHTML = App.tempLeads.map((l, index) => `
+                        <div class="bg-white p-3 rounded border border-slate-200 mb-2 shadow-sm flex justify-between items-center group hover:border-red-200 transition-colors">
+                            <div class="flex-1">
+                                <p class="font-bold text-sm text-slate-700">${l.negocio}</p>
+                                <p class="text-xs text-slate-500 font-mono">${l.whatsapp}</p>
+                            </div>
+                            <button onclick="App.prospectorIA.marcarInvalido(${index})" class="text-slate-300 hover:text-red-500 transition-colors p-2" title="Número no válido (Agregar a Excepciones)">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                },
+                marcarInvalido: (index) => {
+                    const lead = App.tempLeads[index];
+                    if (!lead) return;
+                    
+                    // Agregar a blacklist
+                    const modelInfo = lead._model ? ` | Model: ${lead._model}` : '';
+                    App.datos.blacklist.push(`${lead.whatsapp} (${lead.negocio})${modelInfo}`);
+                    localStorage.setItem('blacklist', JSON.stringify(App.datos.blacklist));
+                    App.ui.actualizarBlacklistCount();
+                    
+                    // Remover de tempLeads
+                    App.tempLeads.splice(index, 1);
+                    
+                    // Re-renderizar
+                    App.prospectorIA.renderResultados();
+                    // Eliminación silenciosa para mayor velocidad (sin modal)
+                },
+                buscar: async () => {
+                    const rubro = document.getElementById('ia-rubro').value;
+                    if (!rubro) return App.ui.notificar("Debes especificar un rubro para iniciar la búsqueda.", "Campo Requerido", "error");
+
+                    document.getElementById('ia-empty-state').classList.add('hidden');
+                    document.getElementById('ia-loading').classList.remove('hidden');
+                    document.getElementById('ia-loading').style.display = 'flex';
+                    document.getElementById('ia-results-container').classList.add('hidden');
+
+                    const ciudad = document.getElementById('ia-ciudad').value;
+                    const cantidad = document.getElementById('ia-cantidad').value;
+                    const model = document.getElementById('model-selector').value;
+                    let prompt = document.getElementById('ia-prompt-area').value;
+                    prompt = prompt.replace(/{rubro}/g, rubro).replace(/{ciudad}/g, ciudad).replace(/{cantidad}/g, cantidad);
+
+                    try {
+                        const res = await fetch('/api/prospectar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ prompt, ciudad, model })
+                        });
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || 'Error en el servidor');
+
+                        // 1. Deduplicar resultados de la IA (por si alucina repetidos)
+                        const uniqueData = [];
+                        const seen = new Set();
+                        data.forEach(l => {
+                            const fonoLimpio = App.util.limpiarTelefono(l.whatsapp);
+                            if (fonoLimpio && !seen.has(fonoLimpio)) {
+                                seen.add(fonoLimpio);
+                                l.whatsapp = '+' + fonoLimpio; // Formato visual +569...
+                                uniqueData.push(l);
+                            }
+                        });
+
+                        // Asignar modelo a los resultados
+                        uniqueData.forEach(l => l._model = model);
+
+                        // Filtrar leads que ya están en la blacklist
+                        const leadsLimpios = uniqueData.filter(l => !App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp.replace('+','')))); // Comparar sin el + si es necesario
+                        const invalidos = uniqueData.length - leadsLimpios.length;
+
+                        App.tempLeads = leadsLimpios;
+
+                        // --- ANÁLISIS RÁPIDO ---
+                        const total = uniqueData.length;
+                        
+                        App.ui.notificar(`Total Únicos: ${total}\nEn Blacklist: ${invalidos}\nDisponibles: ${leadsLimpios.length}`, "Reporte IA", "info");
+                        setTimeout(() => App.ui.cerrarNotificacion(), 2000); // 2 segundos para leer
+                        // --- FIN ANÁLISIS ---
+
+                        App.prospectorIA.renderResultados();
+                        document.getElementById('ia-results-container').classList.remove('hidden');
+                        document.getElementById('btn-ia-guardar').classList.remove('hidden');
+                    } catch (e) {
+                        App.ui.notificar(e.message, "Error de la IA", "error");
+                        document.getElementById('ia-empty-state').classList.remove('hidden');
+                    } finally {
+                        document.getElementById('ia-loading').classList.add('hidden');
+                        document.getElementById('ia-loading').style.display = 'none';
+                    }
+                },
+                guardar: async () => {
+                    if (App.tempLeads.length === 0) return App.ui.notificar("No se encontraron prospectos para guardar.", "Vacío", "error");
+
+                    // 1. Filtrar Blacklist
+                    let leadsParaProcesar = App.tempLeads.filter(l => !App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp.replace('+',''))));
+                    
+                    // 2. Verificar duplicados por DOMINIO
+                    const leadsNuevos = [];
+                    const leadsExistentes = [];
+
+                    for (const l of leadsParaProcesar) {
+                        const existe = App.datos.leads.find(dbLead => dbLead.dominio && l.dominio_sugerido && dbLead.dominio.toLowerCase() === l.dominio_sugerido.toLowerCase());
+                        if (existe) {
+                            leadsExistentes.push({ nuevo: l, original: existe });
+                        } else {
+                            leadsNuevos.push(l);
+                        }
+                    }
+
+                    if (leadsNuevos.length === 0 && leadsExistentes.length === 0) {
+                        return App.ui.notificar("No hay prospectos nuevos para guardar.", "Filtrado", "error");
+                    }
+
+                    // 3. Manejo de Duplicados
+                    let actualizarDuplicados = false;
+                    if (leadsExistentes.length > 0) {
+                        actualizarDuplicados = await App.ui.confirmar(`Se encontraron ${leadsExistentes.length} dominios ya registrados.\n\n¿Deseas ACTUALIZAR sus datos con la nueva información de la IA?`, "Duplicados Detectados");
+                        
+                        if (actualizarDuplicados) {
+                            for (const item of leadsExistentes) {
+                                try {
+                                    await fetch(`/api/clientes/${item.original.id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ 
+                                            ...item.nuevo, // Enviar todos los datos nuevos
+                                            dominio: item.nuevo.dominio_sugerido // Mapear correctamente
+                                        })
+                                    });
+                                } catch (e) { console.error(e); }
+                            }
+                        }
+                    }
+
+                    if (leadsNuevos.length === 0) { App.prospectorIA.cerrar(); return await App.init(); }
+
+                    if (!await App.ui.confirmar(`¿Guardar ${leadsNuevos.length} nuevos prospectos?`)) return;
+                    
+                    await fetch('/api/prospectos/bulk', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prospects: leadsNuevos, ciudad: document.getElementById('ia-ciudad').value })
+                    });
+                    
+                    // 5. Finalizar
+                    App.prospectorIA.cerrar();
+                    await App.init(); // Recargar todo al final
+                }
+            },
+
+            importar: {
+                procesarJSON: async () => {
+                    const area = document.getElementById('import-json-area');
+                    const raw = area.value.trim();
+                    if (!raw) return App.ui.notificar("El área de texto está vacía. Pega el código JSON para importar.", "Campo Vacío", "error");
+
+                    try {
+                        const data = JSON.parse(raw);
+                        const prospects = Array.isArray(data) ? data : (data.prospectos || []);
+                        
+                        if (prospects.length === 0) throw new Error("No se encontraron prospectos en el JSON.");
+
+                        // --- ANÁLISIS RÁPIDO ---
+                        const total = prospects.length;
+                        const invalidos = prospects.filter(l => App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp))).length;
+                        
+                        App.ui.notificar(`Total a Importar: ${total}\nNúmeros en Blacklist: ${invalidos}`, "Análisis Rápido de JSON", "info");
+                        setTimeout(() => App.ui.cerrarNotificacion(), 2000);
+                        // --- FIN ANÁLISIS ---
+
+                        const leadsLimpios = prospects.filter(l => !App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp)));
+                        const descartados = prospects.length - leadsLimpios.length;
+
+                        if (leadsLimpios.length === 0) {
+                            return App.ui.notificar("Todos los prospectos del JSON ya están en la Lista Negra. No se importará nada.", "Importación Cancelada", "error");
+                        }
+
+                        let msg = `¿Confirmas la importación de ${leadsLimpios.length} nuevos prospectos?`;
+                        if (descartados > 0) msg += `\n(${descartados} omitidos por estar en la Lista Negra).`;
+
+                        if (await App.ui.confirmar(msg)) {
+                            const res = await fetch('/api/prospectos/bulk', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ prospects: leadsLimpios, ciudad: 'Importación Manual' })
+                            });
+                            const responseData = await res.json();
+
+                            if (res.ok) {
+                                App.ui.notificar(responseData.message || `${leadsLimpios.length} prospectos fueron importados.`, "Importación Completa", "exito");
+                                area.value = '';
+                                App.ui.toggleModal('modal-prospectos', false);
+                                await App.init(); // Recargar la lista desde la DB
+                            } else {
+                                let errorMessage = responseData.error || 'Error del servidor al importar.';
+                                if (responseData.detalles) {
+                                    const detallesFormateados = responseData.detalles.map(d => `-> ${d.prospecto}: ${d.error}`).join('\n');
+                                    errorMessage += `\n\nDetalles:\n${detallesFormateados}`;
+                                }
+                                throw new Error(errorMessage);
+                            }
+                        }
+                    } catch (e) {
+                        App.ui.notificar(e.message, "Error al Procesar JSON", "error");
+                    }
+                }
+            },
+
+            monitor: {
+                sites: [
+                    { url: 'www.entradasya.cl', name: 'EntradasYa', status: 'pending' },
+                    { url: 'www.turbopos.cl', name: 'TurboPOS', status: 'pending' },
+                    { url: 'https://tusitioya.onrender.com/', name: 'TuSitioYa App', status: 'pending' }
+                ],
+                init: () => {
+                    App.monitor.render();
+                    App.monitor.checkAll();
+                    setInterval(App.monitor.checkAll, 60000); // Check every 60 seconds
+                },
+                render: () => {
+                    const container = document.getElementById('monitor-sites-list');
+                    if (!container) return;
+                    container.innerHTML = App.monitor.sites.map(site => {
+                        let statusClass = 'bg-slate-100 border-slate-200 text-slate-400';
+                        let iconClass = 'fa-circle-notch fa-spin';
+                        let statusLabel = 'Verificando...';
+
+                        if (site.status === 'online') {
+                            statusClass = 'bg-emerald-50 border-emerald-200 text-emerald-600';
+                            iconClass = 'fa-circle-check';
+                            statusLabel = 'ONLINE';
+                        } else if (site.status === 'offline') {
+                            statusClass = 'bg-red-50 border-red-200 text-red-600';
+                            iconClass = 'fa-circle-xmark';
+                            statusLabel = 'OFFLINE';
+                        }
+
+                        return `
+                            <div class="p-3 rounded-xl border ${statusClass} flex items-center justify-between shadow-sm bg-white/80 backdrop-blur-sm transition-all hover:scale-[1.02]">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm border border-slate-100 text-slate-600">
+                                        <i class="fa-solid fa-globe"></i>
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <h4 class="font-bold text-xs text-slate-700 truncate">${site.name}</h4>
+                                        <a href="${site.url.startsWith('http') ? site.url : 'https://' + site.url}" target="_blank" class="text-[9px] text-slate-400 hover:text-blue-500 truncate block">${site.url}</a>
+                                    </div>
+                                </div>
+                                <div class="text-right pl-2">
+                                    <i class="fa-solid ${iconClass} text-lg mb-1"></i>
+                                    <p class="text-[8px] font-black tracking-widest">${statusLabel}</p>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                },
+                checkAll: async () => {
+                    for (let i = 0; i < App.monitor.sites.length; i++) {
+                        const site = App.monitor.sites[i];
+                        try {
+                            const res = await fetch('/api/check-site', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ url: site.url })
+                            });
+                            const data = await res.json();
+                            App.monitor.sites[i].status = data.status;
+                        } catch (e) {
+                            App.monitor.sites[i].status = 'offline';
+                        }
+                        App.monitor.render();
+                    }
+                }
+            },
+
+            logros: {
+                hitos: [
+                    { id: 'first_blood', cantidad: 1, icono: 'fa-medal', color: 'text-amber-600', titulo: 'Primera Venta' },
+                    { id: 'bronze', cantidad: 5, icono: 'fa-trophy', color: 'text-orange-400', titulo: 'Vendedor Bronce' },
+                    { id: 'silver', cantidad: 10, icono: 'fa-trophy', color: 'text-slate-400', titulo: 'Vendedor Plata' },
+                    { id: 'gold', cantidad: 20, icono: 'fa-trophy', color: 'text-yellow-400', titulo: 'Vendedor Oro' },
+                    { id: 'diamond', cantidad: 50, icono: 'fa-gem', color: 'text-blue-400', titulo: 'Leyenda' }
+                ],
+                verificar: () => {
+                    const ventas = App.datos.leads.filter(l => l.estado === 'cerrados').length;
+                    const container = document.getElementById('logros-container');
+                    if(!container) return;
+                    
+                    container.innerHTML = App.logros.hitos.map(hito => {
+                        const desbloqueado = ventas >= hito.cantidad;
+                        const opacity = desbloqueado ? 'opacity-100 scale-110' : 'opacity-20 grayscale';
+                        return `<div class="flex flex-col items-center gap-1 group/icon relative" title="${hito.titulo} (${hito.cantidad} ventas)"><i class="fa-solid ${hito.icono} ${hito.color} text-xl transition-all duration-500 ${opacity}"></i>${desbloqueado ? '<div class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>' : ''}</div>`;
+                    }).join('');
+                    
+                    const lastCount = parseInt(localStorage.getItem('last_sales_count') || 0);
+                    if (ventas > lastCount) {
+                        const newUnlock = App.logros.hitos.find(h => h.cantidad === ventas);
+                        if (newUnlock) {
+                            App.ui.notificar(`¡Has desbloqueado: ${newUnlock.titulo}!`, "🏆 Logro Desbloqueado", "exito");
+                            App.ui.lanzarConfeti();
+                        }
+                        localStorage.setItem('last_sales_count', ventas);
+                    }
+                }
+            },
+
+            ui: {
+                toggleAccordion: (id) => { document.getElementById(`list-${id}`).classList.toggle('open'); },
+                toggleModal: (id, show) => { const el = document.getElementById(id); if(show) el.classList.remove('hidden'); else el.classList.add('hidden'); },
+                actualizarBlacklistCount: () => {
+                    document.getElementById('blacklist-count').innerText = App.datos.blacklist.length;
+                    document.getElementById('metric-excepciones').innerText = App.datos.blacklist.length;
+                    
+                    // Calcular peor modelo
+                    const modelCounts = {};
+                    App.datos.blacklist.forEach(item => {
+                        if (item.includes('| Model:')) {
+                            const model = item.split('| Model:')[1].trim();
+                            modelCounts[model] = (modelCounts[model] || 0) + 1;
+                        }
+                    });
+                    
+                    let worstModel = '';
+                    let maxCount = 0;
+                    for (const [model, c] of Object.entries(modelCounts)) {
+                        if (c > maxCount) { maxCount = c; worstModel = model; }
+                    }
+                    
+                    const worstEl = document.getElementById('blacklist-worst-model');
+                    if (worstModel) { worstEl.innerText = `Peor: ${worstModel} (${maxCount})`; worstEl.classList.remove('hidden'); } else { worstEl.classList.add('hidden'); }
+
+                },
+                mostrarEntregasHoy: () => {
+                    const hoyISO = new Date().toISOString().split('T')[0];
+                    const lista = document.getElementById('entregas-hoy-lista');
+                    lista.innerHTML = '';
+                    
+                    const entregas = App.datos.leads.filter(l => {
+                        const fechaEntrega = l.fecha_proximo_pago ? l.fecha_proximo_pago.split('T')[0] : null;
+                        return l.estado === 'cerrados' && fechaEntrega === hoyISO;
+                    });
+
+                    if (entregas.length === 0) {
+                        lista.innerHTML = '<div class="text-center py-10 text-slate-400">No hay entregas programadas para hoy.</div>';
+                    } else {
+                        entregas.forEach((lead) => {
+                            const realIndex = App.datos.leads.indexOf(lead);
+                            const deuda = Math.max(0, (lead.monto_total || 0) - (lead.monto_pagado || 0));
+                            const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
+                            
+                            const item = document.createElement('div');
+                            item.className = "bg-white p-4 rounded-xl border border-blue-100 flex justify-between items-center shadow-sm mb-2 hover:border-blue-300 transition-colors";
+                            item.innerHTML = `
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm">${lead.negocio}</h4>
+                                    <p class="text-xs text-slate-500">${lead.nombre || 'Sin contacto'}</p>
+                                    <p class="text-[10px] font-bold text-red-500 mt-1">Por cobrar: ${formatter.format(deuda)}</p>
+                                </div>
+                                <button onclick="App.cliente.abrir(${realIndex}); App.ui.toggleModal('modal-entregas-hoy', false);" class="px-3 py-1.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-lg hover:bg-blue-100">Ver Ficha</button>
+                            `;
+                            lista.appendChild(item);
+                        });
+                    }
+                    App.ui.toggleModal('modal-entregas-hoy', true);
+                },
+                buscar: (termino) => {
+                    App.filtroBusqueda = termino.toLowerCase().trim();
+                    App.ui.renderizarListas();
+                },
+                renderizarListas: () => {
+                    const estados = ['nuevos', 'whatsapp_enviado', 'sin_respuesta', 'seguimiento', 'cerrados']; // 'descartados' y 'agendados' se manejan diferente
+                    const contadores = { nuevos: 0, whatsapp_enviado: 0, sin_respuesta: 0, seguimiento: 0, agendados: 0, cerrados: 0, descartados: 0 };
+                    
+                    // Limpiar contenedores
+                    estados.forEach(id => {
+                        const el = document.getElementById(`list-${id}`);
+                        if(el) el.innerHTML = '';
+                    });
+
+                    // Filtrar leads según búsqueda
+                    const leadsFiltrados = App.datos.leads.filter(lead => {
+                        if (!App.filtroBusqueda) return true;
+                        const term = App.filtroBusqueda;
+                        // Búsqueda potente: concatena todo para buscar
+                        const dataString = `${lead.negocio} ${lead.nombre} ${lead.whatsapp} ${lead.dominio || ''}`.toLowerCase();
+                        return dataString.includes(term);
+                    });
+
+                    leadsFiltrados.forEach((lead) => {
+                        // IMPORTANTE: Usamos el índice original para que al hacer click abra el lead correcto
+                        const originalIndex = App.datos.leads.indexOf(lead);
+
+                        // Determinar estado UI
+                        let estadoUI = lead.estado || 'nuevos';
+                        if (!contadores.hasOwnProperty(estadoUI)) estadoUI = 'nuevos';
+
+                        // Contar agendados para métricas, pero visualmente se quedan en su estado original (ej: seguimiento)
+                        if (lead.fecha_agendada) {
+                            contadores.agendados++;
+                        }
+
+                        if (contadores[estadoUI] !== undefined) {
+                            contadores[estadoUI]++;
+                            
+                            let extraInfo = '<i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>';
+                            if (lead.fecha_agendada && estadoUI === 'agendados') extraInfo = `<span class="text-[9px] font-bold text-purple-500 bg-purple-50 px-1 rounded">${lead.fecha_agendada.slice(5)}</span>`;
+                            
+                            const itemHTML = `<div onclick="App.cliente.abrir(${originalIndex})" class="p-3 mb-2 bg-white border border-emerald-100 rounded-xl hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group flex justify-between items-center"><div><span class="block text-xs font-bold text-slate-800 group-hover:text-teal-600 truncate max-w-[150px]">${lead.negocio}</span><span class="text-[9px] text-slate-500 font-mono">${lead.whatsapp}</span><span class="block text-[9px] text-teal-400 font-bold truncate max-w-[140px]">${lead.dominio || ''}</span></div>${extraInfo}</div>`;
+                            const listEl = document.getElementById(`list-${estadoUI}`);
+                            if(listEl) listEl.insertAdjacentHTML('beforeend', itemHTML);
+                        }
+                    });
+                    
+                    // Actualizar badges (incluyendo descartados que no tiene lista)
+                    Object.keys(contadores).forEach(key => { 
+                        const el = document.getElementById(`badge-${key}`); 
+                        if(el) el.innerText = contadores[key]; 
+                    });
+                    
+                    document.getElementById('metric-total').innerText = App.datos.leads.length;
+                    document.getElementById('metric-validos').innerText = contadores.seguimiento + contadores.agendados; 
+
+                    // Si hay búsqueda activa, abrir automáticamente los acordeones que tengan resultados
+                    if (App.filtroBusqueda !== '') {
+                        estados.forEach(id => {
+                            if (contadores[id] > 0) {
+                                document.getElementById(`list-${id}`).classList.add('open');
+                            }
+                        });
+                    }
+
+                    App.ui.actualizarGraficoCircular();
+                    App.ui.actualizarMetas();
+                    App.ui.actualizarFinanzas();
+                    App.logros.verificar();
+                },
+                actualizarMetas: () => {
+                    const hoyISO = new Date().toISOString().split('T')[0];
+                    const hoyLocale = new Date().toLocaleDateString();
+                    
+                    // 1. Leads Nuevos Hoy
+                    const leadsHoy = App.datos.leads.filter(l => l.created_at && l.created_at.startsWith(hoyISO)).length;
+                    const metaLeads = 10; // Meta configurable
+                    
+                    document.getElementById('meta-leads-actual').innerText = leadsHoy;
+                    document.getElementById('meta-leads-total').innerText = metaLeads;
+                    document.getElementById('barra-meta-leads').style.width = `${Math.min((leadsHoy/metaLeads)*100, 100)}%`;
+
+                    // 2. Ventas Hoy (Estado 'cerrados' y (creado hoy O historial venta hoy))
+                    let ventasHoy = 0;
+                    App.datos.leads.forEach(l => {
+                        if (l.estado === 'cerrados') {
+                            const ventaEnHistorial = l.historial && l.historial.some(h => h.nota.includes('VENTA CERRADA') && h.fecha.includes(hoyLocale));
+                            const creadoYcerradoHoy = l.created_at && l.created_at.startsWith(hoyISO);
+                            if (ventaEnHistorial || creadoYcerradoHoy) ventasHoy++;
+                        }
+                    });
+                    
+                    const metaVentas = 3; // Meta configurable
+                    document.getElementById('meta-ventas-actual').innerText = ventasHoy;
+                    document.getElementById('meta-ventas-total').innerText = metaVentas;
+                    document.getElementById('barra-meta-ventas').style.width = `${Math.min((ventasHoy/metaVentas)*100, 100)}%`;
+
+                    // Verificar si se cumplieron ambas metas para lanzar confeti
+                    if (leadsHoy >= metaLeads && ventasHoy >= metaVentas) {
+                        App.ui.lanzarConfeti();
+                    }
+                },
+                actualizarFinanzas: () => {
+                    const hoy = new Date();
+                    const mesActual = hoy.getMonth();
+                    const anioActual = hoy.getFullYear();
+                    const hoyISO = hoy.toISOString().split('T')[0];
+                    const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
+
+                    let totalVentasMes = 0; // Total Contratado (Mes)
+                    let totalRecaudadoMes = 0; // Total Pagado (Mes)
+                    let totalProyeccion = 0; // Deuda Acumulada (Global)
+                    let totalHistoricoVentas = 0;
+                    let countVentasMes = 0;
+                    let countHistoricoVentas = 0;
+                    let countEntregasHoy = 0;
+
+                    App.datos.leads.forEach(l => {
+                        const montoTotal = Number(l.monto_total) || 0;
+                        const montoPagado = Number(l.monto_pagado) || 0;
+                        const deuda = Math.max(0, montoTotal - montoPagado);
+
+                        const fechaCreacion = new Date(l.created_at || new Date());
+                        const esMesActual = fechaCreacion.getMonth() === mesActual && fechaCreacion.getFullYear() === anioActual;
+                        const fechaEntrega = l.fecha_proximo_pago ? l.fecha_proximo_pago.split('T')[0] : null;
+
+                        if (l.estado === 'cerrados') {
+                            // Proyección (Deuda Global - Pasa de mes)
+                            totalProyeccion += deuda;
+
+                            // Entregas Hoy
+                            if (fechaEntrega === hoyISO) {
+                                countEntregasHoy++;
+                            }
+
+                            // Métricas del Mes
+                            if (esMesActual) {
+                                totalVentasMes += montoTotal;
+                                totalRecaudadoMes += montoPagado;
+                                countVentasMes++;
+                            }
+                            // Ticket Promedio
+                            totalHistoricoVentas += montoTotal;
+                            countHistoricoVentas++;
+                        }
+                    });
+
+                    document.getElementById('finanza-ventas-mes').innerText = formatter.format(totalVentasMes);
+                    document.getElementById('count-ventas-mes').innerText = countVentasMes;
+                    document.getElementById('finanza-proyeccion').innerText = formatter.format(totalProyeccion);
+                    document.getElementById('finanza-entregas-hoy').innerText = countEntregasHoy;
+                    document.getElementById('finanza-caja-real').innerText = formatter.format(totalRecaudadoMes);
+                    document.getElementById('finanza-ticket').innerText = formatter.format(countHistoricoVentas > 0 ? totalHistoricoVentas / countHistoricoVentas : 0);
+                },
+                actualizarGraficoCircular: () => {
+                    const total = App.datos.leads.length || 1;
+                    const cerrados = App.datos.leads.filter(l => l.estado === 'cerrados').length;
+                    const porcentaje = Math.round((cerrados / total) * 100);
+                    document.getElementById('percent-text').innerText = `${porcentaje}%`;
+                    document.getElementById('circular-progress').style.background = `conic-gradient(#10b981 0% ${porcentaje}%, #e2e8f0 ${porcentaje}% 100%)`;
+                },
+                lanzarConfeti: () => {
+                    const container = document.getElementById('confetti-container');
+                    if (!container || container.children.length > 0) return; // Evitar spam
+
+                    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+                    for (let i = 0; i < 40; i++) {
+                        const el = document.createElement('div');
+                        el.className = 'confetti';
+                        el.style.left = Math.random() * 100 + '%';
+                        el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        el.style.animationDelay = (Math.random() * 1) + 's';
+                        container.appendChild(el);
+                    }
+                    // Limpiar después de la animación
+                    setTimeout(() => { container.innerHTML = ''; }, 5000);
+                },
+                notificar: (mensaje, titulo = "Notificación", tipo = "info") => {
+                    const modal = document.getElementById('modal-notificacion');
+                    document.getElementById('notificacion-titulo').innerText = titulo;
+                    document.getElementById('notificacion-mensaje').innerText = mensaje;
+                    const iconoContainer = document.getElementById('notificacion-icono');
+                    const btn = document.getElementById('notificacion-btn-ok');
+                    
+                    let icono, color;
+                    switch(tipo) {
+                        case 'exito': icono = '<i class="fa-solid fa-check"></i>'; color = 'emerald'; break;
+                        case 'error': icono = '<i class="fa-solid fa-xmark"></i>'; color = 'red'; break;
+                        default: icono = '<i class="fa-solid fa-info"></i>'; color = 'blue';
+                    }
+                    iconoContainer.innerHTML = icono;
+                    iconoContainer.className = `mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-${color}-100 text-${color}-500`;
+                    btn.className = `w-full py-2.5 font-bold rounded-lg text-white bg-${color}-500 hover:bg-${color}-600`;
+                    
+                    modal.classList.remove('hidden');
+                },
+                cerrarNotificacion: () => {
+                    document.getElementById('modal-notificacion').classList.add('hidden');
+                },
+                confirmar: (mensaje, titulo = "¿Estás seguro?") => {
+                    return new Promise((resolve) => {
+                        const modal = document.getElementById('modal-confirmacion');
+                        document.getElementById('confirmacion-titulo').innerText = titulo;
+                        document.getElementById('confirmacion-mensaje').innerText = mensaje;
+                        
+                        const btnOk = document.getElementById('confirmacion-btn-ok');
+                        const btnCancel = document.getElementById('confirmacion-btn-cancel');
+
+                        const cleanup = () => {
+                            btnOk.removeEventListener('click', okListener);
+                            btnCancel.removeEventListener('click', cancelListener);
+                        };
+
+                        const okListener = () => { modal.classList.add('hidden'); cleanup(); resolve(true); };
+                        const cancelListener = () => { modal.classList.add('hidden'); cleanup(); resolve(false); };
+
+                        btnOk.addEventListener('click', okListener, { once: true });
+                        btnCancel.addEventListener('click', cancelListener, { once: true });
+
+                        modal.classList.remove('hidden');
+                    });
+                },
+                prompt: (mensaje, titulo = "Ingresar Dato", defaultValue = "", type = "text") => {
+                    return new Promise((resolve) => {
+                        const modal = document.getElementById('modal-prompt');
+                        document.getElementById('prompt-titulo').innerText = titulo;
+                        document.getElementById('prompt-mensaje').innerText = mensaje;
+                        const input = document.getElementById('prompt-input');
+                        input.type = type;
+                        input.value = defaultValue;
+                        
+                        const btnOk = document.getElementById('prompt-btn-ok');
+                        const btnCancel = document.getElementById('prompt-btn-cancel');
+
+                        const cleanup = () => { btnOk.removeEventListener('click', okListener); btnCancel.removeEventListener('click', cancelListener); };
+                        const okListener = () => { modal.classList.add('hidden'); cleanup(); resolve(input.value); };
+                        const cancelListener = () => { modal.classList.add('hidden'); cleanup(); resolve(null); };
+
+                        btnOk.addEventListener('click', okListener, { once: true });
+                        btnCancel.addEventListener('click', cancelListener, { once: true });
+
+                        modal.classList.remove('hidden');
+                        input.focus(); 
+                        if (type === 'text') input.select();
+                    });
+                },
+                toggleDashboard: () => {
+                    const content = document.getElementById('dashboard-content');
+                    const icon = document.getElementById('dashboard-chevron');
+                    if (content.classList.contains('hidden')) {
+                        content.classList.remove('hidden'); content.classList.add('flex'); icon.classList.remove('rotate-180');
+                    } else {
+                        content.classList.add('hidden'); content.classList.remove('flex'); icon.classList.add('rotate-180');
+                    }
+                },
+                toggleZenMode: () => {
+                    document.body.classList.toggle('zen-mode');
+                }
+                ,
+                configurarPrompt: () => {
+                    const currentPrompt = localStorage.getItem('analysis_prompt') || DEFAULT_ANALYSIS_PROMPT;
+                    document.getElementById('config-prompt-input').value = currentPrompt;
+                    App.ui.toggleModal('modal-config-prompt', true);
+                },
+                guardarPrompt: () => {
+                    const newPrompt = document.getElementById('config-prompt-input').value;
+                    localStorage.setItem('analysis_prompt', newPrompt);
+                    App.ui.toggleModal('modal-config-prompt', false);
+                    App.ui.notificar("Prompt de IA actualizado correctamente.", "Guardado", "exito");
+                },
+                restaurarPrompt: () => {
+                    document.getElementById('config-prompt-input').value = DEFAULT_ANALYSIS_PROMPT;
+                },
+                probarPrompt: async () => {
+                    const promptInput = document.getElementById('config-prompt-input').value;
+                    const resultContainer = document.getElementById('config-prompt-test-result');
+                    const output = document.getElementById('test-output');
+                    const selectedExample = document.getElementById('config-prompt-example-select').value;
+                    
+                    resultContainer.classList.remove('hidden');
+                    output.innerHTML = '<span class="animate-pulse text-yellow-400">⏳ Enviando a IA para análisis...</span>';
+                    
+                    try {
+                        const fullPrompt = `${promptInput}\n\nCONVERSACIÓN DE EJEMPLO:\n"${EXAMPLE_CONVERSATIONS[selectedExample]}"`;
+                        const model = document.getElementById('model-selector').value;
+                        
+                        const res = await fetch('/api/analizar-chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ prompt: fullPrompt, model: model })
+                        });
+                        
+                        const data = await res.json();
+                        
+                        if (data.error) throw new Error(data.error);
+                        
+                        // Intentar formatear JSON para que se vea bonito
+                        try {
+                            const json = JSON.parse(data.analisis.replace(/```json/g, '').replace(/```/g, '').trim());
+                            output.innerHTML = `<span class="text-emerald-400">${JSON.stringify(json, null, 2)}</span>`;
+                        } catch (e) {
+                            output.innerText = data.analisis;
+                        }
+                    } catch (e) {
+                        output.innerHTML = `<span class="text-red-400">Error: ${e.message}</span>`;
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>

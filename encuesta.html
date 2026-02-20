@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briefing Profesional | TuSitioYa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --p: #2563eb; 
+            --bg-start: #e0f2f7; 
+            --bg-end: #f5fafd;   
+            --txt: #1e293b;      
+            --accent: #dbeafe;   
+            --form-bg: #ffffff;  
+            --font-main: 'Comfortaa', cursive; 
+        }
+        
+        body { 
+            font-family: var(--font-main); 
+            color: var(--txt); 
+            line-height: 1.6; 
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Fondo Animado Amigable */
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .form-card { 
+            max-width: 650px; 
+            width: 90%;
+            background: var(--form-bg); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            margin: 40px 0;
+        }
+
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid var(--accent); 
+            padding-bottom: 20px; 
+        }
+
+        .header h2 {
+            font-size: 2rem;
+            color: var(--p);
+            margin: 0;
+        }
+
+        .prospect-id { 
+            display: inline-block; 
+            background: var(--txt); 
+            color: white; 
+            padding: 8px 20px; 
+            border-radius: 25px; 
+            font-family: monospace; 
+            font-size: 0.95rem; 
+            margin-top: 15px; 
+        }
+        
+        .step { margin-bottom: 35px; }
+        
+        .step-title { 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            color: var(--p); 
+            display: flex; 
+            align-items: center; 
+            margin-bottom: 18px; 
+            background: var(--accent); 
+            padding: 10px 15px;
+            border-radius: 12px;
+        }
+
+        .step-num { 
+            background: var(--p); 
+            color: white; 
+            width: 28px; 
+            height: 28px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            font-size: 0.85rem; 
+            margin-right: 12px; 
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            color: #475569; 
+        }
+
+        input, textarea, select { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 18px; 
+            border: 2px solid #cbd5e1; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-family: var(--font-main);
+            font-size: 1rem; 
+            transition: all 0.3s ease; 
+        }
+
+        input:focus, textarea:focus { 
+            border-color: var(--p); 
+            outline: none; 
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+        
+        .whatsapp-note { 
+            background: #fff9db; 
+            border: 1px solid #fab005; 
+            padding: 18px; 
+            border-radius: 12px; 
+            font-size: 0.9rem; 
+            margin-top: 10px; 
+        }
+
+        button { 
+            width: 100%; 
+            background: linear-gradient(90deg, #2563eb, #3b82f6); 
+            color: white; 
+            border: none; 
+            padding: 20px; 
+            border-radius: 12px; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            font-family: var(--font-main);
+            cursor: pointer; 
+            transition: 0.3s; 
+            margin-top: 10px; 
+        }
+
+        button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); 
+        }
+        
+        small { color: #94a3b8; display: block; margin-top: -10px; margin-bottom: 15px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <div class="header">
+        <h2>Briefing de Proyecto</h2>
+        <p style="color:#64748b;">TuSitioYa - Alexis Ferrada</p>
+        <div class="prospect-id">ID ORDEN: <span id="idDisplay">...</span></div>
+    </div>
+
+    <form action="/api/encuesta" method="POST">
+        
+        <input type="hidden" name="cliente_id" id="idInput">
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">1</span>Identidad Profesional</div>
+            <label>Nombre completo o marca</label>
+            <input type="text" name="Nombre_Profesional" placeholder="Ej: Ps. Patricia Calderón L." required>
+            <label>Especialidad principal</label>
+            <input type="text" name="Especialidad" placeholder="Ej: Hipnosis Ericksoniana" required>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">2</span>Tu Sello Personal</div>
+            <label>¿Qué define tu trato amable y carisma?</label>
+            <textarea name="Sello_Personal" placeholder="¿Cómo quieres que se sientan tus pacientes?" required></textarea>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">3</span>Tu Paciente Ideal</div>
+            <label>¿A qué perfil de personas atiendes?</label>
+            <textarea name="Paciente_Ideal" placeholder="Ej: Adultos con estrés, parejas, etc." required></textarea>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">4</span>Servicios y Modalidad</div>
+            <label>Servicios principales</label>
+            <input type="text" name="Servicios" placeholder="Ej: Terapia Individual, Online, Talleres" required>
+            <select name="Modalidad">
+                <option value="Ambos">Modalidad: Presencial y Online</option>
+                <option value="Online">Solo Online</option>
+                <option value="Presencial">Solo Presencial</option>
+            </select>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">5</span>Contacto y Ubicación</div>
+            <label>Dirección física (opcional)</label>
+            <input type="text" name="Direccion" placeholder="Ej: Av. Providencia 1476">
+            <label>WhatsApp para pacientes</label>
+            <input type="text" name="WhatsApp_Pacientes" placeholder="+56 9 XXXX XXXX" required>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">6</span>Imagen y Colores</div>
+            <label>Colores preferidos</label>
+            <input type="text" name="Colores_Preferidos" placeholder="Ej: Azul pastel y gris suave">
+            <div class="whatsapp-note">
+                <b>📌 Importante:</b> Al terminar, envía tu logo y fotos por WhatsApp indicando tu número de orden.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title"><span class="step-num">7</span>Tu Nombre Web</div>
+            <label>Dominio .cl deseado</label>
+            <input type="text" name="Dominio_Deseado" placeholder="www.tunombre.cl" required>
+        </div>
+
+        <button type="submit">Finalizar y Enviar a Alexis</button>
+    </form>
+</div>
+
+<script>
+    // Generador de ID automático
+    const urlParams = new URLSearchParams(window.location.search);
+    const clienteId = urlParams.get('id');
+
+    if (clienteId) {
+        const displayId = "TSY-" + clienteId.padStart(4, '0');
+        document.getElementById('idDisplay').innerText = displayId;
+        document.getElementById('idInput').value = clienteId;
+    } else {
+        document.getElementById('idDisplay').innerText = "ID NO VÁLIDO";
+        document.querySelector('button[type="submit"]').disabled = true;
+        document.querySelector('button[type="submit"]').innerText = "Error: Link no válido";
+    }
+</script>
+
+</body>
+</html>

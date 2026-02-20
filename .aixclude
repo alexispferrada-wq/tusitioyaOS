@@ -1,0 +1,9 @@
+node_modules/**
+.env
+.git/**
+package-lock.json
+*.log
+**/*.mp4
+**/*.jpg
+**/*.png
+**/*.ico
