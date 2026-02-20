@@ -40,6 +40,11 @@ app.get('/', (req, res) => {
   res.redirect('/previo_comando.html');
 });
 
+// Fix para móviles: Redirigir rutas sin extensión a la vista correcta
+app.get('/previo_comando', (req, res) => {
+  res.redirect('/previo_comando.html');
+});
+
 // A. Obtener todos los clientes (Para llenar la barra lateral)
 app.get('/api/clientes', async (req, res) => {
   let client;
