@@ -193,14 +193,9 @@
             <h3 class="text-2xl font-black text-red-500 group-hover:scale-110 transition-transform mr-2"><span id="blacklist-count">0</span></h3>
         </div>
 
-        <div class="zen-hidden grid grid-cols-3 gap-2 mb-4">
-            <button onclick="App.ui.toggleModal('modal-nuevo-cliente', true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl py-2 text-xs font-bold transition-colors">+ Nuevo</button>
-            <button onclick="App.prospectorIA.abrir()" class="bg-teal-600 hover:bg-teal-700 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-teal-500/30">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> IA
-            </button>
-            <button onclick="App.ui.toggleModal('modal-prospectos', true)" class="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-emerald-500/30">
-                <i class="fa-solid fa-file-import"></i> Importar
-            </button>
+        <div class="zen-hidden grid grid-cols-2 gap-2 mb-4">
+            <button onclick="App.ui.toggleModal('modal-nuevo-cliente', true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1"><i class="fa-solid fa-plus"></i> Nuevo</button>
+            <button onclick="App.prospectorIA.abrir()" class="bg-teal-600 hover:bg-teal-700 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-teal-500/30"><i class="fa-solid fa-wand-magic-sparkles"></i> IA</button>
         </div>
 
         <div class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-1">
@@ -664,7 +659,14 @@
     <div id="modal-ia-generador" class="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[80] hidden flex items-center justify-center p-4">
         <div class="w-full max-w-4xl bg-white rounded-2xl flex flex-col shadow-2xl overflow-hidden border border-slate-200 max-h-[95vh]">
             <div class="p-6 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                <div class="flex items-center gap-3"><div class="bg-blue-600 text-white p-2 rounded-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div><h3 class="text-xl font-bold text-slate-900">Prospector IA</h3></div></div><button onclick="App.prospectorIA.cerrar()" class="text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 text-white p-2 rounded-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div><h3 class="text-xl font-bold text-slate-900">Prospector IA</h3></div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="App.ui.toggleModal('modal-prospectos', true)" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors flex items-center gap-1"><i class="fa-solid fa-file-import"></i> Importar Manual</button>
+                    <button onclick="App.prospectorIA.cerrar()" class="text-slate-400 hover:text-slate-600 ml-2"><i class="fa-solid fa-xmark text-xl"></i></button>
+                </div>
             </div>
             <div class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
                 <div class="w-full lg:w-1/2 flex flex-col p-6 border-b lg:border-b-0 lg:border-r border-slate-100">
@@ -2022,29 +2024,65 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         
                         if (prospects.length === 0) throw new Error("No se encontraron prospectos en el JSON.");
 
-                        // --- ANÁLISIS RÁPIDO ---
-                        const total = prospects.length;
-                        const invalidos = prospects.filter(l => App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp))).length;
-                        
-                        App.ui.notificar(`Total a Importar: ${total}\nNúmeros en Blacklist: ${invalidos}`, "Análisis Rápido de JSON", "info");
-                        setTimeout(() => App.ui.cerrarNotificacion(), 2000);
-                        // --- FIN ANÁLISIS ---
+                        // 1. Filtrar Blacklist (Igual que IA)
+                        let leadsParaProcesar = prospects.filter(l => !App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp)));
+                        const descartadosBlacklist = prospects.length - leadsParaProcesar.length;
 
-                        const leadsLimpios = prospects.filter(l => !App.datos.blacklist.some(blItem => l.whatsapp && blItem.includes(l.whatsapp)));
-                        const descartados = prospects.length - leadsLimpios.length;
+                        // 2. Verificar duplicados por DOMINIO
+                        const leadsNuevos = [];
+                        const leadsExistentes = [];
 
-                        if (leadsLimpios.length === 0) {
-                            return App.ui.notificar("Todos los prospectos del JSON ya están en la Lista Negra. No se importará nada.", "Importación Cancelada", "error");
+                        for (const l of leadsParaProcesar) {
+                            // Normalizar dominio si existe
+                            const dom = l.dominio_sugerido || l.dominio || '';
+                            const existe = App.datos.leads.find(dbLead => dbLead.dominio && dom && dbLead.dominio.toLowerCase() === dom.toLowerCase());
+                            if (existe) {
+                                leadsExistentes.push({ nuevo: l, original: existe });
+                            } else {
+                                leadsNuevos.push(l);
+                            }
                         }
 
-                        let msg = `¿Confirmas la importación de ${leadsLimpios.length} nuevos prospectos?`;
-                        if (descartados > 0) msg += `\n(${descartados} omitidos por estar en la Lista Negra).`;
+                        if (leadsNuevos.length === 0 && leadsExistentes.length === 0) {
+                            return App.ui.notificar(`Todos los prospectos (${descartadosBlacklist}) fueron descartados por estar en la Lista Negra.`, "Filtrado Estricto", "error");
+                        }
+
+                        // 3. Manejo de Duplicados
+                        let actualizarDuplicados = false;
+                        if (leadsExistentes.length > 0) {
+                            actualizarDuplicados = await App.ui.confirmar(`Se encontraron ${leadsExistentes.length} dominios ya registrados en la importación.\n\n¿Deseas ACTUALIZAR sus datos?`, "Duplicados Detectados");
+                            
+                            if (actualizarDuplicados) {
+                                for (const item of leadsExistentes) {
+                                    try {
+                                        await fetch(`/api/clientes/${item.original.id}`, {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ 
+                                                ...item.nuevo, 
+                                                dominio: item.nuevo.dominio_sugerido || item.nuevo.dominio 
+                                            })
+                                        });
+                                    } catch (e) { console.error(e); }
+                                }
+                                App.ui.notificar(`${leadsExistentes.length} clientes actualizados.`, "Actualización", "exito");
+                            }
+                        }
+
+                        if (leadsNuevos.length === 0) {
+                            area.value = '';
+                            App.ui.toggleModal('modal-prospectos', false);
+                            return await App.init();
+                        }
+
+                        let msg = `¿Importar ${leadsNuevos.length} nuevos prospectos?`;
+                        if (descartadosBlacklist > 0) msg += `\n(Se omitieron ${descartadosBlacklist} por Lista Negra)`;
 
                         if (await App.ui.confirmar(msg)) {
                             const res = await fetch('/api/prospectos/bulk', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ prospects: leadsLimpios, ciudad: 'Importación Manual' })
+                                body: JSON.stringify({ prospects: leadsNuevos, ciudad: 'Importación Manual' })
                             });
                             const responseData = await res.json();
 
