@@ -449,7 +449,7 @@
                 <div class="w-full lg:w-[30%] p-5 border-r border-emerald-100 overflow-y-auto bg-white flex flex-col gap-5 custom-scroll">
                     
                     <!-- NUEVA SECCIÓN: ESTADO TÁCTICO -->
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <div id="ficha-estado-tactico" class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
                         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-chess-knight"></i> Estado Táctico</h3>
                         
                         <div class="mb-3">
@@ -471,20 +471,39 @@
                     <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100">
                         <h3 class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-sack-dollar"></i> Acuerdo Comercial</h3>
                         
-                        <div class="flex gap-2 mb-1">
-                            <div class="w-1/3">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Valor Plan</label>
+                        <div class="grid grid-cols-12 gap-2 mb-3">
+                            <div class="col-span-5">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Valor Proyecto</label>
                                 <input type="number" id="ficha-monto-total" onchange="App.cliente.actualizarCampo('monto_total', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-2 text-xs font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500/20">
                             </div>
-                            <div class="w-1/3">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Adelanto</label>
-                                <input type="number" id="ficha-monto-pagado" onchange="App.cliente.actualizarCampo('monto_pagado', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-2 text-xs font-bold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500/20">
+                            <div class="col-span-4">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Mensualidad</label>
+                                <input type="number" id="ficha-monto-mantencion" onchange="App.cliente.actualizarCampo('monto_mantencion', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="$0" class="w-full bg-white border border-blue-200 rounded-lg px-2 py-2 text-xs font-bold text-blue-600 outline-none focus:ring-2 focus:ring-blue-500/20">
                             </div>
-                            <div class="w-1/3">
-                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Restante</label>
+                            <div class="col-span-3">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Día Pago</label>
+                                <input type="number" min="1" max="31" id="ficha-dia-pago" onchange="App.cliente.actualizarCampo('dia_pago', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="1-30" class="w-full bg-white border border-blue-200 rounded-lg px-1 py-2 text-xs font-bold text-blue-600 text-center outline-none focus:ring-2 focus:ring-blue-500/20">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 mb-1 bg-white p-2 rounded-xl border border-emerald-100">
+                            <div class="w-1/2">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Pagado (Adelanto)</label>
+                                <div class="relative">
+                                    <input type="number" id="ficha-monto-pagado" onchange="App.cliente.actualizarCampo('monto_pagado', this.value)" class="w-full bg-emerald-50 border border-emerald-200 rounded-lg pl-2 pr-6 py-2 text-xs font-bold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500/20">
+                                    <button onclick="document.getElementById('ficha-monto-pagado').value = ''; App.cliente.actualizarCampo('monto_pagado', 0); document.getElementById('ficha-monto-pagado').focus();" class="absolute right-1 top-1.5 text-slate-300 hover:text-red-400 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors" title="Borrar pago (Resetear)"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </div>
+                            <div class="w-1/2">
+                                <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Proyectado (Restante)</label>
                                 <input type="text" id="ficha-saldo-pendiente" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg px-2 py-2 text-xs font-bold text-red-500 outline-none mb-1">
-                                <input type="date" id="ficha-fecha-pago" onchange="App.cliente.actualizarCampo('fecha_proximo_pago', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-emerald-500" title="Fecha Probable de Pago">
+                                <input type="date" id="ficha-fecha-pago" onchange="App.cliente.actualizarCampo('fecha_proximo_pago', this.value)" class="w-full bg-white border border-emerald-200 rounded-lg px-2 py-1 text-[10px] font-bold text-slate-600 outline-none focus:ring-1 focus:ring-emerald-500" title="Fecha Límite de Proyecto">
                             </div>
+                        </div>
+
+                        <!-- Proyección Mensualidad (Visual) -->
+                        <div id="info-proxima-mensualidad" class="mt-2 bg-blue-50 border border-blue-100 rounded-lg p-2 flex items-center justify-center gap-2 hidden">
+                            <i class="fa-solid fa-calendar-check text-blue-500"></i> <span class="text-[10px] text-blue-600 font-bold">Cobro este mes: <span id="txt-proximo-cobro" class="text-blue-800">...</span></span>
                         </div>
                     </div>
 
@@ -628,7 +647,7 @@
                             <button onclick="App.ui.configurarPrompt()" class="text-[10px] text-slate-400 hover:text-blue-600 transition-colors flex items-center gap-1"><i class="fa-solid fa-gear"></i> Configurar IA</button>
                         </div>
                         
-                        <textarea id="historial-chat-input" onpaste="App.cliente.guardarHistorialPegado(event)" class="w-full h-32 p-4 rounded-xl border border-emerald-100 text-xs focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-emerald-50/30 placeholder-emerald-300 mb-3 font-mono" placeholder="Pega aquí la conversación de WhatsApp..."></textarea>
+                        <textarea id="historial-chat-input" onpaste="App.cliente.guardarHistorialPegado(event)" class="w-full h-44 p-4 rounded-xl border border-emerald-100 text-xs focus:ring-2 focus:ring-emerald-500 outline-none resize-none bg-emerald-50/30 placeholder-emerald-300 mb-3 font-mono" placeholder="Pega aquí la conversación de WhatsApp..."></textarea>
                         
                         <button id="btn-analizar-cierre" onclick="App.cliente.analizarCierre()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar Estrategia de Cierre
@@ -637,14 +656,6 @@
                         <div id="analysis-result" class="hidden mt-4 bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm text-slate-600 flex-1 overflow-y-auto"></div>
                     </div>
 
-                    <div class="border-t border-emerald-100 pt-4">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-bold text-teal-400 uppercase">Historial de Interacciones</span>
-                        </div>
-                        <div id="ficha-historial" class="space-y-3 pl-2 border-l-2 border-slate-100 ml-1 max-h-40 overflow-y-auto custom-scroll">
-                            <!-- Historial items -->
-                        </div>
-                    </div>
                 </div>
 
                 <!-- COLUMNA 3: SCRIPT Y ACCIONES (25%) -->
@@ -667,7 +678,23 @@
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-2 mt-4">
+                    <!-- Historial de Interacciones -->
+                    <div class="mt-4 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                        <div class="flex justify-between items-center px-3 py-2 border-b border-slate-100 bg-slate-50">
+                            <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest flex items-center gap-1.5">
+                                <i class="fa-solid fa-clock-rotate-left text-teal-400"></i> Historial
+                            </span>
+                            <button onclick="App.cliente.analizarCierre()" class="text-[9px] bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-1 rounded-lg font-bold hover:bg-emerald-100 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Analizar IA
+                            </button>
+                        </div>
+                        <div id="ficha-historial" class="space-y-2 p-3 max-h-52 overflow-y-auto custom-scroll">
+                            <!-- Historial items injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Botones Fase Venta -->
+                    <div id="acciones-venta" class="grid grid-cols-2 gap-2 mt-4">
                         <button onclick="App.cliente.accion('schedule')" class="py-3 bg-white border border-blue-200 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1">
                             <i class="fa-regular fa-calendar text-lg"></i>
                             <span class="text-[10px]">Agendar</span>
@@ -679,6 +706,25 @@
                         <button onclick="App.cliente.accion('lost')" class="py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1 col-span-2">
                             <i class="fa-solid fa-thumbs-down text-lg"></i>
                             <span class="text-[10px]">Descartar</span>
+                        </button>
+                    </div>
+
+                    <!-- Botones Cliente Activo -->
+                    <div id="acciones-cliente" class="hidden grid grid-cols-3 gap-2 mt-4">
+                        <!-- Botón 1: Ver Sitio Web -->
+                        <button class="py-3 bg-white border border-indigo-200 text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-colors flex flex-col items-center justify-center gap-1" title="Ver el sitio web del cliente">
+                            <i class="fa-solid fa-globe text-lg"></i>
+                            <span class="text-[10px]">Ver Sitio</span>
+                        </button>
+                        <!-- Botón 2: Renovar Plan -->
+                        <button class="py-3 bg-white border border-emerald-200 text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors flex flex-col items-center justify-center gap-1" title="Gestionar renovación del plan">
+                            <i class="fa-solid fa-rotate text-lg"></i>
+                            <span class="text-[10px]">Renovar</span>
+                        </button>
+                        <!-- Botón 3: Soporte Técnico -->
+                        <button class="py-3 bg-white border border-orange-200 text-orange-500 font-bold rounded-xl hover:bg-orange-50 transition-colors flex flex-col items-center justify-center gap-1" title="Abrir ticket de soporte técnico">
+                            <i class="fa-solid fa-headset text-lg"></i>
+                            <span class="text-[10px]">Soporte</span>
                         </button>
                     </div>
                 </div>
@@ -1274,6 +1320,9 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         setVal('ficha-rubro', extra.rubro);
                         setVal('ficha-url', extra.url);
                         setVal('ficha-notas', extra.notas);
+                        setVal('ficha-monto-mantencion', extra.monto_mantencion);
+                        setVal('ficha-dia-pago', extra.dia_pago);
+                        App.cliente.actualizarProyeccionMensual();
 
                         // 3.1 Cargar Encuesta Web (Si existe)
                         const web = extra.respuestas_web || {};
@@ -1301,14 +1350,24 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         // Info Financiera
                         const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
                         const fichaFinanciera = document.getElementById('ficha-financiera');
-                        if (fichaFinanciera) {
-                            if (lead.estado === 'cerrados') {
+                        const fichaTactico = document.getElementById('ficha-estado-tactico');
+                        const accionesVenta = document.getElementById('acciones-venta');
+                        const accionesCliente = document.getElementById('acciones-cliente');
+
+                        if (lead.estado === 'cerrados') {
+                            if (fichaFinanciera) {
                                 fichaFinanciera.classList.remove('hidden');
                                 setText('ficha-total', formatter.format(lead.monto_total || 0));
                                 setText('ficha-pagado', formatter.format(lead.monto_pagado || 0));
-                            } else {
-                                fichaFinanciera.classList.add('hidden');
                             }
+                            if (fichaTactico) fichaTactico.classList.add('hidden'); // Ocultar táctica en clientes cerrados
+                            if (accionesVenta) accionesVenta.classList.add('hidden'); // Ocultar botones de venta
+                            if (accionesCliente) accionesCliente.classList.remove('hidden'); // Mostrar botones de gestión
+                        } else {
+                            if (fichaFinanciera) fichaFinanciera.classList.add('hidden');
+                            if (fichaTactico) fichaTactico.classList.remove('hidden'); // Mostrar táctica en prospectos
+                            if (accionesVenta) accionesVenta.classList.remove('hidden'); // Mostrar botones de venta
+                            if (accionesCliente) accionesCliente.classList.add('hidden'); // Ocultar botones de gestión
                         }
 
                         const badge = document.getElementById('ficha-estado-badge');
@@ -1461,6 +1520,24 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                                 body: JSON.stringify(payload) 
                             });
                         } catch(e) { console.error("Error guardando campo extendido", e); }
+                    }
+                },
+                actualizarProyeccionMensual: () => {
+                    const dia = parseInt(document.getElementById('ficha-dia-pago').value);
+                    const monto = document.getElementById('ficha-monto-mantencion').value;
+                    const container = document.getElementById('info-proxima-mensualidad');
+                    const txt = document.getElementById('txt-proximo-cobro');
+
+                    if (dia && dia > 0 && dia <= 31 && monto) {
+                        const hoy = new Date();
+                        // Crear fecha para este mes con el día seleccionado
+                        const fechaCobro = new Date(hoy.getFullYear(), hoy.getMonth(), dia);
+                        
+                        const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+                        txt.innerText = fechaCobro.toLocaleDateString('es-CL', opciones);
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
                     }
                 },
                 guardarEncuestaWeb: async () => {
