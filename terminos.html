@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos de Uso y Licencia | TuSitioYa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #525659; font-family: 'Inter', sans-serif; }
+        .page {
+            background: white;
+            width: 21cm;
+            min-height: 29.7cm;
+            margin: 2rem auto;
+            padding: 2.5cm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            font-family: 'Merriweather', serif;
+            color: #333;
+            position: relative;
+        }
+        @media print {
+            body { background: white; margin: 0; }
+            .page { margin: 0; box-shadow: none; width: 100%; height: auto; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print fixed top-4 right-4 flex gap-2">
+        <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 font-bold text-sm">Descargar / Imprimir PDF</button>
+        <button onclick="window.close()" class="bg-gray-600 text-white px-4 py-2 rounded shadow hover:bg-gray-700 font-bold text-sm">Cerrar</button>
+    </div>
+
+    <div class="page">
+        <div class="text-center border-b-2 border-slate-800 pb-6 mb-8">
+            <h1 class="text-2xl font-bold uppercase tracking-widest text-slate-900">Términos de Uso y Licencia</h1>
+            <p class="text-sm text-slate-500 mt-2">Acuerdo de Desarrollo y Servicios Web</p>
+        </div>
+
+        <div class="text-sm leading-relaxed space-y-6 text-justify">
+            <p>
+                En Santiago de Chile, a <span id="fecha-actual" class="font-bold">...</span>, se establecen los siguientes términos entre <strong>TuSitioYa</strong> (el "Proveedor") y <strong id="cliente-nombre">...</strong> (el "Cliente"), identificado con RUT <span id="cliente-rut">...</span>.
+            </p>
+
+            <h3 class="font-bold text-slate-900 text-base mt-6">1. OBJETO DEL SERVICIO</h3>
+            <p>
+                El Proveedor se compromete a desarrollar, configurar y poner en marcha un sitio web autoadministrable o landing page según las especificaciones acordadas en la Hoja de Ruta digital.
+            </p>
+
+            <h3 class="font-bold text-slate-900 text-base mt-6">2. PROPIEDAD INTELECTUAL Y LICENCIA</h3>
+            <p>
+                Una vez cancelado el 100% del valor del proyecto, el Cliente obtiene una licencia de uso perpetua sobre el diseño y contenido del sitio web. El código fuente base y la infraestructura tecnológica permanecen como propiedad intelectual del Proveedor o de sus respectivos licenciantes open-source.
+            </p>
+
+            <h3 class="font-bold text-slate-900 text-base mt-6">3. PLAZOS Y ENTREGAS</h3>
+            <p>
+                El proyecto se desarrollará siguiendo las etapas descritas en la Hoja de Ruta. Los plazos estimados pueden variar dependiendo de la entrega de material (imágenes, textos) por parte del Cliente.
+            </p>
+
+            <h3 class="font-bold text-slate-900 text-base mt-6">4. PAGOS Y MANTENCIÓN</h3>
+            <p>
+                El Cliente acuerda pagar el saldo restante al momento de la entrega final. Los servicios de mantención mensual, hosting y soporte técnico tienen un valor recurrente acordado previamente, pagadero los días <span id="dia-pago">5</span> de cada mes.
+            </p>
+
+            <h3 class="font-bold text-slate-900 text-base mt-6">5. GARANTÍA</h3>
+            <p>
+                Se ofrece una garantía técnica de 30 días post-lanzamiento para corregir cualquier error de programación imputable al Proveedor sin costo adicional.
+            </p>
+        </div>
+
+        <div class="mt-20 flex justify-between items-end">
+            <div class="text-center w-5/12">
+                <div class="border-b border-slate-400 mb-2 h-10"></div>
+                <p class="font-bold text-xs uppercase">Por TuSitioYa</p>
+                <p class="text-[10px] text-slate-500">Alexis Ferrada</p>
+            </div>
+            <div class="text-center w-5/12">
+                <div class="border-b border-slate-400 mb-2 h-10"></div>
+                <p class="font-bold text-xs uppercase">Por El Cliente</p>
+                <p id="firma-cliente" class="text-[10px] text-slate-500">...</p>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-0 right-0 text-center">
+            <p class="text-[10px] text-slate-400">Documento generado digitalmente por TuSitioYa OS v2.0</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            const fecha = new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' });
+            document.getElementById('fecha-actual').innerText = fecha;
+
+            if(id) {
+                try {
+                    const res = await fetch(`/api/clientes/${id}`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        document.getElementById('cliente-nombre').innerText = data.negocio || data.nombre || "El Cliente";
+                        document.getElementById('cliente-rut').innerText = data.rut || "N/A";
+                        document.getElementById('firma-cliente').innerText = data.nombre || "Representante Legal";
+                        
+                        if(data.encuesta_data && data.encuesta_data.dia_pago) {
+                            document.getElementById('dia-pago').innerText = data.encuesta_data.dia_pago;
+                        }
+                        document.title = `Términos - ${data.negocio}`;
+                    }
+                } catch(e) { console.error(e); }
+            }
+        });
+    </script>
+</body>
+</html>
