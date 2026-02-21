@@ -18,12 +18,15 @@ app.use(express.static(__dirname)); // Servir archivos estáticos (HTML, etc.)
 
 // Verificación rápida: Asegurar que la variable de entorno existe
 if (!process.env.DATABASE_URL) {
-  console.error("❌ ERROR CRÍTICO: No se encontró la variable DATABASE_URL en el archivo .env");
-  console.error("   -> Asegúrate de crear el archivo .env y definir tu conexión a Neon.");
+  console.error("❌ ERROR CRÍTICO: No se encontró la variable de entorno DATABASE_URL.");
+  console.error("   -> En Local: Verifica que exista en tu archivo .env");
+  console.error("   -> En Render: Agrégala en la sección 'Environment Variables' del dashboard.");
   process.exit(1);
 }
 if (!process.env.GEMINI_API_KEY) {
-  console.error("❌ ERROR CRÍTICO: No se encontró la variable GEMINI_API_KEY en el archivo .env");
+  console.error("❌ ERROR CRÍTICO: No se encontró la variable de entorno GEMINI_API_KEY.");
+  console.error("   -> En Local: Verifica que exista en tu archivo .env");
+  console.error("   -> En Render: Agrégala en la sección 'Environment Variables' del dashboard.");
   process.exit(1);
 }
 
