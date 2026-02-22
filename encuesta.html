@@ -251,8 +251,8 @@
     const clienteId = urlParams.get('id');
 
     if (clienteId) {
-        const displayId = "TSY-" + clienteId.padStart(4, '0');
-        document.getElementById('idDisplay').innerText = displayId;
+        // Si el ID ya viene con el formato TSY-XXXX-XXXX lo usamos directo, sino lo formateamos
+        document.getElementById('idDisplay').innerText = clienteId.includes('TSY-') ? clienteId : "TSY-" + clienteId.padStart(4, '0');
         document.getElementById('idInput').value = clienteId;
     } else {
         document.getElementById('idDisplay').innerText = "ID NO VÁLIDO";

@@ -10,6 +10,13 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Función para generar un código profesional único (Ej: TSY-A7B2-9X1P)
+function generarCodigoSeguimiento() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sin O, I, 0, 1 para evitar confusión
+  const gen = (len) => Array.from({length: len}, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+  return `TSY-${gen(4)}-${gen(4)}`;
+}
+
 // Middleware
 app.use(cors()); // Permite que tu HTML local se conecte aquí
 app.use(express.json());
@@ -157,7 +164,8 @@ app.get('/api/clientes/:id', async (req, res) => {
   let client;
   try {
     client = await pool.connect();
-    const result = await client.query('SELECT * FROM clientes WHERE id = $1', [id]);
+    // Permite buscar por ID numérico o por el nuevo Código de Seguimiento
+    const result = await client.query('SELECT * FROM clientes WHERE id::text = $1 OR codigo_seguimiento = $1', [id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Cliente no encontrado' });
@@ -325,12 +333,13 @@ app.post('/api/prospectos/bulk', async (req, res) => {
             url: url
         };
 
+        const codigo = generarCodigoSeguimiento();
         const query = `
-          INSERT INTO clientes (nombre, negocio, whatsapp, dominio, monto_total, estado, propuesta_text, ciudad, rut, encuesta_data, created_at)
-          VALUES ($1, $2, $3, $4, $5, 'prospecto', $6, $7, $8, $9, NOW())
+          INSERT INTO clientes (nombre, negocio, whatsapp, dominio, monto_total, estado, propuesta_text, ciudad, rut, encuesta_data, codigo_seguimiento, created_at)
+          VALUES ($1, $2, $3, $4, $5, 'prospecto', $6, $7, $8, $9, $10, NOW())
           RETURNING *
         `;
-        const resDB = await client.query(query, [nombre, negocio, whatsapp, dominio, 72000, propuesta, ciudad, rut, encuestaData]);
+        const resDB = await client.query(query, [nombre, negocio, whatsapp, dominio, 72000, propuesta, ciudad, rut, encuestaData, codigo]);
         guardados.push(resDB.rows[0]);
       } catch (err) {
         console.error('❌ Error al insertar prospecto:', p.negocio);
@@ -370,18 +379,19 @@ app.post('/api/clientes', async (req, res) => {
         rubro: rubro || null,
         url: url || null
     };
-
+    
+    const codigo = generarCodigoSeguimiento();
     const query = `
-      INSERT INTO clientes (nombre, rut, negocio, whatsapp, dominio, monto_total, monto_pagado, propuesta_text, encuesta_data)
-      VALUES ($1, $2, $3, $4, $5, $6, 0, $7, $8)
+      INSERT INTO clientes (nombre, rut, negocio, whatsapp, dominio, monto_total, monto_pagado, propuesta_text, encuesta_data, codigo_seguimiento, estado, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, 0, $7, $8, $9, 'prospecto', NOW())
       RETURNING *
     `;
-    const values = [nombre, rut, negocio, whatsapp, dominio, monto_total, propuesta_text, encuestaData];
+    const values = [nombre, rut, negocio, whatsapp, dominio, monto_total, propuesta_text, encuestaData, codigo];
     const result = await client.query(query, values);
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error al crear cliente' });
+    res.status(500).json({ error: `Error al crear cliente: ${err.message}` });
   } finally {
     if (client) client.release();
   }
@@ -391,7 +401,7 @@ app.post('/api/clientes', async (req, res) => {
 app.put('/api/clientes/:id', async (req, res) => {
   const { id } = req.params;
   const { 
-      monto_total, monto_pagado, whatsapp, nombre, negocio, dominio, 
+      monto_total, monto_pagado, whatsapp, nombre, negocio, dominio, fecha_agendada,
       fecha_proximo_pago, monto_mantencion, rut, propuesta_text,
       email, rubro, url, // from encuesta_data
       respuestas_web, // Nuevo campo para la encuesta de 7 preguntas
@@ -413,6 +423,7 @@ app.put('/api/clientes/:id', async (req, res) => {
     if (negocio !== undefined) { setClauses.push(`negocio = $${paramIndex++}`); params.push(negocio); }
     if (dominio !== undefined) { setClauses.push(`dominio = $${paramIndex++}`); params.push(dominio); }
     if (fecha_proximo_pago !== undefined) { setClauses.push(`fecha_proximo_pago = $${paramIndex++}`); params.push(fecha_proximo_pago); }
+    if (fecha_agendada !== undefined) { setClauses.push(`fecha_seguimiento = $${paramIndex++}`); params.push(fecha_agendada); }
     if (rut !== undefined) { setClauses.push(`rut = $${paramIndex++}`); params.push(rut); }
     if (propuesta_text !== undefined) { setClauses.push(`propuesta_text = $${paramIndex++}`); params.push(propuesta_text); }
 
@@ -777,6 +788,15 @@ async function startServer() {
     // 1. Probar conexión a la base de datos antes de iniciar
     const client = await pool.connect();
     console.log('✅ Base de Datos NEON conectada correctamente.');
+    
+    // AUTO-FIX: Crear columna faltante si no existe
+    try {
+      await client.query('ALTER TABLE clientes ADD COLUMN IF NOT EXISTS codigo_seguimiento TEXT UNIQUE');
+      console.log('🔧 Esquema verificado: Columna "codigo_seguimiento" lista.');
+    } catch (e) {
+      console.warn('⚠️ No se pudo verificar el esquema:', e.message);
+    }
+    
     client.release();
 
     // 2. Iniciar el servidor Express SOLO si la BD está OK

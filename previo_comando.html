@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -33,7 +33,7 @@
     </script>
 
     <style>
-        body { background: #ecfdf5; color: #064e3b; } /* Fondo Emerald-50 y texto verde oscuro */
+        body { background: #f0fdfa; color: #134e4a; } /* Fondo Teal-50 y texto Teal-900 para menor fatiga */
         
         .main-panel {
             background-color: #ffffff;
@@ -48,7 +48,7 @@
         .card-white {
             background: white;
             border-radius: 1rem;
-            box-shadow: 0 2px 5px rgba(16, 185, 129, 0.05); /* Sombra verdosa muy sutil */
+            box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.1); /* Sombra Teal suave */
             border: 1px solid #d1fae5; /* Borde Emerald-100 */
         }
 
@@ -247,7 +247,7 @@
                         <div class="bg-white/20 p-1.5 rounded-lg"><i class="fa-solid fa-headset text-white text-xs"></i></div>
                         <div class="text-left">
                             <p class="text-[10px] font-bold text-emerald-100 uppercase tracking-wider">Modo Focus</p>
-                            <p class="text-xs font-bold text-white">Iniciar Discador</p>
+                            <p class="text-xs font-bold text-white">Iniciar Discador <span id="btn-discador-count" class="ml-1 bg-white/20 px-1.5 py-0.5 rounded text-[10px]">0</span></p>
                         </div>
                     </div>
                     <i class="fa-solid fa-play text-white group-hover:animate-pulse"></i>
@@ -263,23 +263,30 @@
             </div>
 
             <div class="group">
+                <div onclick="App.ui.toggleAccordion('discador')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100">
+                    <div class="flex items-center gap-2"><span class="text-teal-600 text-xs">📞</span><span class="text-xs font-bold text-teal-800">Cola Discador</span></div>
+                    <span id="badge-discador" class="bg-teal-100 text-teal-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div id="list-discador" class="accordion-content pl-2 open ml-2 border-l-2 border-emerald-100"></div>
+            </div>
+            <div class="group">
                 <div onclick="App.ui.toggleAccordion('nuevos')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100">
-                    <div class="flex items-center gap-2"><span class="text-orange-500 text-xs">🔥</span><span class="text-xs font-bold text-teal-800">Nuevos Leads</span></div>
-                    <span id="badge-nuevos" class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    <div class="flex items-center gap-2"><span class="text-emerald-500 text-xs">🌱</span><span class="text-xs font-bold text-teal-800">Nuevos Leads</span></div>
+                    <span id="badge-nuevos" class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 <div id="list-nuevos" class="accordion-content pl-2 open ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
                 <div onclick="App.ui.toggleAccordion('whatsapp_enviado')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
-                    <div class="flex items-center gap-2"><span class="text-yellow-500 text-xs">⏳</span><span class="text-xs font-bold text-teal-800">Esperando (Enviado)</span></div>
-                    <span id="badge-whatsapp_enviado" class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    <div class="flex items-center gap-2"><span class="text-lime-500 text-xs">⏳</span><span class="text-xs font-bold text-teal-800">Esperando (Enviado)</span></div>
+                    <span id="badge-whatsapp_enviado" class="bg-lime-100 text-lime-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 <div id="list-whatsapp_enviado" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
             <div class="group">
                 <div onclick="App.ui.toggleAccordion('seguimiento')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
-                    <div class="flex items-center gap-2"><span class="text-blue-500 text-xs">💬</span><span class="text-xs font-bold text-teal-800">En Conversación</span></div>
-                    <span id="badge-seguimiento" class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    <div class="flex items-center gap-2"><span class="text-cyan-500 text-xs">💬</span><span class="text-xs font-bold text-teal-800">En Conversación</span></div>
+                    <span id="badge-seguimiento" class="bg-cyan-100 text-cyan-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 <div id="list-seguimiento" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
@@ -292,14 +299,14 @@
             </div>
             <div class="group">
                 <div onclick="App.ui.toggleAccordion('cerrados')" class="flex items-center justify-between p-2 rounded-lg hover:bg-white cursor-pointer transition-colors border border-transparent hover:border-emerald-100 opacity-90">
-                    <div class="flex items-center gap-2"><span class="text-emerald-500 text-xs">🚀</span><span class="text-xs font-bold text-teal-800">Clientes Activos</span></div>
-                    <span id="badge-cerrados" class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
+                    <div class="flex items-center gap-2"><span class="text-green-600 text-xs">🌳</span><span class="text-xs font-bold text-teal-800">Clientes Activos</span></div>
+                    <span id="badge-cerrados" class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
                 <div id="list-cerrados" class="accordion-content pl-2 ml-2 border-l-2 border-emerald-100"></div>
             </div>
              <div class="group">
                 <div class="flex items-center justify-between p-2 rounded-lg border border-transparent opacity-70">
-                    <div class="flex items-center gap-2"><span class="text-red-300 text-xs">🗑️</span><span class="text-xs font-bold text-teal-800">Descartados</span></div>
+                    <div class="flex items-center gap-2"><span class="text-slate-400 text-xs">🍂</span><span class="text-xs font-bold text-teal-800">Descartados</span></div>
                     <span id="badge-descartados" class="bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full">0</span>
                 </div>
             </div>
@@ -332,12 +339,9 @@
         </div>
 
         <div class="zen-hidden w-full text-left mt-6">
-            <div class="flex justify-between items-center mb-3">
-                <div>
-                    <h2 class="text-lg font-bold text-teal-800">Conversión Global</h2>
-                    <p class="text-[10px] text-teal-500 uppercase tracking-widest">Efectividad de Cierre</p>
-                </div>
-                <div id="conversion-filtros" class="flex bg-emerald-100 p-1 rounded-lg border border-emerald-200">
+            <div class="flex flex-col gap-2 mb-3">
+                <h2 class="text-lg font-bold text-teal-800">Conversión Global</h2>
+                <div id="conversion-filtros" class="flex bg-emerald-100 p-1 rounded-lg border border-emerald-200 self-start">
                     <button onclick="App.conversion.cambiarPeriodo('hoy')" class="conversion-btn-filtro active">Hoy</button>
                     <button onclick="App.conversion.cambiarPeriodo('ayer')" class="conversion-btn-filtro">Ayer</button>
                     <button onclick="App.conversion.cambiarPeriodo('semana')" class="conversion-btn-filtro">Semana</button>
@@ -351,12 +355,12 @@
                     <div id="chart-conv-total" class="h-8 w-full mt-2"></div>
                 </div>
                 <div class="card-white p-3">
-                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Efectividad vs. En Conversación</span><span id="conv-vs-conversando" class="text-lg font-black text-blue-600">0%</span></div>
-                    <p id="conv-vs-conversando-detalle" class="text-[9px] text-slate-400">0 cerrados de 0 en seguimiento</p>
-                    <div id="chart-conv-conversando" class="h-8 w-full mt-2"></div>
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Programados vs. Recibidos Hoy</span><span id="conv-vs-programados" class="text-lg font-black text-teal-600">0%</span></div>
+                    <p id="conv-vs-programados-detalle" class="text-[9px] text-slate-400">0 programados de 0 recibidos</p>
+                    <div id="chart-conv-programados" class="h-8 w-full mt-2"></div>
                 </div>
                 <div class="card-white p-3">
-                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Meta Mensual de Cierres</span><span id="conv-vs-meta" class="text-lg font-black text-purple-600">0%</span></div>
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Meta Mensual de Cierres</span><span id="conv-vs-meta" class="text-lg font-black text-emerald-600">0%</span></div>
                     <p id="conv-vs-meta-detalle" class="text-[9px] text-slate-400">0 cerrados de 3 este mes</p>
                     <div id="chart-conv-meta" class="h-8 w-full mt-2"></div>
                 </div>
@@ -365,43 +369,43 @@
 
         <div class="zen-hidden w-full space-y-3 mt-4">
             <div class="card-white p-2 flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Leads Totales</span><span id="metric-total" class="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-1 rounded-md">0</span></div>
-            <div class="card-white p-2 flex justify-between items-center"><span class="text-xs font-bold text-blue-600">En Conversación</span><span id="metric-validos" class="bg-blue-100 text-blue-700 text-xs font-black px-2 py-1 rounded-md">0</span></div>
+            <div class="card-white p-2 flex justify-between items-center"><span class="text-xs font-bold text-cyan-600">En Conversación</span><span id="metric-validos" class="bg-cyan-100 text-cyan-700 text-xs font-black px-2 py-1 rounded-md">0</span></div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col gap-4 w-full h-auto lg:h-full overflow-visible lg:overflow-hidden order-1 lg:order-2">
         <div class="main-panel p-4 lg:p-6 transition-all duration-300" id="dashboard-panel">
             <div class="flex justify-between items-center cursor-pointer" onclick="App.ui.toggleDashboard()">
-                <h2 class="text-xl font-bold text-blue-700 tracking-tight">Dashboard Financiero</h2>
-                <i id="dashboard-chevron" class="fa-solid fa-chevron-up text-slate-400 transition-transform"></i>
+                <h2 class="text-xl font-bold text-teal-700 tracking-tight">Dashboard Financiero</h2>
+                <i id="dashboard-chevron" class="fa-solid fa-chevron-up text-teal-400 transition-transform"></i>
             </div>
             <div id="dashboard-content" class="flex flex-col lg:flex-row gap-4 lg:gap-6 mt-4 overflow-hidden transition-all duration-300">
                 <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-emerald-500 relative overflow-hidden hover:shadow-lg hover:shadow-emerald-500/30 transition-all duration-300">
                     <div class="absolute right-0 bottom-0 text-7xl text-emerald-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-chart-line"></i></div>
-                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">VENTAS DEL MES</p>
-                    <p id="finanza-ventas-mes" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
+                    <p class="text-[9px] font-bold text-emerald-600/70 uppercase tracking-wider">VENTAS DEL MES</p>
+                    <p id="finanza-ventas-mes" class="text-2xl font-bold text-emerald-900 relative z-10">$0</p>
                     <p class="text-[9px] text-emerald-500 font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> <span id="count-ventas-mes">0</span> Cierres</p>
                 </div>
-                <div onclick="App.ui.mostrarEntregasHoy()" class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-blue-500 relative overflow-hidden hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 cursor-pointer">
-                    <div class="absolute right-0 bottom-0 text-7xl text-blue-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-calendar-check"></i></div>
-                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">ENTREGAS HOY</p>
+                <div onclick="App.ui.mostrarEntregasHoy()" class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-teal-500 relative overflow-hidden hover:shadow-lg hover:shadow-teal-500/30 transition-all duration-300 cursor-pointer">
+                    <div class="absolute right-0 bottom-0 text-7xl text-teal-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-calendar-check"></i></div>
+                    <p class="text-[9px] font-bold text-teal-600/70 uppercase tracking-wider">ENTREGAS HOY</p>
                     <div class="flex items-baseline gap-1 relative z-10">
-                        <p id="finanza-entregas-hoy" class="text-2xl font-bold text-slate-800">0</p>
-                        <span class="text-xs text-slate-500 font-bold">Proyectos</span>
+                        <p id="finanza-entregas-hoy" class="text-2xl font-bold text-teal-900">0</p>
+                        <span class="text-xs text-teal-600 font-bold">Proyectos</span>
                     </div>
-                    <p class="text-[9px] text-blue-400 font-bold">Por cobrar: <span id="finanza-proyeccion">$0</span></p>
+                    <p class="text-[9px] text-teal-500 font-bold">Por cobrar: <span id="finanza-proyeccion">$0</span></p>
                 </div>
-                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-orange-500 relative overflow-hidden hover:shadow-lg hover:shadow-orange-500/30 transition-all duration-300">
-                    <div class="absolute right-0 bottom-0 text-7xl text-orange-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-sack-dollar"></i></div>
-                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">CAJA REAL</p>
-                    <p id="finanza-caja-real" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
-                    <p class="text-[9px] text-orange-400 font-bold">Recaudado este mes</p>
+                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-cyan-500 relative overflow-hidden hover:shadow-lg hover:shadow-cyan-500/30 transition-all duration-300">
+                    <div class="absolute right-0 bottom-0 text-7xl text-cyan-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <p class="text-[9px] font-bold text-cyan-600/70 uppercase tracking-wider">CAJA REAL</p>
+                    <p id="finanza-caja-real" class="text-2xl font-bold text-cyan-900 relative z-10">$0</p>
+                    <p class="text-[9px] text-cyan-500 font-bold">Recaudado este mes</p>
                 </div>
-                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-purple-500 relative overflow-hidden hover:shadow-lg hover:shadow-purple-500/30 transition-all duration-300">
-                    <div class="absolute right-0 bottom-0 text-7xl text-purple-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-receipt"></i></div>
-                    <p class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">TICKET PROMEDIO</p>
-                    <p id="finanza-ticket" class="text-2xl font-bold text-slate-800 relative z-10">$0</p>
-                    <p class="text-[9px] text-purple-400 font-bold">Valor medio venta</p>
+                <div class="card-white p-4 w-full lg:w-1/4 flex flex-col justify-between border-l-4 border-l-lime-500 relative overflow-hidden hover:shadow-lg hover:shadow-lime-500/30 transition-all duration-300">
+                    <div class="absolute right-0 bottom-0 text-7xl text-lime-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-receipt"></i></div>
+                    <p class="text-[9px] font-bold text-lime-600/70 uppercase tracking-wider">TICKET PROMEDIO</p>
+                    <p id="finanza-ticket" class="text-2xl font-bold text-lime-900 relative z-10">$0</p>
+                    <p class="text-[9px] text-lime-500 font-bold">Valor medio venta</p>
                 </div>
             </div>
         </div>
@@ -439,12 +443,14 @@
                 </span>
                 <div class="flex items-center gap-3">
                     <span class="text-xs font-mono text-emerald-100" id="discador-counter">1 / 10</span>
+                    <span class="text-xs font-bold text-orange-200 bg-orange-900/30 px-2 py-0.5 rounded hidden" id="discador-intentos">Msg: 0</span>
+                    <button onclick="App.discador.posponer()" class="bg-yellow-500/20 hover:bg-yellow-500/40 text-yellow-100 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2 border border-yellow-500/30">Posponer 1h <i class="fa-solid fa-clock"></i></button>
                     <button onclick="App.discador.siguiente()" class="bg-white/20 hover:bg-white/30 text-white px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">Saltar <i class="fa-solid fa-forward"></i></button>
                     <button onclick="App.discador.detener()" class="text-white/60 hover:text-white px-2"><i class="fa-solid fa-xmark text-lg"></i></button>
                 </div>
             </div>
 
-            <div class="bg-teal-900 p-5 text-white flex justify-between items-start shrink-0">
+            <div class="bg-[#0f3d3e] p-5 text-white flex justify-between items-start shrink-0">
                 <div class="flex-1">
                     <div class="flex items-center gap-3 mb-1">
                         <h2 id="header-negocio" class="text-2xl font-bold">...</h2>
@@ -453,14 +459,14 @@
                     </div>
                     <div class="flex gap-4 text-sm text-slate-400">
                         <p id="header-nombre"><i class="fa-solid fa-user mr-1"></i> ...</p>
-                        <p id="header-telefono" class="font-mono"><i class="fa-brands fa-whatsapp mr-1"></i> ...</p>
+                        <p id="header-telefono" class="font-mono text-emerald-300"><i class="fa-brands fa-whatsapp mr-1"></i> ...</p>
                     </div>
                 </div>
                 
                 <div id="ficha-financiera" class="hidden mr-6 text-right">
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ESTADO FINANCIERO</p>
                     <p class="text-xl font-bold text-emerald-400"><span id="ficha-pagado">$0</span> <span class="text-xs text-slate-500 font-normal">pagado</span></p>
-                    <p class="text-xs text-slate-400">de <span id="ficha-total">$0</span> total</p>
+                    <p class="text-xs text-slate-400">de <span id="ficha-total" class="text-slate-300">$0</span> total</p>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -469,10 +475,10 @@
                 </div>
             </div>
             
-            <div class="flex-1 overflow-hidden flex flex-col lg:flex-row bg-slate-50">
+            <div class="flex-1 overflow-hidden flex flex-col lg:flex-row bg-[#f8fafc]">
                 
                 <!-- COLUMNA 1: DATOS, TÁCTICA Y FINANZAS (30%) -->
-                <div class="w-full lg:w-[30%] p-5 border-r border-emerald-100 overflow-y-auto bg-white flex flex-col gap-5 custom-scroll">
+                <div class="w-full lg:w-[30%] p-5 border-r border-emerald-100 overflow-y-auto bg-white/80 flex flex-col gap-5 custom-scroll">
                     
                     <!-- NUEVA SECCIÓN: ESTADO TÁCTICO -->
                     <div id="ficha-estado-tactico" class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
@@ -489,25 +495,25 @@
                         
                         <div>
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Notas Rápidas</label>
-                            <textarea id="ficha-notas" onchange="App.cliente.actualizarCampo('notas', this.value)" rows="2" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 resize-none" placeholder="Ej: Hablar con secretaria, llamar martes..."></textarea>
+                            <textarea id="ficha-notas" onfocus="App.discador.togglePausa(true)" onblur="App.discador.togglePausa(false)" onchange="App.cliente.actualizarCampo('notas', this.value)" rows="2" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-100 resize-none" placeholder="Ej: Hablar con secretaria, llamar martes..."></textarea>
                         </div>
                     </div>
                     
                     <!-- NUEVO: CONTROL DE PROYECTO (HOJA DE RUTA TÉCNICA) -->
-                    <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                        <h3 class="text-xs font-bold text-blue-600 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-bars-progress"></i> Control de Proyecto</h3>
+                    <div class="bg-cyan-50 p-4 rounded-2xl border border-cyan-100">
+                        <h3 class="text-xs font-bold text-cyan-700 uppercase tracking-widest mb-3 flex items-center gap-2"><i class="fa-solid fa-bars-progress"></i> Control de Proyecto</h3>
                         
                         <div class="mb-3">
                             <div class="flex justify-between mb-1">
                                 <label class="text-[9px] font-bold text-slate-400 uppercase">Avance General</label>
-                                <span id="lbl-progreso" class="text-[10px] font-bold text-blue-600">0%</span>
+                                <span id="lbl-progreso" class="text-[10px] font-bold text-cyan-600">0%</span>
                             </div>
-                            <input type="range" id="ficha-progreso" min="0" max="100" step="5" oninput="document.getElementById('lbl-progreso').innerText = this.value + '%'" onchange="App.cliente.actualizarCampo('progreso', this.value)" class="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                            <input type="range" id="ficha-progreso" min="0" max="100" step="5" oninput="document.getElementById('lbl-progreso').innerText = this.value + '%'" onchange="App.cliente.actualizarCampo('progreso', this.value)" class="w-full h-2 bg-cyan-200 rounded-lg appearance-none cursor-pointer accent-cyan-600">
                         </div>
 
                         <div class="mb-3">
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Fase Actual</label>
-                            <select id="ficha-fase" onchange="App.cliente.actualizarCampo('fase_actual', this.value)" class="w-full bg-white border border-blue-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none font-bold">
+                            <select id="ficha-fase" onchange="App.cliente.actualizarCampo('fase_actual', this.value)" class="w-full bg-white border border-cyan-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none font-bold">
                                 <option value="Inicio del Proyecto">🚀 Inicio del Proyecto</option>
                                 <option value="Infraestructura y Configuración">⚙️ Infraestructura y Configuración</option>
                                 <option value="Arquitectura de Base de Datos">🗄️ Arquitectura de Base de Datos</option>
@@ -521,14 +527,14 @@
 
                         <div>
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1"><i class="fa-brands fa-google-drive"></i> Carpeta Google Drive (Nube)</label>
-                            <input type="text" id="ficha-drive" onchange="App.cliente.actualizarCampo('drive_link', this.value)" placeholder="https://drive.google.com/..." class="w-full bg-white border border-blue-200 rounded-lg px-2 py-1.5 text-xs text-blue-600 outline-none">
+                            <input type="text" id="ficha-drive" onchange="App.cliente.actualizarCampo('drive_link', this.value)" placeholder="https://drive.google.com/..." class="w-full bg-white border border-cyan-200 rounded-lg px-2 py-1.5 text-xs text-cyan-600 outline-none">
                         </div>
 
                         <!-- NUEVO: GENERADOR DE RUTA IA -->
-                        <div class="mt-3 pt-3 border-t border-blue-200">
+                        <div class="mt-3 pt-3 border-t border-cyan-200">
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Personalización de Ruta</label>
-                            <textarea id="txt-ruta-custom" rows="2" class="w-full bg-white border border-blue-200 rounded-lg px-2 py-1.5 text-xs text-slate-600 outline-none mb-2 resize-none" placeholder="Instrucciones extra o Prompt externo..."></textarea>
-                            <button onclick="App.cliente.generarHojaRutaIA()" id="btn-ruta-ia" class="w-full py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-lg text-[10px] font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                            <textarea id="txt-ruta-custom" rows="2" class="w-full bg-white border border-cyan-200 rounded-lg px-2 py-1.5 text-xs text-slate-600 outline-none mb-2 resize-none" placeholder="Instrucciones extra o Prompt externo..."></textarea>
+                            <button onclick="App.cliente.generarHojaRutaIA()" id="btn-ruta-ia" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white rounded-lg text-[10px] font-bold shadow-md transition-all flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> Generar Ruta Única con IA
                             </button>
                             <p class="text-[9px] text-slate-400 mt-1 text-center">Crea pasos específicos según el rubro o tus instrucciones.</p>
@@ -546,11 +552,11 @@
                             </div>
                             <div class="col-span-4">
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Mensualidad</label>
-                                <input type="number" id="ficha-monto-mantencion" onchange="App.cliente.actualizarCampo('monto_mantencion', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="$0" class="w-full bg-white border border-blue-200 rounded-lg px-2 py-2 text-xs font-bold text-blue-600 outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <input type="number" id="ficha-monto-mantencion" onchange="App.cliente.actualizarCampo('monto_mantencion', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="$0" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-2 text-xs font-bold text-teal-600 outline-none focus:ring-2 focus:ring-teal-500/20">
                             </div>
                             <div class="col-span-3">
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Día Pago</label>
-                                <input type="number" min="1" max="31" id="ficha-dia-pago" onchange="App.cliente.actualizarCampo('dia_pago', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="1-30" class="w-full bg-white border border-blue-200 rounded-lg px-1 py-2 text-xs font-bold text-blue-600 text-center outline-none focus:ring-2 focus:ring-blue-500/20">
+                                <input type="number" min="1" max="31" id="ficha-dia-pago" onchange="App.cliente.actualizarCampo('dia_pago', this.value); App.cliente.actualizarProyeccionMensual();" placeholder="1-30" class="w-full bg-white border border-teal-200 rounded-lg px-1 py-2 text-xs font-bold text-teal-600 text-center outline-none focus:ring-2 focus:ring-teal-500/20">
                             </div>
                         </div>
 
@@ -570,8 +576,8 @@
                         </div>
 
                         <!-- Proyección Mensualidad (Visual) -->
-                        <div id="info-proxima-mensualidad" class="mt-2 bg-blue-50 border border-blue-100 rounded-lg p-2 flex items-center justify-center gap-2 hidden">
-                            <i class="fa-solid fa-calendar-check text-blue-500"></i> <span class="text-[10px] text-blue-600 font-bold">Cobro este mes: <span id="txt-proximo-cobro" class="text-blue-800">...</span></span>
+                        <div id="info-proxima-mensualidad" class="mt-2 bg-teal-50 border border-teal-100 rounded-lg p-2 flex items-center justify-center gap-2 hidden">
+                            <i class="fa-solid fa-calendar-check text-teal-500"></i> <span class="text-[10px] text-teal-600 font-bold">Cobro este mes: <span id="txt-proximo-cobro" class="text-teal-800">...</span></span>
                         </div>
                     </div>
 
@@ -579,18 +585,18 @@
                     <div class="space-y-3 pb-4">
                         <div class="flex justify-between items-center">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-address-card"></i> Datos del Cliente</h3>
-                            <button onclick="App.cliente.actualizarDatosContacto()" class="text-[10px] bg-blue-50 text-blue-600 px-2 py-1 rounded hover:bg-blue-100 font-bold transition-colors">Actualizar Datos</button>
+                            <button onclick="App.cliente.actualizarDatosContacto()" class="text-[10px] bg-teal-50 text-teal-600 px-2 py-1 rounded hover:bg-teal-100 font-bold transition-colors">Actualizar Datos</button>
                         </div>
                         
                         <!-- Campos Básicos -->
                         <div class="grid grid-cols-1 gap-3">
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Nombre Negocio</label>
-                                <input type="text" id="ficha-negocio" onchange="App.cliente.actualizarCampo('negocio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-blue-400 focus:bg-blue-50/30 transition-colors">
+                                <input type="text" id="ficha-negocio" onchange="App.cliente.actualizarCampo('negocio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 outline-none focus:border-teal-400 focus:bg-teal-50/30 transition-colors">
                             </div>
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Nombre Contacto</label>
-                                <input type="text" id="ficha-nombre" onchange="App.cliente.actualizarCampo('nombre', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-blue-50/30 transition-colors">
+                                <input type="text" id="ficha-nombre" onchange="App.cliente.actualizarCampo('nombre', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-teal-400 focus:bg-teal-50/30 transition-colors">
                             </div>
                         </div>
 
@@ -598,56 +604,56 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">RUT / ID Fiscal</label>
-                                <input type="text" id="ficha-rut" onchange="App.cliente.actualizarCampo('rut', this.value)" placeholder="12.345.678-9" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                                <input type="text" id="ficha-rut" onchange="App.cliente.actualizarCampo('rut', this.value)" placeholder="12.345.678-9" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-teal-400 focus:bg-white transition-colors">
                             </div>
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Rubro / Industria</label>
-                                <input type="text" id="ficha-rubro" onchange="App.cliente.actualizarCampo('rubro', this.value)" placeholder="Ej: Legal, Salud..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                                <input type="text" id="ficha-rubro" onchange="App.cliente.actualizarCampo('rubro', this.value)" placeholder="Ej: Legal, Salud..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-teal-400 focus:bg-white transition-colors">
                             </div>
                         </div>
 
                         <div>
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Correo Electrónico</label>
-                            <input type="email" id="ficha-email" onchange="App.cliente.actualizarCampo('email', this.value)" placeholder="contacto@empresa.cl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                            <input type="email" id="ficha-email" onchange="App.cliente.actualizarCampo('email', this.value)" placeholder="contacto@empresa.cl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-600 outline-none focus:border-teal-400 focus:bg-white transition-colors">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">WhatsApp</label>
-                                <input type="text" id="ficha-whatsapp" onchange="App.cliente.actualizarCampo('whatsapp', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                                <input type="text" id="ficha-whatsapp" onchange="App.cliente.actualizarCampo('whatsapp', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-600 outline-none focus:border-teal-400 focus:bg-white transition-colors">
                             </div>
                             <div>
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Dominio .CL</label>
-                                <input type="text" id="ficha-dominio" onchange="App.cliente.actualizarCampo('dominio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-indigo-600 font-bold outline-none focus:border-blue-400 focus:bg-white transition-colors">
+                                <input type="text" id="ficha-dominio" onchange="App.cliente.actualizarCampo('dominio', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-teal-600 font-bold outline-none focus:border-teal-400 focus:bg-white transition-colors">
                             </div>
                         </div>
 
                         <div>
                             <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">URL Actual / Maps</label>
                             <div class="relative">
-                                <input type="text" id="ficha-url" onchange="App.cliente.actualizarCampo('url', this.value)" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs text-blue-500 underline cursor-pointer outline-none focus:border-blue-400 focus:bg-white transition-colors">
-                                <a href="#" onclick="window.open(document.getElementById('ficha-url').value, '_blank')" class="absolute right-2 top-1.5 text-slate-400 hover:text-blue-500"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
+                                <input type="text" id="ficha-url" onchange="App.cliente.actualizarCampo('url', this.value)" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-3 pr-8 py-2 text-xs text-teal-500 underline cursor-pointer outline-none focus:border-teal-400 focus:bg-white transition-colors">
+                                <a href="#" onclick="window.open(document.getElementById('ficha-url').value, '_blank')" class="absolute right-2 top-1.5 text-slate-400 hover:text-teal-500"><i class="fa-solid fa-arrow-up-right-from-square text-xs"></i></a>
                             </div>
                         </div>
 
                         <!-- SECCIÓN ENCUESTA WEB (NUEVO) -->
-                        <div class="mt-4 bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
+                        <div class="mt-4 bg-teal-50 p-4 rounded-2xl border border-teal-100">
                             <div class="flex justify-between items-center mb-3">
-                                <h3 class="text-xs font-bold text-indigo-800 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-laptop-code"></i> Briefing Web</h3>
-                                <span id="badge-encuesta-info" class="hidden text-[9px] bg-white text-indigo-600 px-2 py-1 rounded-lg border border-indigo-100 font-bold shadow-sm">
+                                <h3 class="text-xs font-bold text-teal-800 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-laptop-code"></i> Briefing Web</h3>
+                                <span id="badge-encuesta-info" class="hidden text-[9px] bg-white text-teal-600 px-2 py-1 rounded-lg border border-teal-100 font-bold shadow-sm">
                                     <i class="fa-solid fa-clock-rotate-left mr-1"></i> <span id="txt-encuesta-fecha">...</span>
                                 </span>
                             </div>
                             
                             <!-- GENERADOR DE LINK (NUEVO) -->
-                            <div class="mb-4 bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                            <div class="mb-4 bg-white p-3 rounded-xl border border-teal-100 shadow-sm">
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Link para el Cliente</label>
                                 <div class="flex gap-2">
                                     <input type="text" id="link-encuesta-cliente" readonly class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-[10px] text-slate-600 outline-none font-mono">
-                                    <button onclick="App.cliente.copiarLinkEncuesta()" class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-indigo-200 transition-colors" title="Copiar Link"><i class="fa-regular fa-copy"></i></button>
+                                    <button onclick="App.cliente.copiarLinkEncuesta()" class="bg-teal-100 text-teal-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-teal-200 transition-colors" title="Copiar Link"><i class="fa-regular fa-copy"></i></button>
                                     <button onclick="App.cliente.enviarEncuestaWhatsApp()" class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs font-bold hover:bg-green-600 transition-colors" title="Enviar por WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
                                 </div>
-                                <p class="text-[9px] text-indigo-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-share-nodes"></i> Envía este link para que llenen el formulario ellos mismos.</p>
+                                <p class="text-[9px] text-teal-400 mt-1 flex items-center gap-1"><i class="fa-solid fa-share-nodes"></i> Envía este link para que llenen el formulario ellos mismos.</p>
                             </div>
 
                             <div class="space-y-3">
@@ -662,7 +668,7 @@
 
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">1. Objetivo Principal</label>
-                                    <select id="p1_objetivo" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
+                                    <select id="p1_objetivo" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
                                         <option value="Vender productos (E-commerce)">Vender productos (E-commerce)</option>
                                         <option value="Generar Leads/Contactos">Generar Leads/Contactos</option>
                                         <option value="Presencia de Marca">Presencia de Marca</option>
@@ -671,27 +677,27 @@
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">2. Público Objetivo</label>
-                                    <input type="text" id="p2_publico" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Mujeres 25-40 años...">
+                                    <input type="text" id="p2_publico" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Mujeres 25-40 años...">
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">3. Referentes (URLs)</label>
-                                    <input type="text" id="p3_referentes" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: apple.com, nike.com">
+                                    <input type="text" id="p3_referentes" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: apple.com, nike.com">
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">4. Estilo Visual</label>
-                                    <input type="text" id="p4_estilo" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Minimalista, oscuro...">
+                                    <input type="text" id="p4_estilo" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Ej: Minimalista, oscuro...">
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">5. Secciones</label>
-                                    <input type="text" id="p5_secciones" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Inicio, Nosotros, Contacto...">
+                                    <input type="text" id="p5_secciones" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Inicio, Nosotros, Contacto...">
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">6. Funcionalidades</label>
-                                    <input type="text" id="p6_funcionalidades" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Chatbot, Reservas...">
+                                    <input type="text" id="p6_funcionalidades" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none" placeholder="Chatbot, Reservas...">
                                 </div>
                                 <div>
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">7. Tono Comunicación</label>
-                                    <select id="p7_tono" class="w-full bg-white border border-indigo-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
+                                    <select id="p7_tono" class="w-full bg-white border border-teal-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none">
                                         <option value="Profesional y Serio">Profesional y Serio</option>
                                         <option value="Cercano y Amigable">Cercano y Amigable</option>
                                         <option value="Juvenil y Disruptivo">Juvenil y Disruptivo</option>
@@ -700,15 +706,15 @@
                                 </div>
 
                                 <div class="flex gap-2 pt-2">
-                                    <button onclick="App.cliente.guardarEncuestaWeb()" class="flex-1 bg-indigo-100 text-indigo-700 py-2 rounded-lg text-xs font-bold hover:bg-indigo-200 transition-colors"><i class="fa-solid fa-save"></i> Guardar</button>
-                                    <button onclick="App.cliente.generarPromptWeb()" id="btn-prompt-web" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-500/30"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear Prompt</button>
+                                    <button onclick="App.cliente.guardarEncuestaWeb()" class="flex-1 bg-teal-100 text-teal-700 py-2 rounded-lg text-xs font-bold hover:bg-teal-200 transition-colors"><i class="fa-solid fa-save"></i> Guardar</button>
+                                    <button onclick="App.cliente.generarPromptWeb()" id="btn-prompt-web" class="flex-1 bg-teal-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-teal-700 transition-colors shadow-md shadow-teal-500/30"><i class="fa-solid fa-wand-magic-sparkles"></i> Crear Prompt</button>
                                 </div>
 
                                 <!-- Resultado Prompt -->
                                 <div id="container-prompt-web" class="hidden mt-2">
                                     <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Prompt Generado</label>
                                     <textarea id="txt-prompt-web" rows="4" class="w-full bg-slate-800 text-green-400 font-mono text-[10px] p-2 rounded-lg mb-1" readonly></textarea>
-                                    <button onclick="navigator.clipboard.writeText(document.getElementById('txt-prompt-web').value); App.ui.notificar('Copiado al portapapeles', 'Copiado', 'exito')" class="w-full text-center text-[10px] text-indigo-600 font-bold hover:underline">Copiar Prompt</button>
+                                    <button onclick="navigator.clipboard.writeText(document.getElementById('txt-prompt-web').value); App.ui.notificar('Copiado al portapapeles', 'Copiado', 'exito')" class="w-full text-center text-[10px] text-teal-600 font-bold hover:underline">Copiar Prompt</button>
                                 </div>
                             </div>
                         </div>
@@ -717,7 +723,7 @@
                 </div>
 
                 <!-- COLUMNA 2: IA PROTAGONISTA (45%) -->
-                <div class="w-full lg:w-[45%] p-5 bg-white overflow-y-auto flex flex-col border-r border-emerald-100 relative">
+                <div class="w-full lg:w-[45%] p-5 bg-[#f0fdfa] overflow-y-auto flex flex-col border-r border-emerald-100 relative">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
                     
                     <div class="mb-4 flex-1 flex flex-col">
@@ -754,24 +760,24 @@
 
                             <!-- Manejar Objeciones -->
                             <button onclick="App.cliente.analizarConContexto('manejar_objeciones', this)"
-                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-blue-300 bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-500 hover:to-indigo-600 hover:border-blue-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.02] cursor-pointer">
+                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-cyan-300 bg-gradient-to-br from-cyan-50 to-sky-50 hover:from-cyan-500 hover:to-sky-600 hover:border-cyan-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-cyan-500/30 hover:scale-[1.02] cursor-pointer">
                                 <div class="flex items-center gap-1">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-blue-400 group-hover:text-white text-xs transition-colors"></i>
-                                    <i class="fa-solid fa-shield-halved text-blue-600 group-hover:text-white text-lg transition-colors"></i>
+                                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 group-hover:text-white text-xs transition-colors"></i>
+                                    <i class="fa-solid fa-shield-halved text-cyan-600 group-hover:text-white text-lg transition-colors"></i>
                                 </div>
-                                <span class="text-[11px] font-bold text-blue-800 group-hover:text-white text-center leading-tight transition-colors">Manejar objeciones</span>
-                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
+                                <span class="text-[11px] font-bold text-cyan-800 group-hover:text-white text-center leading-tight transition-colors">Manejar objeciones</span>
+                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
                             </button>
 
                             <!-- Cliente Probable -->
                             <button onclick="App.cliente.analizarConContexto('cliente_probable', this)"
-                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-purple-300 bg-gradient-to-br from-purple-50 to-violet-50 hover:from-purple-500 hover:to-violet-600 hover:border-purple-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.02] cursor-pointer">
+                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-lime-300 bg-gradient-to-br from-lime-50 to-green-50 hover:from-lime-500 hover:to-green-600 hover:border-lime-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-lime-500/30 hover:scale-[1.02] cursor-pointer">
                                 <div class="flex items-center gap-1">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400 group-hover:text-white text-xs transition-colors"></i>
-                                    <i class="fa-solid fa-crosshairs text-purple-600 group-hover:text-white text-lg transition-colors"></i>
+                                    <i class="fa-solid fa-wand-magic-sparkles text-lime-400 group-hover:text-white text-xs transition-colors"></i>
+                                    <i class="fa-solid fa-crosshairs text-lime-600 group-hover:text-white text-lg transition-colors"></i>
                                 </div>
-                                <span class="text-[11px] font-bold text-purple-800 group-hover:text-white text-center leading-tight transition-colors">Es cliente probable</span>
-                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
+                                <span class="text-[11px] font-bold text-lime-800 group-hover:text-white text-center leading-tight transition-colors">Es cliente probable</span>
+                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-lime-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
                             </button>
 
                             <!-- Primer Contacto -->
@@ -787,13 +793,13 @@
 
                             <!-- Negociar Precio -->
                             <button onclick="App.cliente.analizarConContexto('negociar_precio', this)"
-                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-amber-50 hover:from-orange-500 hover:to-amber-600 hover:border-orange-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-orange-500/30 hover:scale-[1.02] cursor-pointer">
+                                class="ia-action-btn group relative overflow-hidden flex flex-col items-center justify-center gap-1.5 p-3.5 rounded-xl border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-yellow-50 hover:from-amber-500 hover:to-yellow-600 hover:border-amber-500 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-amber-500/30 hover:scale-[1.02] cursor-pointer">
                                 <div class="flex items-center gap-1">
-                                    <i class="fa-solid fa-wand-magic-sparkles text-orange-400 group-hover:text-white text-xs transition-colors"></i>
-                                    <i class="fa-solid fa-tags text-orange-600 group-hover:text-white text-lg transition-colors"></i>
+                                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400 group-hover:text-white text-xs transition-colors"></i>
+                                    <i class="fa-solid fa-tags text-amber-600 group-hover:text-white text-lg transition-colors"></i>
                                 </div>
-                                <span class="text-[11px] font-bold text-orange-800 group-hover:text-white text-center leading-tight transition-colors">Negociar precio</span>
-                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
+                                <span class="text-[11px] font-bold text-amber-800 group-hover:text-white text-center leading-tight transition-colors">Negociar precio</span>
+                                <div class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse group-hover:bg-white/70"></div>
                             </button>
 
                             <!-- Reactivar Lead Frío -->
@@ -828,7 +834,7 @@
                 </div>
 
                 <!-- COLUMNA 3: SCRIPT Y ACCIONES (25%) -->
-                <div class="w-full lg:w-[25%] p-5 overflow-y-auto flex flex-col bg-slate-50 border-l border-emerald-100">
+                <div class="w-full lg:w-[25%] p-5 overflow-y-auto flex flex-col bg-white border-l border-emerald-100">
                     
                     <!-- Script Box (Referencia) -->
                     <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm mb-4 flex flex-col h-48">
@@ -841,6 +847,10 @@
 
                     <!-- Action Buttons -->
                     <div class="grid grid-cols-1 gap-3 mb-auto">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ACCIÓN PRINCIPAL</span>
+                            <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Intentos: <span id="ficha-intentos-count">0</span></span>
+                        </div>
                         <button onclick="App.cliente.accion('whatsapp')" class="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-lg shadow-green-500/30 flex items-center justify-center gap-2 transition-transform hover:scale-[1.01]">
                             <i class="fa-brands fa-whatsapp text-xl"></i>
                             <span class="text-sm font-bold">Enviar WhatsApp</span>
@@ -864,29 +874,33 @@
 
                     <!-- Botones Fase Venta -->
                     <div id="acciones-venta" class="grid grid-cols-2 gap-2 mt-4">
-                        <button onclick="App.cliente.accion('schedule')" class="py-3 bg-white border border-blue-200 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1">
+                        <button onclick="App.cliente.accion('schedule')" class="py-3 bg-white border border-cyan-200 text-cyan-600 font-bold rounded-xl hover:bg-cyan-50 transition-colors flex flex-col items-center justify-center gap-1">
                             <i class="fa-regular fa-calendar text-lg"></i>
                             <span class="text-[10px]">Agendar</span>
                         </button>
                         <button onclick="App.cliente.accion('won')" class="py-3 bg-white border border-emerald-200 text-emerald-600 font-bold rounded-xl hover:bg-emerald-50 transition-colors flex flex-col items-center justify-center gap-1">
                             <i class="fa-solid fa-trophy text-lg"></i>
-                            <span class="text-[10px]">Cerrar</span>
+                            <span class="text-[10px]">Cerrar Venta</span>
                         </button>
-                        <button onclick="App.cliente.accion('lost')" class="py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1 col-span-2">
+                        <button onclick="App.cliente.accion('lost')" class="py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1">
                             <i class="fa-solid fa-thumbs-down text-lg"></i>
                             <span class="text-[10px]">Descartar</span>
+                        </button>
+                        <button onclick="App.cliente.cerrarFicha()" class="py-3 bg-white border border-slate-200 text-slate-500 font-bold rounded-xl hover:bg-slate-50 transition-colors flex flex-col items-center justify-center gap-1">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                            <span class="text-[10px]">Cerrar Ficha</span>
                         </button>
                     </div>
 
                     <!-- Botones Cliente Activo -->
                     <div id="acciones-cliente" class="hidden grid grid-cols-3 gap-2 mt-4">
                         <!-- Botón 1: Ver Sitio Web -->
-                        <button onclick="App.cliente.verSitio()" class="py-3 bg-white border border-indigo-200 text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-colors flex flex-col items-center justify-center gap-1" title="Ver el sitio web del cliente">
+                        <button onclick="App.cliente.verSitio()" class="py-3 bg-white border border-teal-200 text-teal-600 font-bold rounded-xl hover:bg-teal-50 transition-colors flex flex-col items-center justify-center gap-1" title="Ver el sitio web del cliente">
                             <i class="fa-solid fa-globe text-lg"></i>
                             <span class="text-[10px]">Ver Sitio</span>
                         </button>
                         <!-- Botón Nuevo: Hoja de Ruta -->
-                        <button onclick="window.open('/hoja_ruta.html?id=' + App.datos.leads[App.clienteActivoIndex].id, '_blank')" class="py-3 bg-white border border-blue-200 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-1" title="Ver Hoja de Ruta del Proyecto">
+                        <button onclick="window.open('/hoja_ruta.html?id=' + App.datos.leads[App.clienteActivoIndex].id, '_blank')" class="py-3 bg-white border border-cyan-200 text-cyan-600 font-bold rounded-xl hover:bg-cyan-50 transition-colors flex flex-col items-center justify-center gap-1" title="Ver Hoja de Ruta del Proyecto">
                             <i class="fa-solid fa-map-location-dot text-lg"></i>
                             <span class="text-[10px]">Hoja Ruta</span>
                         </button>
@@ -901,7 +915,7 @@
                             <span class="text-[10px]">Agregar Servicio</span>
                         </button>
                         <!-- Botón 3: Soporte Técnico -->
-                        <button onclick="App.cliente.abrirSoporteWhatsApp()" class="py-3 bg-white border border-orange-200 text-orange-500 font-bold rounded-xl hover:bg-orange-50 transition-colors flex flex-col items-center justify-center gap-1" title="Contactar por WhatsApp">
+                        <button onclick="App.cliente.abrirSoporteWhatsApp()" class="py-3 bg-white border border-amber-200 text-amber-500 font-bold rounded-xl hover:bg-amber-50 transition-colors flex flex-col items-center justify-center gap-1" title="Contactar por WhatsApp">
                             <i class="fa-brands fa-whatsapp text-lg"></i>
                             <span class="text-[10px]">Soporte</span>
                         </button>
@@ -915,6 +929,7 @@
         <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-6 h-[80vh] flex flex-col">
             <div class="flex justify-between items-center mb-6"><div><h3 class="text-xl font-bold text-indigo-900">Agenda Predictiva</h3><p class="text-xs text-slate-400">Seguimientos para hoy</p></div><button onclick="App.ui.toggleModal('modal-agenda', false)" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-xl"></i></button></div>
             <div id="agenda-lista" class="flex-1 overflow-y-auto space-y-3 pr-2 custom-scroll"></div>
+            <div class="text-center font-bold pt-4 border-t border-slate-100">Leads Agendados Hoy: <span id="conteo-lead-Discador" class="text-blue-600">0</span></div>
         </div>
     </div>
 
@@ -1057,7 +1072,7 @@
             <form onsubmit="App.cliente.guardarManual(event)" class="p-6 space-y-4 overflow-y-auto custom-scroll">
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Dominio (ID Único)</label>
-                    <input name="dominio" type="text" required placeholder="ejemplo.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20 transition-all">
+                    <input name="dominio" type="text" required placeholder="ejemplo.cl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/20 transition-all">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -1093,9 +1108,9 @@
                 </div>
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Propuesta Inicial</label>
-                    <textarea name="propuesta" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    <textarea name="propuesta" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-teal-500/20"></textarea>
                 </div>
-                <button type="submit" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">Guardar Lead</button>
+                <button type="submit" class="w-full py-3 bg-teal-600 text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 hover:bg-teal-700 transition-all">Guardar Lead</button>
             </form>
         </div>
     </div>
@@ -1173,7 +1188,7 @@
             <p id="confirmacion-mensaje" class="text-sm text-slate-500 mb-6"></p>
             <div class="flex gap-3">
                 <button id="confirmacion-btn-cancel" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200">Cancelar</button>
-                <button id="confirmacion-btn-ok" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Confirmar</button>
+                <button id="confirmacion-btn-ok" class="flex-1 py-2.5 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700">Confirmar</button>
             </div>
         </div>
     </div>
@@ -1182,31 +1197,33 @@
         <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8">
             <h3 id="prompt-titulo" class="text-lg font-bold text-slate-800 mb-2"></h3>
             <p id="prompt-mensaje" class="text-sm text-slate-500 mb-4"></p>
-            <input id="prompt-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none mb-6 focus:ring-2 focus:ring-blue-200">
+            <input id="prompt-input" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm outline-none mb-6 focus:ring-2 focus:ring-teal-200">
             <div class="flex gap-3">
                 <button id="prompt-btn-cancel" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200">Cancelar</button>
-                <button id="prompt-btn-ok" class="flex-1 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Aceptar</button>
+                <button id="prompt-btn-ok" class="flex-1 py-2.5 bg-teal-600 text-white font-bold rounded-lg hover:bg-teal-700">Aceptar</button>
             </div>
         </div>
     </div>
 
     <!-- Banner de Permiso de Notificaciones -->
     <div id="notification-permission-banner" class="hidden fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg z-[150] flex items-center gap-4 border border-slate-200">
-        <i class="fa-solid fa-bell text-blue-500 text-xl"></i>
+        <i class="fa-solid fa-bell text-teal-500 text-xl"></i>
         <p class="text-sm text-slate-700 font-medium">¿Activar alertas de sitios caídos?</p>
-        <button onclick="App.ui.solicitarPermisoNotificaciones()" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-bold">Activar</button>
+        <button onclick="App.ui.solicitarPermisoNotificaciones()" class="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded-lg text-sm font-bold">Activar</button>
         <button onclick="document.getElementById('notification-permission-banner').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">&times;</button>
     </div>
 
     <!-- MODAL INTERCEPTOR RESPUESTA -->
     <div id="modal-interceptor" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-blue-100 text-blue-600 animate-pulse"><i class="fa-solid fa-comments"></i></div>
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-8 text-center relative">
+            <button onclick="App.ui.toggleModal('modal-interceptor', false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-teal-100 text-teal-600 animate-pulse"><i class="fa-solid fa-comments"></i></div>
             <h3 class="text-xl font-bold text-slate-800 mb-2">¿Te contestó este lead?</h3>
             <p class="text-sm text-slate-500 mb-6">Ya enviaste el mensaje anteriormente. Necesitamos actualizar el estado.</p>
             <div class="flex flex-col gap-2">
-                <button onclick="App.cliente.procesarRespuesta('si')" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/30">Sí, contestó 💬</button>
-                <button onclick="App.cliente.procesarRespuesta('enviado')" class="w-full py-3 bg-yellow-100 text-yellow-700 font-bold rounded-xl hover:bg-yellow-200">Solo Enviado 📩</button>
+                <button onclick="App.cliente.procesarRespuesta('si')" class="w-full py-3 bg-teal-600 text-white font-bold rounded-xl hover:bg-teal-700 shadow-lg shadow-teal-500/30">Sí, contestó 💬</button>
+                <button onclick="App.cliente.procesarRespuesta('enviado')" class="w-full py-3 bg-lime-100 text-lime-700 font-bold rounded-xl hover:bg-lime-200">Solo Enviado 📩</button>
+                <button onclick="App.cliente.procesarRespuesta('discador')" class="w-full py-3 bg-emerald-100 text-emerald-700 font-bold rounded-xl hover:bg-emerald-200">Mandar al Discador 📞</button>
                 <button onclick="App.cliente.procesarRespuesta('no')" class="w-full py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200">No, eliminar 🗑️</button>
             </div>
         </div>
@@ -1216,7 +1233,7 @@
     <div id="modal-config-prompt" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[120] hidden flex items-center justify-center p-4">
         <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[85vh]">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-robot mr-2 text-blue-500"></i> Cerebro de Ventas (Prompt)</h3>
+                <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-robot mr-2 text-teal-500"></i> Cerebro de Ventas (Prompt)</h3>
                 <button onclick="App.ui.toggleModal('modal-config-prompt', false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="p-0 flex-1 relative">
@@ -1232,20 +1249,20 @@
                 </div>
             </div>
             <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
-                <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-purple-100 text-purple-600 text-xs font-bold rounded-lg hover:bg-purple-200 border border-purple-200 transition-colors flex items-center gap-2">
+                <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-cyan-100 text-cyan-700 text-xs font-bold rounded-lg hover:bg-cyan-200 border border-cyan-200 transition-colors flex items-center gap-2">
                     <i class="fa-solid fa-flask"></i> Probar con Ejemplo
                 </button>
                 <div class="flex items-center gap-2">
-                    <select id="config-prompt-example-select" class="bg-white border border-slate-200 text-slate-600 text-xs rounded-lg px-2 py-2 outline-none focus:ring-2 focus:ring-purple-200 cursor-pointer font-bold">
+                    <select id="config-prompt-example-select" class="bg-white border border-slate-200 text-slate-600 text-xs rounded-lg px-2 py-2 outline-none focus:ring-2 focus:ring-cyan-200 cursor-pointer font-bold">
                         <option value="precio">💰 Objeción Precio</option>
                         <option value="interesado">🚀 Cliente Interesado</option>
                         <option value="enojado">😡 Cliente Enojado</option>
                     </select>
-                    <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-purple-100 text-purple-600 text-xs font-bold rounded-lg hover:bg-purple-200 border border-purple-200 transition-colors flex items-center gap-2"><i class="fa-solid fa-flask"></i> Probar</button>
+                    <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-cyan-100 text-cyan-700 text-xs font-bold rounded-lg hover:bg-cyan-200 border border-cyan-200 transition-colors flex items-center gap-2"><i class="fa-solid fa-flask"></i> Probar</button>
                 </div>
                 <div class="flex gap-3">
                     <button onclick="App.ui.restaurarPrompt()" class="px-4 py-2 text-slate-500 text-xs font-bold hover:text-red-500">Restaurar Original</button>
-                    <button onclick="App.ui.guardarPrompt()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-md">Guardar Cambios</button>
+                    <button onclick="App.ui.guardarPrompt()" class="px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-lg shadow-md">Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -1364,10 +1381,12 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
 
                     this.datos.leads = data.map(l => ({
                         ...l,
+                        fecha_agendada: l.fecha_seguimiento, // Recuperar fecha real de la DB
                         estado: this.api.mapEstado(l.estado),
                         propuesta: l.propuesta_text || '',
                         historial: l.encuesta_data?.historial || []
                     }));
+
                     document.getElementById('neon-status-text').innerText = "CONECTADO";
                     document.getElementById('neon-status-dot').className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
                 } catch (err) {
@@ -1408,6 +1427,32 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                     return limpio;
                 },
                 fechaHoy: () => new Date().toISOString().split('T')[0],
+                fechaHoraDefault: () => {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // Ajuste zona horaria local
+                    return now.toISOString().slice(0, 16); // Formato YYYY-MM-DDTHH:mm
+                },
+                fechaHoraHabilDefault: () => {
+                    const now = new Date();
+                    const day = now.getDay();
+                    const hour = now.getHours();
+
+                    // Lógica de horario hábil:
+                    // Domingo (0) -> Lunes (+1)
+                    // Sábado (6) > 16:00 -> Lunes (+2)
+                    // Lunes-Viernes (1-5) > 19:00 -> Mañana (+1)
+                    
+                    if (day === 0) now.setDate(now.getDate() + 1);
+                    else if (day === 6 && hour >= 16) now.setDate(now.getDate() + 2);
+                    else if (day >= 1 && day <= 5 && hour >= 19) {
+                        now.setDate(now.getDate() + 1);
+                        // Si era Viernes y pasó a Sábado > 16:00 (ej: Viernes 20:00 -> Sábado 20:00), mover a Lunes
+                        if (now.getDay() === 6 && now.getHours() >= 16) now.setDate(now.getDate() + 2);
+                    }
+
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    return now.toISOString().slice(0, 16);
+                },
                 fechaActualHistorial: () => new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 iniciarReloj: () => {
                     const update = () => {
@@ -1426,11 +1471,12 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                 mapEstado: (dbEstado) => {
                     const map = {
                         'prospecto': 'nuevos',
-                        'whatsapp_enviado': 'whatsapp_enviado',
+                        'whatsapp_enviado': 'whatsapp_enviado', // Lime
                         'sin_respuesta': 'sin_respuesta',
-                        'contactado': 'seguimiento',
-                        'cliente': 'cerrados',
-                        'no_interesado': 'descartados'
+                        'contactado': 'seguimiento', // Cyan
+                        'cliente': 'cerrados', // Green
+                        'no_interesado': 'descartados',
+                        'discador': 'discador'
                     };
                     return map[dbEstado] || 'nuevos';
                 }
@@ -1480,19 +1526,13 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         }
                         App.clienteActivoIndex = index;
 
-                        // INTERCEPTOR: Si ya se envió whatsapp, preguntar si contestó
-                        if (!forceOpen && lead.estado === 'whatsapp_enviado') {
-                            App.ui.toggleModal('modal-interceptor', true);
-                            return;
-                        }
-
                         // Helper para setear texto seguro
                         const setText = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val || ''; };
                         const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
 
                         // Header Ficha
                         setText('header-negocio', lead.negocio);
-                        setText('header-id', `ID: ${lead.id}`);
+                        setText('header-id', lead.codigo_seguimiento ? `REF: ${lead.codigo_seguimiento}` : `ID: ${lead.id}`);
                         setText('header-nombre', lead.nombre || 'Desconocido');
                         setText('header-telefono', lead.whatsapp);
                         setText('header-dominio', lead.dominio || 'Sin dominio');
@@ -1559,7 +1599,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         document.getElementById('container-prompt-web').classList.add('hidden');
                         
                         // 3.2 Generar Link de Encuesta
-                        const linkEncuesta = `${window.location.origin}/encuesta.html?id=${lead.id}`;
+                        const linkEncuesta = `${window.location.origin}/encuesta.html?id=${lead.codigo_seguimiento || lead.id}`;
                         setVal('link-encuesta-cliente', linkEncuesta);
 
                         // 4. Estado Táctico (Temperatura)
@@ -1595,21 +1635,25 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         const badge = document.getElementById('ficha-estado-badge');
                         if (badge) {
                             let textoEstado = (lead.estado || '').toUpperCase();
-                            let badgeClass = "bg-slate-700 text-slate-300"; 
+                            let badgeClass = "bg-slate-700 text-slate-300";
                             
                             if (lead.estado === 'cerrados') {
                                 badgeClass = "bg-green-100 text-green-700";
                                 textoEstado = "CLIENTE ACTIVO";
                             }
                             else if (lead.estado === 'descartados') badgeClass = "bg-red-100 text-red-700";
-                            else if (lead.estado === 'seguimiento') badgeClass = "bg-blue-100 text-blue-700";
-                            else if (lead.estado === 'whatsapp_enviado') badgeClass = "bg-yellow-100 text-yellow-700";
+                            else if (lead.estado === 'seguimiento') badgeClass = "bg-cyan-100 text-cyan-700";
+                            else if (lead.estado === 'whatsapp_enviado') badgeClass = "bg-lime-100 text-lime-700";
                             else if (lead.estado === 'sin_respuesta') badgeClass = "bg-slate-100 text-slate-500";
                             
                             badge.innerText = textoEstado;
                             badge.className = `px-3 py-1 rounded-full text-xs font-bold uppercase ${badgeClass}`;
                         }
                         
+                        // Calcular intentos
+                        const intentos = (lead.historial || []).filter(h => h.nota && (h.nota.includes('WhatsApp Enviado') || h.nota.includes('Enviado'))).length;
+                        setText('ficha-intentos-count', intentos);
+
                         if (this.renderizarHistorial) this.renderizarHistorial(lead);
                         
                         // Reset Analysis View
@@ -1626,6 +1670,14 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                             if (App.discador.activo) {
                                 discadorBar.classList.remove('hidden');
                                 setText('discador-counter', `${App.discador.indiceActual + 1} / ${App.discador.cola.length}`);
+                                
+                                // Mostrar intentos de contacto previos
+                                const intentos = (lead.historial || []).filter(h => h.nota && (h.nota.includes('WhatsApp Enviado') || h.nota.includes('Enviado'))).length;
+                                const elIntentos = document.getElementById('discador-intentos');
+                                if(elIntentos) {
+                                    elIntentos.innerText = `Enviados: ${intentos}`;
+                                    elIntentos.classList.remove('hidden');
+                                }
                             } else {
                                 discadorBar.classList.add('hidden');
                             }
@@ -1865,7 +1917,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                 enviarHojaRutaWhatsApp: () => {
                     if (App.clienteActivoIndex === null) return;
                     const lead = App.datos.leads[App.clienteActivoIndex];
-                    const link = `${window.location.origin}/hoja_ruta.html?id=${lead.id}`;
+                    const link = `${window.location.origin}/hoja_ruta.html?id=${lead.codigo_seguimiento || lead.id}`;
                     const mensaje = `Hola ${lead.nombre || ''} 👋, aquí tienes el enlace a tu Hoja de Ruta 🗺️ para ver el avance del proyecto en tiempo real y subir tus archivos: ${link}`;
                     const fono = App.util.limpiarTelefono(lead.whatsapp);
                     if(fono) window.open(`https://wa.me/${fono}?text=${encodeURIComponent(mensaje)}`, 'whatsapp_tab');
@@ -1971,6 +2023,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                 procesarRespuesta: async (accion) => {
                     if (App.clienteActivoIndex === null) return;
                     const lead = App.datos.leads[App.clienteActivoIndex];
+                    const estadoOriginal = lead.estado; // Capturar estado original para flujo inteligente
                     App.ui.toggleModal('modal-interceptor', false);
 
                     if (accion === 'si') {
@@ -1994,6 +2047,54 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                     } else if (accion === 'enviado') {
                         // Mantener en enviado y abrir ficha
                         App.cliente.abrir(App.clienteActivoIndex, true);
+                    } else if (accion === 'discador') {
+                        const defaultDate = App.util.fechaHoraHabilDefault();
+                        
+                        // Formatear fecha para el mensaje amigable
+                        const d = new Date(defaultDate);
+                        const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+                        const diaNombre = dias[d.getDay()];
+                        const horaStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        
+                        App.ui.notificar(`El asistente de IA ha determinado moverlo para el ${diaNombre} a las ${horaStr}`, "Reprogramación Inteligente", "info", 1000);
+
+                        lead.estado = 'discador';
+                        lead.fecha_agendada = defaultDate;
+                        App.cliente.agregarNotaHistorial(`📞 Programado para discador: ${defaultDate.replace('T', ' ')}`);
+                        
+                        try {
+                            await fetch(`/api/clientes/${lead.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ fecha_agendada: defaultDate, estado: 'discador' })
+                            });
+                        } catch(e) { console.error("Error guardando agenda", e); }
+
+                        App.ui.renderizarListas();
+                        
+                        // Avanzar al siguiente lead automáticamente tras 1 segundo
+                        const currentIndex = App.clienteActivoIndex;
+                        setTimeout(() => {
+                            App.cliente.cerrarFicha();
+                            
+                            // Lógica de Flujo: Si estábamos en 'nuevos', buscar el siguiente 'nuevo'
+                            if (estadoOriginal === 'nuevos') {
+                                let nextIndex = -1;
+                                for (let i = currentIndex + 1; i < App.datos.leads.length; i++) {
+                                    if (App.datos.leads[i].estado === 'nuevos') {
+                                        nextIndex = i;
+                                        break;
+                                    }
+                                }
+                                if (nextIndex !== -1) App.cliente.abrir(nextIndex);
+                                else App.ui.notificar("Prospectos nuevos terminados.", "Flujo Finalizado", "exito");
+                            } else {
+                                // Comportamiento estándar para otros estados
+                                if (App.datos.leads[currentIndex + 1]) {
+                                    App.cliente.abrir(currentIndex + 1);
+                                }
+                            }
+                        }, 1000);
                     }
                 },
                 cerrarFicha: () => { if(App.discador.activo) App.discador.detener(); App.ui.toggleModal('modal-ficha-cliente', false); App.clienteActivoIndex = null; },
@@ -2008,30 +2109,35 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                                 return;
                             }
                             
-                            // Lógica de Agendamiento Automático (Mañana, saltando Domingo)
-                            const hoy = new Date();
-                            let nextDate = new Date(hoy);
-                            nextDate.setDate(hoy.getDate() + 1);
-                            if (nextDate.getDay() === 0) { // 0 es Domingo
-                                nextDate.setDate(nextDate.getDate() + 1); // Saltar al Lunes
+                            // 1. ABRIR WHATSAPP (Siempre, reutilizando pestaña)
+                            window.open(`https://wa.me/${fonoLimpio}?text=${encodeURIComponent(lead.propuesta)}`, 'whatsapp_tab');
+
+                            // 2. INTERCEPTOR (Siempre que sea manual)
+                            // Se abre el modal para que al volver puedas gestionar el estado
+                            if (!App.discador.activo) {
+                                App.ui.toggleModal('modal-interceptor', true);
                             }
-
-                            // Actualizar Estado y Historial
+                            
+                            // 3. Actualizar Estado (Si es nuevo)
                             if (lead.estado === 'nuevos' || lead.estado === 'sin_respuesta') lead.estado = 'whatsapp_enviado';
-                            App.cliente.agregarNotaHistorial(`✅ WhatsApp Enviado. Esperando respuesta.`);
                             
-                            // Persistencia en Segundo Plano (Sin bloquear UI)
-                            fetch(`/api/clientes/${lead.id}/estado`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: 'whatsapp_enviado' }) }).catch(console.error);
-                            // fetch(`/api/clientes/${lead.id}/agendar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fecha: fechaAgendada }) }).catch(console.error);
+                            // 4. Historial y Contadores
+                            App.cliente.agregarNotaHistorial(`✅ WhatsApp Enviado.`);
+                            
+                            const intentos = (lead.historial || []).filter(h => h.nota && (h.nota.includes('WhatsApp Enviado') || h.nota.includes('Enviado'))).length;
+                            const elIntentos = document.getElementById('ficha-intentos-count');
+                            if(elIntentos) elIntentos.innerText = intentos;
+                            
+                            // Persistencia
+                            fetch(`/api/clientes/${lead.id}/estado`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: lead.estado }) }).catch(console.error);
 
-                            App.ui.renderizarListas(); // Actualizar UI inmediatamente
+                            App.ui.renderizarListas();
                             
-                            // Si estamos en modo discador, avanzar automáticamente tras un breve delay
+                            // 5. Discador Automático (Avance)
                             if (App.discador.activo) {
-                                window.open(`https://wa.me/${fonoLimpio}?text=${encodeURIComponent(lead.propuesta)}`, 'whatsapp_tab');
-                                setTimeout(() => App.discador.siguiente(), 1000);
-                            } else {
-                                window.open(`https://wa.me/${fonoLimpio}?text=${encodeURIComponent(lead.propuesta)}`, 'whatsapp_tab');
+                                setTimeout(() => {
+                                    if (!App.discador.pausado) App.discador.siguiente();
+                                }, 1000);
                             }
                             break;
                         case 'invalid':
@@ -2046,11 +2152,11 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                             App.ui.notificar("Cliente eliminado y agregado a la lista negra.", "Eliminado", "exito");
                             break;
                         case 'schedule':
-                            const fecha = await App.ui.prompt("Selecciona la fecha de seguimiento:", "Agendar Lead", App.util.fechaHoy(), "date");
+                            const fecha = await App.ui.prompt("Selecciona fecha y hora:", "Agendar Lead", App.util.fechaHoraDefault(), "datetime-local");
                             if (fecha) { 
                                 lead.estado = 'seguimiento'; 
                                 lead.fecha_agendada = fecha; 
-                                App.cliente.agregarNotaHistorial(`📅 Agendado para: ${fecha}`);
+                                App.cliente.agregarNotaHistorial(`📅 Agendado para: ${fecha.replace('T', ' ')}`);
                                 App.ui.notificar("Lead agendado con éxito.", "Agendado", "exito"); 
                             }
                             break;
@@ -2220,21 +2326,21 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
                                     <div class="flex justify-between items-center mb-1">
                                         <p class="text-[10px] font-bold text-slate-400 uppercase">RESUMEN</p>
-                                        <span class="text-[9px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">${analisisObj.rubro_detectado || 'General'}</span>
+                                        <span class="text-[9px] bg-teal-100 text-teal-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">${analisisObj.rubro_detectado || 'General'}</span>
                                     </div>
                                     <p class="text-xs text-slate-700 font-medium leading-tight">${analisisObj.resumen_una_linea || '...'}</p>
                                 </div>
                                 <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
                                     <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">PSICOLOGÍA & ESTRATEGIA</p>
                                     <p class="text-[10px] text-slate-600 mb-1">${analisisObj.perfil_psicologico || '...'}</p>
-                                    <p class="text-[10px] text-blue-600 font-bold"><i class="fa-solid fa-bolt mr-1"></i> Acción: ${analisisObj.accion_sugerida || '...'}</p>
+                                    <p class="text-[10px] text-cyan-600 font-bold"><i class="fa-solid fa-bolt mr-1"></i> Acción: ${analisisObj.accion_sugerida || '...'}</p>
                                 </div>
-                                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                                <div class="bg-teal-50 p-3 rounded-xl border border-teal-100">
                                     <div class="flex justify-between items-center mb-2">
-                                        <p class="text-[10px] font-bold text-indigo-500 uppercase">RESPUESTA DETALLADA</p>
-                                        <button onclick="navigator.clipboard.writeText('${(analisisObj.texto_cierre || '').replace(/'/g, "\\'")}')" class="text-[10px] text-indigo-600 hover:text-indigo-800 font-bold"><i class="fa-regular fa-copy"></i> Copiar</button>
+                                        <p class="text-[10px] font-bold text-teal-500 uppercase">RESPUESTA DETALLADA</p>
+                                        <button onclick="navigator.clipboard.writeText('${(analisisObj.texto_cierre || '').replace(/'/g, "\\'")}')" class="text-[10px] text-teal-600 hover:text-teal-800 font-bold"><i class="fa-regular fa-copy"></i> Copiar</button>
                                     </div>
-                                    <p class="text-xs text-indigo-900 italic leading-relaxed">"${analisisObj.texto_cierre}"</p>
+                                    <p class="text-xs text-teal-900 italic leading-relaxed">"${analisisObj.texto_cierre}"</p>
                                 </div>
                                 <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
                                   <div class="flex justify-between items-center mb-2">
@@ -2454,7 +2560,7 @@ Responde SOLO en JSON estricto:
                                 <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
                                     <div class="flex justify-between items-center mb-1">
                                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">RESUMEN</p>
-                                        <span class="text-[9px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-bold uppercase">${analisisObj.rubro_detectado || 'General'}</span>
+                                        <span class="text-[9px] bg-teal-100 text-teal-600 px-2 py-0.5 rounded font-bold uppercase">${analisisObj.rubro_detectado || 'General'}</span>
                                     </div>
                                     <p class="text-xs text-slate-700 font-medium leading-snug">${analisisObj.resumen_una_linea || '...'}</p>
                                 </div>
@@ -2464,9 +2570,9 @@ Responde SOLO en JSON estricto:
                                     <p class="text-[10px] text-slate-600 leading-snug">${analisisObj.perfil_psicologico || '...'}</p>
                                 </div>
 
-                                <div class="bg-blue-50 p-2.5 rounded-lg border border-blue-100">
-                                    <p class="text-[9px] font-bold text-blue-400 uppercase tracking-wider mb-1"><i class="fa-solid fa-bolt mr-1"></i>ACCIÓN SUGERIDA</p>
-                                    <p class="text-[10px] text-blue-700 font-semibold leading-snug">${analisisObj.accion_sugerida || '...'}</p>
+                                <div class="bg-cyan-50 p-2.5 rounded-lg border border-cyan-100">
+                                    <p class="text-[9px] font-bold text-cyan-400 uppercase tracking-wider mb-1"><i class="fa-solid fa-bolt mr-1"></i>ACCIÓN SUGERIDA</p>
+                                    <p class="text-[10px] text-cyan-700 font-semibold leading-snug">${analisisObj.accion_sugerida || '...'}</p>
                                 </div>
 
                                 <div class="bg-emerald-50 p-2.5 rounded-lg border border-emerald-100">
@@ -2544,50 +2650,119 @@ Responde SOLO en JSON estricto:
                             // 4. ABRIR LA FICHA INMEDIATAMENTE (Índice 0 porque hicimos unshift)
                             App.cliente.abrir(0);
                             e.target.reset();
+                        } else {
+                            const errData = await res.json();
+                            throw new Error(errData.error || "Error desconocido al guardar.");
                         }
                     } catch (err) {
                         console.error("Error guardando lead manual:", err);
-                        App.ui.notificar("No se pudo guardar el lead. Revisa tu conexión a internet.", "Error de Red", "error");
+                        App.ui.notificar(err.message, "Error al Guardar", "error");
                     }
                 }
             },
             
             discador: {
                 activo: false,
+                pausado: false,
                 cola: [],
                 indiceActual: 0,
-                iniciar: () => {
-                    // Filtrar leads AGENDADOS (con fecha de seguimiento)
-                    // Ordenados por fecha (los más antiguos/urgentes primero)
-                    App.discador.cola = App.datos.leads
-                        .filter(l => l.fecha_agendada && l.estado !== 'descartados' && l.estado !== 'cerrados')
-                        .sort((a, b) => new Date(a.fecha_agendada) - new Date(b.fecha_agendada));
+                iniciar: async () => {
+                    // Automáticamente buscar leads agendados para HOY o ANTES (Pendientes)
+                    const hoy = App.util.fechaHoy();
+                    const candidatos = App.datos.leads.filter(l => {
+                        if (!l.fecha_agendada || l.estado === 'descartados' || l.estado === 'cerrados') return false;
+                        return l.fecha_agendada.split('T')[0] <= hoy; // Incluye hoy y atrasados
+                    });
 
-                    if (App.discador.cola.length === 0) {
-                        App.ui.notificar("No hay leads agendados para procesar.", "Discador", "info");
+                    if (candidatos.length === 0) {
+                        App.ui.notificar("No hay leads agendados pendientes.", "Todo al día", "exito");
                         return;
                     }
+                    
+                    // Mover leads al estado 'discador'
+                    for (const lead of candidatos) {
+                        if (lead.estado !== 'discador') {
+                            lead.estado = 'discador';
+                            fetch(`/api/clientes/${lead.id}/estado`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ estado: 'discador' })
+                            }).catch(console.error);
+                        }
+                    }
+                    
                     App.discador.activo = true;
+                    App.discador.cola = candidatos.sort((a, b) => new Date(a.fecha_agendada) - new Date(b.fecha_agendada));
+                    App.ui.renderizarListas();
+                    
                     App.discador.indiceActual = 0;
+                    App.ui.notificar(`Iniciando cola con ${App.discador.cola.length} leads.`, "Discador Activo", "exito");
                     App.discador.cargarActual();
                 },
-                cargarActual: () => {
+                cargarActual: async () => {
+                    // Verificar si se acabó la cola
                     if (App.discador.indiceActual >= App.discador.cola.length) {
                         App.discador.detener();
-                        App.ui.notificar("¡Has terminado la lista de agendados!", "Discador Finalizado", "exito");
+                        App.ui.notificar("¡Has terminado todos los pendientes!", "Discador Finalizado", "exito");
                         return;
                     }
                     const lead = App.discador.cola[App.discador.indiceActual];
                     const realIndex = App.datos.leads.indexOf(lead);
-                    App.cliente.abrir(realIndex);
+                    App.cliente.abrir(realIndex, true); // forceOpen = true para saltar el modal interceptor
+                },
+                togglePausa: (estado) => {
+                    if (!App.discador.activo) return;
+                    App.discador.pausado = estado;
+                    const bar = document.getElementById('ficha-discador-bar');
+                    const label = bar.querySelector('span');
+                    
+                    if (estado) {
+                        bar.classList.replace('bg-emerald-600', 'bg-amber-600');
+                        if(!bar.dataset.original) bar.dataset.original = label.innerHTML;
+                        label.innerHTML = '<i class="fa-solid fa-pen-nib animate-bounce"></i> Escribiendo... (Pausado)';
+                    } else {
+                        bar.classList.replace('bg-amber-600', 'bg-emerald-600');
+                        if(bar.dataset.original) label.innerHTML = bar.dataset.original;
+                    }
                 },
                 siguiente: () => {
                     App.discador.indiceActual++;
                     App.discador.cargarActual();
                 },
+                posponer: async () => {
+                    if (!App.discador.activo || App.discador.indiceActual >= App.discador.cola.length) return;
+                    
+                    const lead = App.discador.cola[App.discador.indiceActual];
+                    
+                    // Mover al final de la cola (Mochila)
+                    App.discador.cola.splice(App.discador.indiceActual, 1);
+                    App.discador.cola.push(lead);
+                    
+                    // Calcular nueva hora (Ahora + 1 hora)
+                    const now = new Date();
+                    now.setHours(now.getHours() + 1);
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // Ajuste zona horaria
+                    const nuevaFecha = now.toISOString().slice(0, 16);
+
+                    lead.fecha_agendada = nuevaFecha;
+                    App.cliente.agregarNotaHistorial(`⏱️ Pospuesto (Mochila) para el final de la cola.`);
+
+                    try {
+                        await fetch(`/api/clientes/${lead.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ fecha_agendada: nuevaFecha })
+                        });
+                        App.ui.notificar("Lead movido al final de la cola.", "Pospuesto", "info");
+                    } catch (e) { console.error(e); }
+
+                    // Cargar el siguiente (que ahora ocupa el indice actual tras el splice)
+                    App.discador.cargarActual();
+                },
                 detener: () => {
                     App.discador.activo = false;
                     App.ui.toggleModal('modal-ficha-cliente', false);
+                    App.ui.renderizarListas();
                 }
             },
 
@@ -2598,6 +2773,8 @@ Responde SOLO en JSON estricto:
                     const agendados = App.datos.leads.filter(l => l.estado === 'seguimiento');
                     if (agendados.length === 0) { lista.innerHTML = '<div class="text-center py-10 text-slate-400">Nada pendiente hoy.</div>'; } 
                     else {
+                        const elConteo = document.getElementById('conteo-lead-Discador');
+                        if(elConteo) elConteo.innerText = agendados.length;
                         agendados.forEach((lead) => {
                             const realIndex = App.datos.leads.indexOf(lead);
                             const item = document.createElement('div');
@@ -3198,7 +3375,7 @@ Responde SOLO en JSON estricto:
                     });
 
                     const trendTotal = [];
-                    const trendConversando = [];
+                    const trendProgramados = [];
                     const trendMeta = [];
 
                     last7Days.forEach(date => {
@@ -3213,21 +3390,21 @@ Responde SOLO en JSON estricto:
 
                         const closedCount = App.datos.leads.filter(l => l.estado === 'cerrados' && l.historial && l.historial.some(h => h.nota.includes('VENTA CERRADA') && h.fecha.includes(dateStr))).length;
                         
-                        const contactedCount = App.datos.leads.filter(l => l.historial && l.historial.some(h => (h.nota.includes('WhatsApp Enviado') || h.nota.includes('Agendado')) && h.fecha.includes(dateStr))).length;
+                        const scheduledCount = App.datos.leads.filter(l => l.fecha_agendada && l.fecha_agendada.startsWith(date.toISOString().split('T')[0])).length;
 
                         // 1. Efectividad Total (Cerrados / Creados)
                         trendTotal.push(createdCount > 0 ? Math.round((closedCount / createdCount) * 100) : 0);
 
-                        // 2. Efectividad Conversación (Cerrados / Contactados)
-                        trendConversando.push(contactedCount > 0 ? Math.round((closedCount / contactedCount) * 100) : 0);
+                        // 2. Tendencia de Programación (Programados / Creados)
+                        trendProgramados.push(createdCount > 0 ? Math.round((scheduledCount / createdCount) * 100) : 0);
 
                         // 3. Meta (Volumen de Ventas Diario)
                         trendMeta.push(closedCount);
                     });
 
                     App.ui.renderSparkline('chart-conv-total', trendTotal, '#10b981');
-                    App.ui.renderSparkline('chart-conv-conversando', trendConversando, '#3b82f6');
-                    App.ui.renderSparkline('chart-conv-meta', trendMeta, '#9333ea');
+                    App.ui.renderSparkline('chart-conv-programados', trendProgramados, '#0d9488'); // Teal-600
+                    App.ui.renderSparkline('chart-conv-meta', trendMeta, '#059669'); // Emerald-600
                 }
             },
 
@@ -3278,10 +3455,14 @@ Responde SOLO en JSON estricto:
                     
                     document.getElementById('conv-vs-total-detalle').innerText = `${cerradosEnPeriodo} cerrados de ${nuevosEnPeriodo} nuevos`;
 
-                    const poolCualificado = leadsPeriodo.filter(l => l.estado === 'seguimiento' || l.estado === 'cerrados').length;
-                    const efectividadConversando = (poolCualificado > 0) ? Math.round((cerradosEnPeriodo / poolCualificado) * 100) : 0;
-                    document.getElementById('conv-vs-conversando').innerText = `${efectividadConversando}%`;
-                    document.getElementById('conv-vs-conversando-detalle').innerText = `${cerradosEnPeriodo} cerrados de ${poolCualificado} cualificados`;
+                    // NUEVA MÉTRICA: % Programados vs Recibidos Hoy
+                    const hoyISO = new Date().toISOString().split('T')[0];
+                    const recibidosHoy = App.datos.leads.filter(l => l.created_at && l.created_at.startsWith(hoyISO)).length;
+                    const programadosHoy = App.datos.leads.filter(l => l.fecha_agendada && l.fecha_agendada.startsWith(hoyISO)).length;
+                    const porcProgramados = recibidosHoy > 0 ? Math.round((programadosHoy / recibidosHoy) * 100) : 0;
+
+                    document.getElementById('conv-vs-programados').innerText = `${porcProgramados}%`;
+                    document.getElementById('conv-vs-programados-detalle').innerText = `${programadosHoy} programados de ${recibidosHoy} recibidos hoy`;
 
                     const mesActual = new Date().getMonth(); const anioActual = new Date().getFullYear();
                     const metaMes = 3 + (mesActual - 1); // Meta 3 para Febrero (mes 1), 4 para Marzo, etc.
@@ -3388,8 +3569,8 @@ Responde SOLO en JSON estricto:
                     App.ui.renderizarListas();
                 },
                 renderizarListas: () => {
-                    const estados = ['nuevos', 'whatsapp_enviado', 'sin_respuesta', 'seguimiento', 'cerrados']; // 'descartados' y 'agendados' se manejan diferente
-                    const contadores = { nuevos: 0, whatsapp_enviado: 0, sin_respuesta: 0, seguimiento: 0, agendados: 0, cerrados: 0, descartados: 0 };
+                    const estados = ['discador', 'nuevos', 'whatsapp_enviado', 'sin_respuesta', 'seguimiento', 'cerrados']; // 'descartados' y 'agendados' se manejan diferente
+                    const contadores = { discador: 0, nuevos: 0, whatsapp_enviado: 0, sin_respuesta: 0, seguimiento: 0, agendados: 0, cerrados: 0, descartados: 0 };
                     
                     // Limpiar contenedores
                     estados.forEach(id => {
@@ -3424,7 +3605,7 @@ Responde SOLO en JSON estricto:
                             
                             let extraInfo = '<i class="fa-solid fa-chevron-right text-[9px] text-slate-400"></i>';
                             if (lead.fecha_agendada && estadoUI === 'agendados') extraInfo = `<span class="text-[9px] font-bold text-purple-500 bg-purple-50 px-1 rounded">${lead.fecha_agendada.slice(5)}</span>`;
-                            
+
                             const itemHTML = `<div onclick="App.cliente.abrir(${originalIndex})" class="p-3 mb-2 bg-white border border-emerald-100 rounded-xl hover:shadow-md hover:border-emerald-300 transition-all cursor-pointer group flex justify-between items-center"><div><span class="block text-xs font-bold text-slate-800 group-hover:text-teal-600 truncate max-w-[150px]">${lead.negocio}</span><span class="text-[9px] text-slate-500 font-mono">${lead.whatsapp}</span><span class="block text-[9px] text-teal-400 font-bold truncate max-w-[140px]">${lead.dominio || ''}</span></div>${extraInfo}</div>`;
                             const listEl = document.getElementById(`list-${estadoUI}`);
                             if(listEl) listEl.insertAdjacentHTML('beforeend', itemHTML);
@@ -3434,11 +3615,44 @@ Responde SOLO en JSON estricto:
                     // Actualizar badges (incluyendo descartados que no tiene lista)
                     Object.keys(contadores).forEach(key => { 
                         const el = document.getElementById(`badge-${key}`); 
-                        if(el) el.innerText = contadores[key]; 
+                        if(el) {
+                            el.innerText = contadores[key];
+                            
+                            // Parpadeo para Cola Discador si hay pendientes y no está activo
+                            if (key === 'discador') {
+                                // Calcular pendientes reales (Hoy o Atrasados + En Cola)
+                                const hoy = App.util.fechaHoy();
+                                const pendientesReales = App.datos.leads.filter(l => (l.estado === 'discador') || (l.fecha_agendada && l.fecha_agendada.split('T')[0] <= hoy && l.estado !== 'descartados' && l.estado !== 'cerrados')).length;
+                                el.innerText = pendientesReales;
+
+                                if (pendientesReales > 0 && !App.discador.activo) {
+                                    el.classList.add('animate-pulse', 'bg-red-600', 'text-white');
+                                    el.classList.remove('bg-teal-100', 'text-teal-700');
+                                } else {
+                                    el.classList.remove('animate-pulse', 'bg-red-600', 'text-white');
+                                    el.classList.add('bg-teal-100', 'text-teal-700');
+                                }
+                            }
+                        }
                     });
                     
                     document.getElementById('metric-total').innerText = App.datos.leads.length;
                     document.getElementById('metric-validos').innerText = contadores.seguimiento + contadores.agendados; 
+
+                    // Actualizar contador en el botón de Modo Focus (Total global de agendados)
+                    const hoy = App.util.fechaHoy();
+                    const totalProgramados = App.datos.leads.filter(l => l.fecha_agendada && l.estado !== 'descartados' && l.estado !== 'cerrados').length;
+                    const pendientesHoy = App.datos.leads.filter(l => l.fecha_agendada && l.fecha_agendada.split('T')[0] <= hoy && l.estado !== 'descartados' && l.estado !== 'cerrados').length;
+                    
+                    const elBtnCount = document.getElementById('btn-discador-count');
+                    if(elBtnCount) {
+                        elBtnCount.innerText = totalProgramados;
+                        if (pendientesHoy > 0) {
+                            elBtnCount.className = "ml-1 bg-red-600 text-white px-2 py-0.5 rounded text-[10px] animate-pulse shadow-lg shadow-red-500/50";
+                        } else {
+                            elBtnCount.className = "ml-1 bg-white/20 px-1.5 py-0.5 rounded text-[10px]";
+                        }
+                    }
 
                     // Si hay búsqueda activa, abrir automáticamente los acordeones que tengan resultados
                     if (App.filtroBusqueda !== '') {
@@ -3578,7 +3792,7 @@ Responde SOLO en JSON estricto:
 
                     container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible"><polyline fill="none" stroke="${color}" stroke-width="2" points="${points}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" /><circle cx="${points.split(' ').pop().split(',')[0]}" cy="${points.split(' ').pop().split(',')[1]}" r="3" fill="${color}" /></svg>`;
                 },
-                notificar: (mensaje, titulo = "Notificación", tipo = "info") => {
+                notificar: (mensaje, titulo = "Notificación", tipo = "info", duracion = 0) => {
                     const modal = document.getElementById('modal-notificacion');
                     document.getElementById('notificacion-titulo').innerText = titulo;
                     document.getElementById('notificacion-mensaje').innerText = mensaje;
@@ -3596,6 +3810,10 @@ Responde SOLO en JSON estricto:
                     btn.className = `w-full py-2.5 font-bold rounded-lg text-white bg-${color}-500 hover:bg-${color}-600`;
                     
                     modal.classList.remove('hidden');
+
+                    if (duracion > 0) {
+                        setTimeout(() => { modal.classList.add('hidden'); }, duracion);
+                    }
                 },
                 cerrarNotificacion: () => {
                     document.getElementById('modal-notificacion').classList.add('hidden');

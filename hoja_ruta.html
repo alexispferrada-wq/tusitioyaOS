@@ -209,7 +209,7 @@
                 };
 
                 // 1. Header
-                document.getElementById('cliente-id').innerText = `ID PROYECTO: #${id.padStart(4, '0')}`;
+                document.getElementById('cliente-id').innerText = id.includes('TSY-') ? id : `ID PROYECTO: #${id.padStart(4, '0')}`;
                 document.getElementById('cliente-nombre').innerText = cliente.nombre;
                 
                 // 2. Barra de Progreso
