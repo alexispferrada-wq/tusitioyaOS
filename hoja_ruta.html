@@ -89,20 +89,32 @@
                 <div id="drive-container" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6"></div>
 
                 <!-- DOCUMENTACIÓN EXISTENTE -->
-                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-folder-open text-yellow-500"></i> Documentación</h3>
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-folder-open text-yellow-500"></i> Carpeta del Cliente</h3>
                 
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
                     
                     <!-- Item Documento -->
                     <div onclick="abrirTerminos()" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-pointer group">
                         <div class="w-10 h-10 bg-slate-100 text-slate-600 rounded-lg flex items-center justify-center text-xl">
-                            <i class="fa-solid fa-file-contract"></i>
+                            <i class="fa-solid fa-file-code"></i>
                         </div>
                         <div class="flex-1 overflow-hidden">
-                            <p class="text-sm font-bold text-slate-700 truncate group-hover:text-blue-600">Términos de Uso y Licencia</p>
-                            <p class="text-xs text-slate-400">Ver Documento Legal</p>
+                            <p class="text-sm font-bold text-slate-700 truncate group-hover:text-blue-600">Acuerdo de Creación de Software</p>
+                            <p class="text-xs text-slate-400">Estado de Licencia</p>
                         </div>
                         <i class="fa-solid fa-arrow-up-right-from-square text-slate-300 group-hover:text-blue-500"></i>
+                    </div>
+
+                    <!-- Item Comprobantes -->
+                    <div onclick="verComprobantes()" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-pointer group">
+                        <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-sm font-bold text-slate-700 truncate group-hover:text-green-600">Comprobantes de Pago</p>
+                            <p class="text-xs text-slate-400">Historial de Transferencias</p>
+                        </div>
+                        <i class="fa-solid fa-eye text-slate-300 group-hover:text-green-500"></i>
                     </div>
 
                     <!-- Item Documento -->
@@ -115,6 +127,18 @@
                             <p class="text-xs text-slate-400">Ver Requerimientos</p>
                         </div>
                         <i class="fa-solid fa-eye text-slate-300 group-hover:text-blue-500"></i>
+                    </div>
+
+                    <!-- Item Credenciales -->
+                    <div onclick="verCredenciales()" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all cursor-pointer group">
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-key"></i>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-sm font-bold text-slate-700 truncate group-hover:text-purple-600">Accesos y Credenciales</p>
+                            <p class="text-xs text-slate-400">Datos de tu sitio</p>
+                        </div>
+                        <i class="fa-solid fa-lock text-slate-300 group-hover:text-purple-500"></i>
                     </div>
 
                 </div>
@@ -160,6 +184,16 @@
                     <textarea disabled id="v_funcionalidades" rows="3" class="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-500 font-bold resize-none"></textarea>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL INFO GENÉRICO -->
+    <div id="modal-info" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden p-6 text-center">
+            <div id="modal-info-icon" class="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-blue-100 text-blue-600"></div>
+            <h3 id="modal-info-title" class="text-xl font-bold text-slate-800 mb-2"></h3>
+            <p id="modal-info-msg" class="text-sm text-slate-500 mb-6"></p>
+            <button onclick="document.getElementById('modal-info').classList.add('hidden')" class="w-full py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors">Entendido</button>
         </div>
     </div>
 
@@ -231,10 +265,20 @@
                     const driveDiv = document.getElementById('drive-container');
                     driveDiv.classList.remove('hidden'); // Mostrar contenedor
                     driveDiv.innerHTML = `
-                        <a href="${cliente.drive_link}" target="_blank" class="drive-btn w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors">
+                        <a href="${cliente.drive_link}" target="_blank" class="drive-btn w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-100 transition-colors mb-4">
                             <i class="fa-brands fa-google-drive text-xl"></i> Ver Carpeta en la Nube
                         </a>
-                        <p class="text-[10px] text-slate-400 mt-2 text-center">Acceso directo a tus archivos en Google Drive</p>
+                        
+                        <div class="bg-slate-50 rounded-xl border border-slate-200 p-4">
+                            <h4 class="font-bold text-xs text-slate-700 mb-3 flex items-center gap-2 uppercase tracking-wider"><i class="fa-solid fa-folder-tree text-blue-500"></i> Estructura Sugerida</h4>
+                            <ul class="space-y-2 text-[10px] text-slate-600">
+                                <li class="flex items-center gap-2"><i class="fa-regular fa-folder-open text-yellow-500"></i> 01. Logos y Marca</li>
+                                <li class="flex items-center gap-2"><i class="fa-regular fa-folder-open text-yellow-500"></i> 02. Fotos y Videos</li>
+                                <li class="flex items-center gap-2"><i class="fa-regular fa-folder-open text-yellow-500"></i> 03. Textos y Contenido</li>
+                                <li class="flex items-center gap-2"><i class="fa-regular fa-folder-open text-yellow-500"></i> 04. Legal</li>
+                            </ul>
+                        </div>
+                        <p class="text-[9px] text-slate-400 mt-2 text-center">Sube tus archivos ordenados aquí ☝️</p>
                     `;
                 }
 
@@ -313,6 +357,37 @@
             document.getElementById('v_funcionalidades').value = detalles;
 
             document.getElementById('modal-encuesta').classList.remove('hidden');
+        }
+
+        function verComprobantes() {
+            if(!CURRENT_CLIENT_DATA) return;
+            const total = CURRENT_CLIENT_DATA.monto_total || 0;
+            const pagado = CURRENT_CLIENT_DATA.monto_pagado || 0;
+            const deuda = Math.max(0, total - pagado);
+            const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
+
+            const msg = `
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4 text-left">
+                    <div class="flex justify-between mb-1"><span class="text-xs font-bold text-slate-500">Total Proyecto:</span> <span class="text-xs font-bold text-slate-800">${formatter.format(total)}</span></div>
+                    <div class="flex justify-between mb-1"><span class="text-xs font-bold text-slate-500">Pagado:</span> <span class="text-xs font-bold text-green-600">${formatter.format(pagado)}</span></div>
+                    <div class="flex justify-between border-t border-slate-200 pt-1 mt-1"><span class="text-xs font-bold text-slate-500">Pendiente:</span> <span class="text-xs font-bold text-red-500">${formatter.format(deuda)}</span></div>
+                </div>
+                <p class="text-xs">Los comprobantes detallados fueron enviados a tu correo electrónico registrado.</p>
+            `;
+
+            document.getElementById('modal-info-icon').innerHTML = '<i class="fa-solid fa-receipt"></i>';
+            document.getElementById('modal-info-icon').className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-green-100 text-green-600";
+            document.getElementById('modal-info-title').innerText = "Estado de Pagos";
+            document.getElementById('modal-info-msg').innerHTML = msg;
+            document.getElementById('modal-info').classList.remove('hidden');
+        }
+
+        function verCredenciales() {
+            document.getElementById('modal-info-icon').innerHTML = '<i class="fa-solid fa-lock"></i>';
+            document.getElementById('modal-info-icon').className = "mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center text-3xl bg-purple-100 text-purple-600";
+            document.getElementById('modal-info-title').innerText = "Accesos Seguros";
+            document.getElementById('modal-info-msg').innerText = "Por seguridad, las credenciales de administración (WordPress/cPanel) se entregarán una vez finalizado el proyecto y cubierto el 100% del pago.";
+            document.getElementById('modal-info').classList.remove('hidden');
         }
     </script>
 </body>
