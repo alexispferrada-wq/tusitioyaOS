@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -1297,62 +1297,6 @@
         ];
 
         const PROMPT_TEMPLATE = `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".
-Tu misión es encontrar clientes REALES y VERIFICABLES mediante una búsqueda exhaustiva en fuentes públicas (Google Maps, Directorios, Redes Sociales).
-OBJETIVO: Generar {cantidad} prospectos del rubro "{rubro}" en "{ciudad}".
-REGLAS ESTRICTAS DE FILTRADO (OBLIGATORIO):
-1. DATOS REALES: Toda la información debe ser de un negocio real y visible públicamente. NO inventes, NO alucines datos.
-2. CONTACTO VÁLIDO: El WhatsApp debe ser un número de celular chileno (+56 9...). DESCARTA números fijos (2...) o números falsos/de ejemplo. Si no hay celular, descarta el prospecto.
-3. UBICACIÓN: Deben estar ubicados en {ciudad}.
-4. ACTIVIDAD: Prioriza negocios con reseñas recientes (idealmente de los últimos 10-30 días) para asegurar que sigan operativos.
-5. RELEVANCIA: Deben tener perfil público con al menos 10 reseñas acumuladas.
-Para cada prospecto, genera un JSON con: nombre, negocio, whatsapp, dominio_sugerido, rut, email, rubro, url, y "propuesta_text".
-REGLAS DE ORO PARA EL MENSAJE (propuesta_text):
-1. 🚫 PROHIBIDO usar "Estimado", "Estimada" o saludos formales anticuados.
-2. 🚫 PROHIBIDO frases de relleno como "Espero que esté bien" o "Vi su rubro...".
-3. ✅ IDENTIDAD: Eres Alexis Ferrada de TuSitioYa.
-4. ✅ SALUDO: Debe ser: "Hola [Nombre] 👋, le saluda Alexis Ferrada de TuSitioYa." (O "Hola [Nombre], un gusto saludarle").
-5. ✅ TONO "PSICÓLOGO": Identifica un dolor real visible en su perfil (ej: no tienen web, web caída, usan Linktree, fotos pixeladas) y ofrece la cura inmediata.
-6. ✅ ESTRUCTURA VISUAL: Usa emojis para los bullets y párrafos cortos.
-ESTRUCTURA DEL MENSAJE A GENERAR:
-1. Saludo directo (Personalizado).
-2. El Gancho (Hook): "Vi sus reseñas en Google y destacan su atención, pero noté que no tiene web/su web falla...".
-3. La Solución (Dominio): "Le ofrezco asegurar hoy mismo [Dominio Sugerido]...".
-4. Lista de Beneficios (4 Bullets con Emojis):
-   - ✅ [Beneficio 1: Estética/Imagen]
-   - ✅ [Beneficio 2: Funcionalidad]
-   - ✅ [Beneficio 3: Contacto/Ventas]
-   - ✅ [Beneficio 4: Propiedad del dominio .cl]
-5. El Cierre (Precio y Pregunta): "Valor único: $72.000 (50% inicio / 50% entrega). ¿Le gustaría ver una demo?"
-Responde SOLO con un objeto JSON que contenga una única clave "prospectos", y su valor debe ser un Array de JSON válido. No incluyas texto adicional ni explicaciones. NO DATOS SIMULADOS.`;
-
-        const DEFAULT_ANALYSIS_PROMPT = `Actúa como Alexis Ferrada, director de ventas de "TuSitioYa". Eres experto en Neuroventas y Cialdini.
-Analiza la conversación adjunta con un prospecto.
-
-OBJETIVO: Generar una estrategia de cierre basada en psicología y detectar el rubro del negocio.
-
-SALIDA REQUERIDA (JSON ESTRICTO):
-{
-  "rubro_detectado": "Rubro o nicho del negocio del cliente (Ej: Clínica Dental, Abogado, Sushi). Si no es claro, deduce el más probable.",
-  "probabilidad_cierre": (Número entero 0-100),
-  "resumen_una_linea": "Resumen ejecutivo de máximo 15 palabras.",
-  "perfil_psicologico": "Identifica el DOLOR PRINCIPAL (Miedo a perder, Estatus, Ahorro, Seguridad) y el TIPO DE COMPRADOR (Analítico, Emocional, Asertivo).",
-  "accion_sugerida": "La mejor acción táctica ahora (Ej: Enviar audio, Agendar Demo, Pedir el 50%).",
-  "texto_cierre": "Script de respuesta persuasiva para WhatsApp. Usa gatillos mentales (Escasez, Autoridad o Prueba Social). Termina con una pregunta de cierre.",
-  "texto_cierre_corto": "Versión resumida del script anterior. OBLIGATORIO: Texto listo para enviar, de MÁXIMO 3 LÍNEAS, directo y al grano. NO uses guiones ni placeholders."
-}
-
-NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere una estrategia de apertura agresiva pero empática.`;
-
-        const EXAMPLE_CONVERSATIONS = {
-            precio: `[10:00] Cliente: Hola, vi su anuncio de páginas web.
-[10:05] Vendedor: Hola! Sí, tenemos planes desde $72.000. Qué negocio tienes?
-[10:10] Cliente: Es una pastelería. Pero ese precio es muy alto para mí ahora. Tienen algo más barato?`,
-            interesado: `[09:00] Cliente: Hola, necesito una web para mi clínica dental.\n[09:05] Vendedor: Hola! Perfecto, tenemos experiencia con clínicas. ¿Buscas algo informativo o con agenda?\n[09:10] Cliente: Con agenda, me urge tenerla lista esta semana. ¿Cuánto sale y cómo pagamos?`,
-            enojado: `[15:00] Cliente: Llevo 3 días esperando respuesta sobre mi soporte.\n[15:05] Vendedor: Hola, disculpa la demora. ¿Cuál era el problema?\n[15:10] Cliente: Mi web sigue caída y estoy perdiendo ventas. Si no se arregla hoy quiero la devolución.`
-        };
-
-        const EXAMPLE_CONVERSATION = EXAMPLE_CONVERSATIONS.precio;
-
         const App = {
             datos: { leads: [], blacklist: [] },
             tempLeads: [],
@@ -1362,6 +1306,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
             init: async function() {
                 try {
                     this.datos.blacklist = JSON.parse(localStorage.getItem('blacklist') || '[]');
+                    this.entrenar.init(); // Iniciar módulo de entrenamiento
                     this.ui.actualizarBlacklistCount();
                     this.models.cargarLista();
                     // Intentar cargar estado visual IA sin bloquear la app si falla
@@ -1401,7 +1346,6 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                 }
                 
                 this.ui.renderizarListas(); // Esto ya llama a las demás actualizaciones
-                this.util.iniciarReloj();
                 this.monitor.init();
                 this.conversion.init();
 
@@ -1464,6 +1408,7 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                     };
                     setInterval(update, 1000);
                     update();
+                    this.util.iniciarReloj();
                 }
             },
 
@@ -2272,8 +2217,27 @@ NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere 
                         }
 
                         // Obtener el prompt personalizado o el default
-                        const systemPrompt = localStorage.getItem('analysis_prompt') || DEFAULT_ANALYSIS_PROMPT;
-                        const fullPrompt = `${systemPrompt}\n\nCONVERSACIÓN:\n"${historialTexto}"`;
+                        const systemPrompt = `Actúa como Alexis Ferrada, director de ventas de "TuSitioYa". Eres experto en Neuroventas y Cialdini.
+Analiza la conversación adjunta con un prospecto.
+
+OBJETIVO: Generar una estrategia de cierre basada en psicología y detectar el rubro del negocio.
+
+SALIDA REQUERIDA (JSON ESTRICTO):
+{
+  "rubro_detectado": "Rubro o nicho del negocio del cliente (Ej: Clínica Dental, Abogado, Sushi). Si no es claro, deduce el más probable.",
+  "probabilidad_cierre": (Número entero 0-100),
+  "resumen_una_linea": "Resumen ejecutivo de máximo 15 palabras.",
+  "perfil_psicologico": "Identifica el DOLOR PRINCIPAL (Miedo a perder, Estatus, Ahorro, Seguridad) y el TIPO DE COMPRADOR (Analítico, Emocional, Asertivo).",
+  "accion_sugerida": "La mejor acción táctica ahora (Ej: Enviar audio, Agendar Demo, Pedir el 50%).",
+  "texto_cierre": "Script de respuesta persuasiva para WhatsApp. Usa gatillos mentales (Escasez, Autoridad o Prueba Social). Termina con una pregunta de cierre.",
+  "texto_cierre_corto": "Versión resumida del script anterior. OBLIGATORIO: Texto listo para enviar, de MÁXIMO 3 LÍNEAS, directo y al grano. NO uses guiones ni placeholders."
+}
+
+NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere una estrategia de apertura agresiva pero empática.
+
+CONVERSACIÓN:
+"${historialTexto}"`;
+                        const fullPrompt = systemPrompt; // No se usa renderPrompt aquí porque el prompt ya está completo
 
                         const model = document.getElementById('model-selector').value;
                         const res = await fetch('/api/analizar-chat', {

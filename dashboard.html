@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Aexon LeadGen Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes subirAguja {
+            from { stroke-dashoffset: 126; }
+        }
+        @keyframes subirAgujaRotacion {
+            from { transform: rotate(-90deg); }
+            to { transform: var(--target-rotation); }
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50% { transform: translateY(-10px); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-gray-900 text-white flex flex-col">
+            <div class="h-16 flex items-center justify-center border-b border-gray-800">
+                <h1 class="text-xl font-bold tracking-wider">Aexon<span class="text-blue-500">LeadGen</span></h1>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="javascript:void(0)" id="nav-wizard" onclick="App.navegacion.ir('wizard')" class="flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white font-medium shadow-lg transition">
+                    <i class="fas fa-magic"></i> Asistente Wizard
+                </a>
+                <a href="javascript:void(0)" id="nav-buscador" onclick="App.navegacion.ir('buscador')" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition">
+                    <i class="fas fa-radar"></i> Buscador IA
+                </a>
+                <a href="javascript:void(0)" id="nav-database" onclick="App.navegacion.ir('database')" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition">
+                    <i class="fas fa-database"></i> Base de Datos
+                </a>
+                <a href="javascript:void(0)" id="nav-entrenar" onclick="App.navegacion.ir('entrenar')" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition">
+                    <i class="fas fa-robot"></i> Entrenar Modelos
+                </a>
+                <a href="javascript:void(0)" id="nav-config" onclick="App.navegacion.ir('config')" class="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition">
+                    <i class="fas fa-cog"></i> Configuración
+                </a>
+            </nav>
+            <div class="p-4 border-t border-gray-800">
+                <p class="text-xs text-gray-500 text-center">Powered by Aexon Software Solutions</p>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10">
+                <h2 class="text-xl font-semibold text-gray-800">Orquestador de Prospección</h2>
+                <div class="flex items-center gap-4">
+                    <!-- SELECTOR DE IA GLOBAL -->
+                    <select id="global-model-selector" class="bg-gray-50 border border-gray-300 text-gray-700 text-xs font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 outline-none">
+                        <option value="gemini-2.0-flash">Gemini 2.0 Flash (Google)</option>
+                        <option value="groq-llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
+                        <option value="groq-llama-3.1-8b-instant">Llama 3.1 8B (Rápido)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    </select>
+                    <!-- INDICADOR DE SUSCRIPCIÓN -->
+                    <div id="subscription-badge" class="hidden bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full border border-purple-200 flex items-center gap-2">
+                        <i class="fas fa-calendar-check"></i> <span id="dias-restantes">--</span> Días Restantes
+                    </div>
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full border border-green-200">
+                        <i class="fas fa-circle text-[10px] mr-1"></i> Sistema Operativo
+                    </span>
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                        U
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-6">
+                
+                <!-- VISTA WIZARD (NUEVO - AHORA PRIMERO) -->
+                <div id="view-wizard" class="view-section block">
+                    <div class="max-w-3xl mx-auto">
+                        <!-- Paso 1: Identidad -->
+                        <div id="step-1" class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col h-[550px] transition-all duration-500">
+                            <!-- Chat Header -->
+                            <div class="bg-gray-50 p-4 border-b border-gray-100 flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-800">Estratega IA</h3>
+                                    <p class="text-xs text-gray-500 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> En línea</p>
+                                </div>
+                            </div>
+
+                            <!-- Chat Messages -->
+                            <div id="wizard-chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/50">
+                                <!-- Mensaje Inicial Inyectado por JS -->
+                            </div>
+
+                            <!-- Input Area -->
+                            <div class="p-4 bg-white border-t border-gray-100">
+                                <div class="relative">
+                                    <input type="text" id="wizard-chat-input" placeholder="Escribe aquí tu respuesta..." class="w-full pl-4 pr-12 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all" onkeypress="if(event.key === 'Enter') App.wizard.enviarMensaje()">
+                                    <button onclick="App.wizard.enviarMensaje()" class="absolute right-2 top-2 bottom-2 bg-blue-600 hover:bg-blue-700 text-white w-10 rounded-lg flex items-center justify-center transition-colors"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 2: Loader con Animación de Redes -->
+                        <div id="step-2" class="hidden bg-white rounded-2xl shadow-lg border border-gray-200 p-16 text-center">
+                            <div class="relative w-24 h-24 mx-auto mb-8">
+                                <div class="absolute inset-0 border-4 border-gray-100 rounded-full"></div>
+                                <div class="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                                <i class="fas fa-brain absolute inset-0 flex items-center justify-center text-blue-500 text-2xl animate-pulse"></i>
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Escaneando Ecosistema Digital...</h3>
+                            <p class="text-gray-500 mb-8">La IA está buscando patrones en:</p>
+
+                            <!-- Iconos de Redes Animados -->
+                            <div class="flex justify-center gap-8 text-3xl">
+                                <div class="flex flex-col items-center gap-2" style="animation: floatIcon 2s infinite ease-in-out;">
+                                    <i class="fab fa-google text-red-500"></i>
+                                    <span class="text-[10px] font-bold text-gray-400">Google</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-2" style="animation: floatIcon 2s infinite ease-in-out 0.5s;">
+                                    <i class="fab fa-facebook text-blue-600"></i>
+                                    <span class="text-[10px] font-bold text-gray-400">Facebook</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-2" style="animation: floatIcon 2s infinite ease-in-out 1s;">
+                                    <i class="fab fa-instagram text-pink-500"></i>
+                                    <span class="text-[10px] font-bold text-gray-400">Instagram</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Paso 3: Sugerencias -->
+                        <div id="step-3" class="hidden space-y-6">
+                            <div class="text-center mb-8">
+                                <h2 class="text-2xl font-bold text-gray-900">Estrategias Detectadas</h2>
+                                <p id="wizard-context-text" class="text-gray-500">Basado en tu entrevista, hemos diseñado estos 3 planes:</p>
+                            </div>
+                            <div id="wizard-cards" class="space-y-4">
+                                <!-- Inyectado por JS -->
+                            </div>
+                            <div class="text-center mt-6">
+                                <button onclick="App.wizard.reset()" class="text-gray-400 hover:text-gray-600 text-sm font-medium">
+                                    <i class="fas fa-comments mr-1"></i> Volver al Chat
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Paso 4: Configuración Final -->
+                        <div id="step-4" class="hidden bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
+                            <div class="bg-blue-50/50 p-6 border-b border-blue-100 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Nicho Seleccionado</p>
+                                    <h3 id="wizard-selected-niche" class="text-xl font-bold text-gray-900">...</h3>
+                                </div>
+                                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-500 shadow-sm">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                            </div>
+                            <div class="p-8 space-y-6">
+                                <div class="space-y-4">
+                                    <label class="flex items-center p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-blue-300 hover:bg-blue-50/30 transition-all group">
+                                        <input type="checkbox" id="wizard-save-template" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300" onchange="document.getElementById('template-name-group').classList.toggle('hidden')">
+                                        <div class="ml-3">
+                                            <span class="block text-sm font-bold text-gray-800 group-hover:text-blue-700">💾 Guardar como Plantilla Rápida</span>
+                                            <span class="block text-xs text-gray-500">Para reutilizar esta configuración en el futuro.</span>
+                                        </div>
+                                    </label>
+                                    
+                                    <div id="template-name-group" class="hidden pl-8">
+                                        <label class="block text-xs font-bold text-gray-500 mb-1">Nombre de la Plantilla</label>
+                                        <input type="text" id="wizard-template-name" placeholder="Ej: Seguros - Recién Nacidos" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                                    </div>
+                                </div>
+
+                                <button onclick="App.wizard.guardarYSalir()" class="w-full bg-green-600 hover:bg-green-700 text-white text-lg font-bold py-4 rounded-xl shadow-lg shadow-green-500/30 transition-all transform hover:scale-[1.01] flex items-center justify-center gap-2">
+                                    <i class="fas fa-save"></i> Guardar en Bóveda e Ir al Buscador
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 1: BUSCADOR IA -->
+                <div id="view-buscador" class="view-section hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Ejecutar Estrategia Guardada</h3>
+                            <button onclick="App.navegacion.ir('wizard')" class="text-sm text-blue-600 hover:underline font-medium">
+                                <i class="fas fa-plus-circle"></i> Crear nueva estrategia
+                            </button>
+                        </div>
+                        
+                        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Selecciona una fórmula de tu bóveda:</label>
+                                <select id="select-estrategia" onchange="App.prospector.seleccionarEstrategia()" class="w-full rounded-xl border-gray-300 border p-4 focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-lg font-medium shadow-sm transition-all">
+                                    <option value="" disabled selected>-- Cargar estrategia desde el Wizard --</option>
+                                    <!-- Se llena dinámicamente -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad:</label>
+                                <select id="select-cantidad" class="w-full rounded-xl border-gray-300 border p-4 focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-lg font-medium shadow-sm transition-all">
+                                    <option value="5">5 (Rápido)</option>
+                                    <option value="10" selected>10 (Estándar)</option>
+                                    <option value="20">20 (Profundo)</option>
+                                    <option value="50">50 (Masivo)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Segmentación / Prompt de Búsqueda (Editable):</label>
+                                <textarea id="txt-estrategia-prompt" rows="2" class="w-full rounded-xl border-gray-300 border p-3 focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm shadow-sm transition-all resize-none font-mono text-slate-600" placeholder="Selecciona una estrategia para ver su prompt..."></textarea>
+                            </div>
+                        </div>
+
+                        <button onclick="App.prospector.ejecutarEstrategia()" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 text-lg">
+                            <i class="fas fa-play"></i> Ejecutar Búsqueda de Clientes
+                        </button>
+                    </div>
+
+                    <!-- Tabla de Resultados -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 class="font-bold text-gray-700">Resultados en Tiempo Real</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-center">Calidad IA</th>
+                                        <th class="px-6 py-3">Negocio</th>
+                                        <th class="px-6 py-3">WhatsApp</th>
+                                        <th class="px-6 py-3">Correo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-resultados">
+                                    <!-- JS Injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 2: BASE DE DATOS -->
+                <div id="view-database" class="view-section hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                        
+                        <!-- Stats & Info Header -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <p class="text-xs font-bold text-blue-500 uppercase tracking-wider">Total Registros</p>
+                                <p id="db-total-registros" class="text-3xl font-black text-blue-700 mt-1">0</p>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                                <p class="text-xs font-bold text-purple-500 uppercase tracking-wider">Saldo Actual</p>
+                                <p id="db-saldo-actual" class="text-3xl font-black text-purple-700 mt-1">--</p>
+                                <p class="text-[10px] text-purple-400 font-bold">Días Disponibles</p>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 flex flex-col justify-center">
+                                <p class="text-xs font-bold text-emerald-700 mb-2"><i class="fa-solid fa-shield-heart mr-1"></i> Garantía de Calidad</p>
+                                <p class="text-[10px] text-emerald-800 leading-relaxed text-justify">
+                                    Cada registro dura 6 meses y se borra de tu vista (aunque internamente lo usaremos para alimentar una IA propia en proyecto). Usamos IA para validar contactos, aunque la conectividad final puede variar. Si reportas un número inválido, ayudas a entrenar al sistema. <span class="font-bold">Cada lead entregado cuenta en tu plan.</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Filters & Actions -->
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <div class="flex gap-3 w-full md:w-auto">
+                                <select id="filter-estrategia" onchange="App.database.aplicarFiltros()" class="bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none shadow-sm">
+                                    <option value="all">Todas las Estrategias</option>
+                                </select>
+                                <select id="filter-fecha" onchange="App.database.aplicarFiltros()" class="bg-white border border-gray-300 text-gray-700 text-xs font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none shadow-sm">
+                                    <option value="all">Cualquier Fecha</option>
+                                    <option value="hoy">Hoy</option>
+                                    <option value="semana">Esta Semana</option>
+                                    <option value="mes">Este Mes</option>
+                                </select>
+                            </div>
+                            <button onclick="App.database.cargar()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold py-2 px-4 rounded-lg text-sm flex items-center gap-2 transition-colors">
+                                <i class="fa-solid fa-rotate"></i> Refrescar
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3">Fecha</th>
+                                        <th class="px-6 py-3">Estrategia (Nicho)</th>
+                                        <th class="px-6 py-3">Prospecto</th>
+                                        <th class="px-6 py-3">Contacto</th>
+                                        <th class="px-6 py-3 text-center">Calidad</th>
+                                        <th class="px-6 py-3 text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-database" class="bg-white divide-y divide-gray-200">
+                                    <!-- JS Injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 text-center text-xs text-gray-400">
+                            Mostrando <span id="db-count-visible" class="font-bold text-gray-600">0</span> registros.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 3: ENTRENAR (Placeholder) -->
+                <div id="view-entrenar" class="view-section hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">Entrenamiento de Modelos (Prompts)</h3>
+                                <p class="text-sm text-gray-500">Personaliza las instrucciones del cerebro IA. Usa variables como {{NOMBRE}}.</p>
+                            </div>
+                            <button onclick="App.entrenar.restaurarTodo()" class="text-xs text-red-400 hover:text-red-600 font-bold border border-red-200 px-3 py-1 rounded-lg hover:bg-red-50 transition-colors">
+                                <i class="fa-solid fa-rotate-left"></i> Restaurar Originales
+                            </button>
+                        </div>
+
+                        <div class="flex flex-1 gap-6 overflow-hidden">
+                            <!-- Lista de Habilidades -->
+                            <div class="w-1/3 border-r border-slate-100 pr-4 overflow-y-auto custom-scroll">
+                                <div id="lista-prompts" class="space-y-2">
+                                    <!-- JS Generated -->
+                                </div>
+                            </div>
+
+                            <!-- Editor -->
+                            <div class="w-2/3 flex flex-col">
+                                <div class="mb-2 flex justify-between items-center">
+                                    <h4 id="editor-titulo" class="font-bold text-slate-700">Selecciona una habilidad</h4>
+                                    <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-mono">System Prompt</span>
+                                </div>
+                                <textarea id="editor-prompt" class="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-xs text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/20 resize-none leading-relaxed" placeholder="Selecciona un modelo de la izquierda..."></textarea>
+                                <div class="mt-4 flex justify-end gap-3">
+                                    <button onclick="App.entrenar.guardar()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg transition-all">Guardar Cambios</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VISTA 4: CONFIGURACIÓN (Placeholder) -->
+                <div id="view-config" class="view-section hidden">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                        <h3 class="text-2xl font-bold text-gray-800">Configuración del Sistema</h3>
+                        <p class="text-gray-500 mt-2">API Keys y parámetros globales.</p>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const DEFAULT_PROMPTS = {
+            analisis_general: {
+                titulo: "🧠 Análisis General",
+                desc: "Prompt por defecto para analizar historiales de chat.",
+                template: `Actúa como Alexis Ferrada, director de ventas de "TuSitioYa". Eres experto en Neuroventas y Cialdini.
+Analiza la conversación adjunta con un prospecto.
+
+OBJETIVO: Generar una estrategia de cierre basada en psicología y detectar el rubro del negocio.
+
+SALIDA REQUERIDA (JSON ESTRICTO):
+{
+  "rubro_detectado": "Rubro o nicho del negocio del cliente (Ej: Clínica Dental, Abogado, Sushi). Si no es claro, deduce el más probable.",
+  "probabilidad_cierre": (Número entero 0-100),
+  "resumen_una_linea": "Resumen ejecutivo de máximo 15 palabras.",
+  "perfil_psicologico": "Identifica el DOLOR PRINCIPAL (Miedo a perder, Estatus, Ahorro, Seguridad) y el TIPO DE COMPRADOR (Analítico, Emocional, Asertivo).",
+  "accion_sugerida": "La mejor acción táctica ahora (Ej: Enviar audio, Agendar Demo, Pedir el 50%).",
+  "texto_cierre": "Script de respuesta persuasiva para WhatsApp. Usa gatillos mentales (Escasez, Autoridad o Prueba Social). Termina con una pregunta de cierre.",
+  "texto_cierre_corto": "Versión resumida del script anterior. OBLIGATORIO: Texto listo para enviar, de MÁXIMO 3 LÍNEAS, directo y al grano. NO uses guiones ni placeholders."
+}
+
+NOTA: Si no hay historial suficiente, asume que es un primer contacto y sugiere una estrategia de apertura agresiva pero empática.
+
+CONVERSACIÓN:
+"{{HISTORIAL}}"`
+            },
+            manejar_objeciones: {
+                titulo: "🛡️ Manejo de Objeciones",
+                desc: "Responde a peros y dudas comunes.",
+                template: `Actúa como Alexis Ferrada de TuSitioYa, experto en manejo de objeciones con técnicas de Cialdini.
+CLIENTE: {{NOMBRE}} de "{{NEGOCIO}}" ({{RUBRO}}). Temperatura actual: {{TEMPERATURA}}.
+HISTORIAL DE CONTACTO:
+{{HISTORIAL}}
+
+MISIÓN: Detecta la objeción principal del cliente y genera respuestas específicas para superarla. Si no hay historial, prepara respuestas para las 3 objeciones más comunes: precio, tiempo y competencia.
+
+Responde SOLO en JSON estricto:
+{
+  "rubro_detectado": "Rubro del negocio",
+  "probabilidad_cierre": 60,
+  "resumen_una_linea": "Objeción principal detectada en 15 palabras",
+  "perfil_psicologico": "Tipo de objeción (Precio/Tiempo/Competencia/Desconfianza) y perfil del comprador",
+  "accion_sugerida": "Técnica específica para superar la objeción (reencuadre, prueba social, garantía)",
+  "texto_cierre": "Script detallado para manejar la objeción con empatía y reencuadre. Usa prueba social y casos de éxito de TuSitioYa.",
+  "texto_cierre_corto": "Respuesta corta de WhatsApp (máx 3 líneas) que neutraliza la objeción y mantiene la conversación viva."
+}`
+            },
+            cliente_probable: {
+                titulo: "🎯 Cliente Probable",
+                desc: "Evalúa si vale la pena invertir tiempo.",
+                template: `Actúa como Alexis Ferrada de TuSitioYa, analista de oportunidades de venta.
+CLIENTE: {{NOMBRE}} de "{{NEGOCIO}}" ({{RUBRO}}). Temperatura actual: {{TEMPERATURA}}.
+HISTORIAL DE CONTACTO:
+{{HISTORIAL}}
+
+MISIÓN: Evalúa la probabilidad real de cierre, identifica señales de compra y define el próximo paso estratégico.
+
+Responde SOLO en JSON estricto:
+{
+  "rubro_detectado": "Rubro del negocio",
+  "probabilidad_cierre": 65,
+  "resumen_una_linea": "Evaluación del potencial en 15 palabras",
+  "perfil_psicologico": "Señales de compra detectadas y perfil de decisión (rápido/lento/analítico/emocional)",
+  "accion_sugerida": "Próximo paso concreto para avanzar en el funnel (demo, propuesta, seguimiento en X días)",
+  "texto_cierre": "Mensaje estratégico que avanza la conversación sin presionar. Genera curiosidad y compromiso.",
+  "texto_cierre_corto": "Mensaje WhatsApp de máx 3 líneas que genera un micro-compromiso (agendar llamada, ver demo, confirmar interés)."
+}`
+            },
+            primer_contacto: {
+                titulo: "📞 Primer Contacto",
+                desc: "Script de apertura para romper el hielo.",
+                template: `Actúa como Alexis Ferrada de TuSitioYa, experto en apertura de conversaciones de venta.
+CLIENTE POTENCIAL: {{NOMBRE}} de "{{NEGOCIO}}" ({{RUBRO}}).
+CONTEXTO: Es el primer contacto. El cliente no nos conoce aún.
+
+MISIÓN: Genera el mensaje de apertura perfecto que genere interés inmediato, sin parecer spam ni vendedor agresivo.
+
+Responde SOLO en JSON estricto:
+{
+  "rubro_detectado": "{{RUBRO}}",
+  "probabilidad_cierre": 40,
+  "resumen_una_linea": "Estrategia de primer contacto para {{NEGOCIO}}",
+  "perfil_psicologico": "Dolor probable del negocio basado en su rubro y la falta de presencia digital",
+  "accion_sugerida": "Enviar mensaje de apertura personalizado con gancho específico del rubro",
+  "texto_cierre": "Script completo de primer contacto: saludo personalizado, gancho con dolor específico del rubro, propuesta de valor de TuSitioYa, beneficios clave y pregunta de apertura. Tono cercano y profesional.",
+  "texto_cierre_corto": "Mensaje WhatsApp de apertura de máx 3 líneas. Personalizado para {{NEGOCIO}}. Termina con pregunta abierta."
+}`
+            },
+            negociar_precio: {
+                titulo: "💰 Negociar Precio",
+                desc: "Argumentos de valor para justificar el costo.",
+                template: `Actúa como Alexis Ferrada de TuSitioYa, experto en negociación de valor y precios.
+CLIENTE: {{NOMBRE}} de "{{NEGOCIO}}" ({{RUBRO}}). Temperatura actual: {{TEMPERATURA}}.
+HISTORIAL DE CONTACTO:
+{{HISTORIAL}}
+
+MISIÓN: El cliente considera que el precio es alto. Genera argumentos de valor irrefutables y alternativas de pago que faciliten el cierre.
+
+Responde SOLO en JSON estricto:
+{
+  "rubro_detectado": "Rubro del negocio",
+  "probabilidad_cierre": 55,
+  "resumen_una_linea": "Situación de negociación en 15 palabras",
+  "perfil_psicologico": "Sensibilidad al precio y motivación real de compra",
+  "accion_sugerida": "Estrategia de negociación: anclar valor, ofrecer plan de pago 50/50, mostrar ROI",
+  "texto_cierre": "Script de negociación que justifica el precio con ROI concreto para su rubro, compara con alternativas más caras, y ofrece el plan de pago 50% inicio / 50% entrega como ventaja. Incluye urgencia de cupos limitados.",
+  "texto_cierre_corto": "Mensaje WhatsApp de máx 3 líneas que reencuadra el precio como inversión y propone el plan de pago."
+}`
+            },
+            reactivar_lead: {
+                titulo: "🔄 Reactivar Lead",
+                desc: "Mensaje para revivir muertos (Ghosting).",
+                template: `Actúa como Alexis Ferrada de TuSitioYa, experto en reactivación de leads fríos.
+CLIENTE: {{NOMBRE}} de "{{NEGOCIO}}" ({{RUBRO}}). Temperatura: FRÍO (sin respuesta hace tiempo).
+HISTORIAL DE CONTACTO:
+{{HISTORIAL}}
+
+MISIÓN: El cliente dejó de responder. Genera un mensaje de reactivación que genere curiosidad y rompa el silencio sin parecer desesperado.
+
+Responde SOLO en JSON estricto:
+{
+  "rubro_detectado": "Rubro del negocio",
+  "probabilidad_cierre": 30,
+  "resumen_una_linea": "Situación del lead frío en 15 palabras",
+  "perfil_psicologico": "Razón probable del silencio (precio, timing, olvidó, no le convenció)",
+  "accion_sugerida": "Táctica de reactivación: nuevo ángulo, FOMO, novedad o pregunta directa",
+  "texto_cierre": "Script de reactivación con un ángulo completamente nuevo. Puede ser: una novedad del servicio, un caso de éxito del mismo rubro, o una pregunta directa y honesta. Evita el clásico 'solo quería saber si...'",
+  "texto_cierre_corto": "Mensaje WhatsApp de máx 3 líneas que rompe el silencio con curiosidad o FOMO. Sorprendente y directo."
+}`
+            },
+            generador_web: {
+                titulo: "💻 Generador Web",
+                desc: "Prompt para crear código de Landing Pages.",
+                template: `Actúa como Arquitecto de Software Senior. Crea un PROMPT TÉCNICO DETALLADO para desarrollar una Landing Page con estas características:
+
+1. Objetivo: {{OBJETIVO}}
+2. Público: {{PUBLICO}}
+3. Referentes: {{REFERENTES}}
+4. Estilo: {{ESTILO}}
+5. Secciones: {{SECCIONES}}
+6. Funcionalidades: {{FUNCIONALIDADES}}
+7. Tono: {{TONO}}
+
+SALIDA: Un prompt optimizado para que una IA de código (Cursor/Windsurf) genere el proyecto completo en HTML/Tailwind/JS.`
+            },
+            hoja_ruta: {
+                titulo: "🗺️ Hoja de Ruta",
+                desc: "Generador de plan de trabajo paso a paso.",
+                template: `Actúa como Project Manager experto en desarrollo web.
+Crea una Hoja de Ruta de 6 pasos para un proyecto web.
+
+DATOS DEL PROYECTO:
+- Cliente: {{NEGOCIO}}
+- Rubro/Industria: {{RUBRO}}
+- INSTRUCCIONES ADICIONALES: {{INSTRUCCIONES}}
+
+OBJETIVO: Generar un plan de trabajo técnico y visual (0% a 100%).
+Si hay instrucciones adicionales, úsalas como prioridad para definir los pasos.
+Si solo hay rubro, adapta los pasos estándar a ese nicho.
+
+FORMATO JSON ESTRICTO (Array de objetos):
+[
+    { "titulo": "Nombre corto del paso", "rango": "0% - 15%", "descripcion": "Descripción técnica breve adaptada." },
+    ... hasta 6 pasos cubriendo del 0% al 100%
+]
+
+Solo devuelve el JSON, nada más.`
+            },
+            prospector_ia: {
+                titulo: "🕵️ Prospector IA",
+                desc: "Plantilla base para la búsqueda de leads.",
+                template: `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".
+Tu misión es encontrar clientes REALES y VERIFICABLES mediante una búsqueda exhaustiva en fuentes públicas (Google Maps, Directorios, Redes Sociales).
+OBJETIVO: Generar {{CANTIDAD}} prospectos del rubro "{{RUBRO}}" en "{{CIUDAD}}".
+REGLAS ESTRICTAS DE FILTRADO (OBLIGATORIO):
+1. DATOS REALES: Toda la información debe ser de un negocio real y visible públicamente. NO inventes, NO alucines datos.
+2. CONTACTO VÁLIDO: El WhatsApp debe ser un número de celular chileno (+56 9...). DESCARTA números fijos (2...) o números falsos/de ejemplo. Si no hay celular, descarta el prospecto.
+3. UBICACIÓN: Deben estar ubicados en {{CIUDAD}}.
+4. ACTIVIDAD: Prioriza negocios con reseñas recientes (idealmente de los últimos 10-30 días) para asegurar que sigan operativos.
+5. RELEVANCIA: Deben tener perfil público con al menos 10 reseñas acumuladas.
+Para cada prospecto, genera un JSON con: nombre, negocio, whatsapp, dominio_sugerido, rut, email, rubro, url, y "propuesta_text".
+REGLAS DE ORO PARA EL MENSAJE (propuesta_text):
+1. 🚫 PROHIBIDO usar "Estimado", "Estimada" o saludos formales anticuados.
+2. 🚫 PROHIBIDO frases de relleno como "Espero que esté bien" o "Vi su rubro...".
+3. ✅ IDENTIDAD: Eres Alexis Ferrada de TuSitioYa.
+4. ✅ SALUDO: Debe ser: "Hola [Nombre] 👋, le saluda Alexis Ferrada de TuSitioYa." (O "Hola [Nombre], un gusto saludarle").
+5. ✅ TONO "PSICÓLOGO": Identifica un dolor real visible en su perfil (ej: no tienen web, web caída, usan Linktree, fotos pixeladas) y ofrece la cura inmediata.
+6. ✅ ESTRUCTURA VISUAL: Usa emojis para los bullets y párrafos cortos.
+ESTRUCTURA DEL MENSAJE A GENERAR:
+1. Saludo directo (Personalizado).
+2. El Gancho (Hook): "Vi sus reseñas en Google y destacan su atención, pero noté que no tiene web/su web falla...".
+3. La Solución (Dominio): "Le ofrezco asegurar hoy mismo [Dominio Sugerido]...".
+4. Lista de Beneficios (4 Bullets con Emojis):
+   - ✅ [Beneficio 1: Estética/Imagen]
+   - ✅ [Beneficio 2: Funcionalidad]
+   - ✅ [Beneficio 3: Contacto/Ventas]
+   - ✅ [Beneficio 4: Propiedad del dominio .cl]
+5. El Cierre (Precio y Pregunta): "Valor único: $72.000 (50% inicio / 50% entrega). ¿Le gustaría ver una demo?"
+Responde SOLO con un objeto JSON que contenga una única clave "prospectos", y su valor debe ser un Array de JSON válido. No incluyas texto adicional ni explicaciones. NO DATOS SIMULADOS.`
+            }
+        };
+
+        const App = {
+            init: function() {
+                console.log("Aexon LeadGen Pro v1.0 Iniciado");
+                App.suscripcion.verificar(); // Verificar pago al iniciar
+                App.prospector.cargarEstrategias(); // Cargar lista en el buscador
+                App.entrenar.init(); // Iniciar módulo de entrenamiento
+            },
+
+            navegacion: {
+                ir: (vista) => {
+                    // 1. Ocultar todas las vistas
+                    document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+                    
+                    // 2. Mostrar vista seleccionada (si existe)
+                    const view = document.getElementById(`view-${vista}`);
+                    if(view) view.classList.remove('hidden');
+                    
+                    // Cargar datos si es la vista de base de datos
+                    if (vista === 'database') {
+                        App.database.cargar();
+                    }
+
+                    // 3. Actualizar Sidebar (Estilos)
+                    const links = ['buscador', 'wizard', 'database', 'entrenar', 'config'];
+                    links.forEach(id => {
+                        const link = document.getElementById(`nav-${id}`);
+                        if(link) {
+                            if(id === vista) {
+                                link.className = "flex items-center gap-3 px-4 py-3 bg-blue-600 rounded-lg text-white font-medium shadow-lg transition";
+                            } else {
+                                link.className = "flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition";
+                            }
+                        }
+                    });
+                }
+            },
+
+            ui: {
+                notificar: (mensaje, titulo = "Notificación", tipo = "info") => {
+                    alert(`${titulo}: ${mensaje}`);
+                }
+            },
+
+            util: {
+                renderPrompt: (template, vars) => {
+                    let res = template;
+                    for (const [key, val] of Object.entries(vars)) {
+                        res = res.split(`{{${key}}}`).join(val || '');
+                    }
+                    return res;
+                }
+            },
+
+            entrenar: {
+                prompts: {},
+                activeKey: null,
+                init: () => {
+                    const saved = JSON.parse(localStorage.getItem('custom_prompts') || '{}');
+                    const defaults = JSON.parse(JSON.stringify(DEFAULT_PROMPTS));
+
+                    // Limpiar localStorage de prompts antiguos que ya no se usan
+                    localStorage.removeItem('analysis_prompt'); // Eliminar prompt de análisis general antiguo
+                    
+                    // Fusionar: Usar defaults como base y sobreescribir solo si existe en saved Y en defaults
+                    App.entrenar.prompts = { ...defaults };
+                    for (const key in saved) {
+                        if (App.entrenar.prompts[key]) App.entrenar.prompts[key] = saved[key];
+                    }
+                    App.entrenar.renderLista();
+                },
+                renderLista: () => {
+                    const container = document.getElementById('lista-prompts');
+                    if(!container) return;
+                    container.innerHTML = Object.keys(App.entrenar.prompts).map(key => {
+                        const p = App.entrenar.prompts[key];
+                        const activeClass = App.entrenar.activeKey === key ? 'bg-blue-50 border-blue-200 ring-1 ring-blue-200' : 'bg-white border-slate-100 hover:bg-slate-50';
+                        return `
+                            <div onclick="App.entrenar.seleccionar('${key}')" class="p-3 rounded-lg border cursor-pointer transition-all ${activeClass}">
+                                <h5 class="font-bold text-xs text-slate-700">${p.titulo}</h5>
+                                <p class="text-[10px] text-slate-400 truncate">${p.desc}</p>
+                            </div>
+                        `;
+                    }).join('');
+                },
+                seleccionar: (key) => {
+                    App.entrenar.activeKey = key;
+                    App.entrenar.renderLista();
+                    const p = App.entrenar.prompts[key];
+                    document.getElementById('editor-titulo').innerText = p.titulo;
+                    document.getElementById('editor-prompt').value = p.template;
+                },
+                guardar: () => {
+                    if (!App.entrenar.activeKey) return;
+                    const newVal = document.getElementById('editor-prompt').value;
+                    App.entrenar.prompts[App.entrenar.activeKey].template = newVal;
+                    localStorage.setItem('custom_prompts', JSON.stringify(App.entrenar.prompts));
+                    App.ui.notificar("Prompt actualizado y guardado.", "Entrenamiento", "exito");
+                },
+                restaurarTodo: () => {
+                    if(confirm("¿Restaurar todos los prompts a su estado original?")) {
+                        localStorage.removeItem('custom_prompts');
+                        App.entrenar.init();
+                        App.ui.notificar("Prompts restaurados.", "Restauración", "info");
+                    }
+                },
+                getPrompt: (key) => {
+                    return (App.entrenar.prompts[key] || DEFAULT_PROMPTS[key] || DEFAULT_PROMPTS.prospector_ia).template;
+                }
+            },
+
+            suscripcion: {
+                activo: false,
+                verificar: async () => {
+                    try {
+                        const res = await fetch('/api/suscripcion/estado');
+                        const data = await res.json();
+                        App.suscripcion.activo = data.activo;
+                        
+                        const badge = document.getElementById('subscription-badge');
+                        const diasTxt = document.getElementById('dias-restantes');
+                        
+                        badge.classList.remove('hidden');
+                        diasTxt.innerText = data.dias_restantes;
+
+                        if (!data.activo) {
+                            badge.classList.replace('bg-purple-100', 'bg-red-100');
+                            badge.classList.replace('text-purple-800', 'text-red-800');
+                            diasTxt.innerText = "0";
+                            alert("⚠️ Tu pase de acceso ha vencido. Por favor recarga para continuar buscando.");
+                        }
+                    } catch (e) {
+                        console.error("Error verificando suscripción", e);
+                    }
+                }
+            },
+
+            database: {
+                datosCache: [],
+
+                cargar: async () => {
+                    const tbody = document.getElementById('tabla-database');
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8"><i class="fa-solid fa-circle-notch fa-spin text-blue-500 text-2xl"></i><p class="mt-2 text-gray-500">Cargando historial...</p></td></tr>';
+                    
+                    try {
+                        const res = await fetch('/api/prospectos');
+                        const data = await res.json();
+                        
+                        if (!Array.isArray(data) || data.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No hay registros en la base de datos.</td></tr>';
+                            document.getElementById('db-total-registros').innerText = '0';
+                            return;
+                        }
+
+                        App.database.datosCache = data;
+                        
+                        // Actualizar Stats
+                        document.getElementById('db-total-registros').innerText = data.length;
+                        const diasRestantes = document.getElementById('dias-restantes').innerText;
+                        document.getElementById('db-saldo-actual').innerText = diasRestantes;
+
+                        // Llenar filtro de estrategias
+                        const estrategias = [...new Set(data.map(p => p.categoria_nicho || 'General'))];
+                        const selectEstrategia = document.getElementById('filter-estrategia');
+                        selectEstrategia.innerHTML = '<option value="all">Todas las Estrategias</option>';
+                        estrategias.forEach(e => {
+                            selectEstrategia.innerHTML += `<option value="${e}">${e}</option>`;
+                        });
+
+                        App.database.aplicarFiltros();
+
+                    } catch (e) {
+                        console.error(e);
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-red-500">Error al cargar datos. Verifica la conexión con el servidor.</td></tr>';
+                    }
+                },
+
+                aplicarFiltros: () => {
+                    const estrategia = document.getElementById('filter-estrategia').value;
+                    const fechaFiltro = document.getElementById('filter-fecha').value;
+                    const tbody = document.getElementById('tabla-database');
+                    
+                    const hoy = new Date();
+                    hoy.setHours(0,0,0,0);
+
+                    const filtrados = App.database.datosCache.filter(p => {
+                        // Filtro Estrategia
+                        if (estrategia !== 'all' && (p.categoria_nicho || 'General') !== estrategia) return false;
+
+                        // Filtro Fecha
+                        const fechaP = new Date(p.created_at);
+                        fechaP.setHours(0,0,0,0);
+                        
+                        if (fechaFiltro === 'hoy') {
+                            if (fechaP.getTime() !== hoy.getTime()) return false;
+                        } else if (fechaFiltro === 'semana') {
+                            const primerDiaSemana = new Date(hoy);
+                            primerDiaSemana.setDate(hoy.getDate() - hoy.getDay()); // Domingo
+                            if (fechaP < primerDiaSemana) return false;
+                        } else if (fechaFiltro === 'mes') {
+                            if (fechaP.getMonth() !== hoy.getMonth() || fechaP.getFullYear() !== hoy.getFullYear()) return false;
+                        }
+
+                        return true;
+                    });
+
+                    document.getElementById('db-count-visible').innerText = filtrados.length;
+
+                    if (filtrados.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-400">No se encontraron resultados con estos filtros.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = filtrados.map(p => {
+                            const fecha = new Date(p.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                            
+                            let estadoBadge = '<span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Pendiente</span>';
+                            if (p.estado_whatsapp === 'VALIDO') estadoBadge = '<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded border border-green-200"><i class="fa-solid fa-check mr-1"></i> Válido</span>';
+                            if (p.estado_whatsapp === 'INVALIDO') estadoBadge = '<span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded border border-red-200"><i class="fa-solid fa-ban mr-1"></i> Inválido</span>';
+                            if (p.estado_whatsapp === 'DUPLICADO') estadoBadge = '<span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded border border-yellow-200"><i class="fa-solid fa-clone mr-1"></i> Duplicado</span>';
+
+                            // Lógica Barra Score (Estilo Excel)
+                            const score = p.score_calidad || 0;
+                            let barColor = 'bg-red-500';
+                            if (score >= 40) barColor = 'bg-yellow-400';
+                            if (score >= 70) barColor = 'bg-green-500';
+
+                            // Links Contacto
+                            const fonoLimpio = p.telefono ? p.telefono.replace(/\D/g, '') : '';
+                            const waLink = fonoLimpio ? `https://wa.me/${fonoLimpio}` : '#';
+
+                            return `
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">${fecha}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-bold text-gray-900">${p.categoria_nicho || 'General'}</div>
+                                        <div class="text-xs text-gray-500 truncate max-w-[150px]">${p.segmento || ''}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium text-gray-900 mb-1">${p.negocio}</div>
+                                        <div class="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 italic leading-relaxed">
+                                            "${p.razon_seleccion || 'Sin motivo registrado'}"
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        ${p.telefono ? `<a href="${waLink}" target="_blank" class="flex items-center gap-1 text-sm text-gray-900 font-mono hover:text-green-600 transition-colors mb-1"><i class="fa-brands fa-whatsapp"></i> ${p.telefono}</a>` : '<span class="text-sm text-gray-400 block mb-1">--</span>'}
+                                        ${p.correo ? `<a href="mailto:${p.correo}" class="flex items-center gap-1 text-xs text-blue-500 hover:underline"><i class="fa-regular fa-envelope"></i> ${p.correo}</a>` : ''}
+                                    </td>
+                                    <td class="px-6 py-4 align-middle">
+                                        <div class="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden border border-gray-300 shadow-inner" title="Score: ${score}%">
+                                            <div class="h-full ${barColor}" style="width: ${score}%"></div>
+                                            <span class="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-slate-700 drop-shadow-sm">${score}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        ${estadoBadge}
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                }
+            },
+
+            prospector: {
+                estrategiasCache: [],
+
+                cargarEstrategias: async () => {
+                    try {
+                        const res = await fetch('/api/plantillas');
+                        const data = await res.json();
+                        App.prospector.estrategiasCache = data;
+                        
+                        const select = document.getElementById('select-estrategia');
+                        select.innerHTML = '<option value="" disabled selected>-- Selecciona una Estrategia Guardada --</option>';
+                        data.forEach((p, index) => {
+                            select.innerHTML += `<option value="${index}">📂 ${p.nombre_plantilla}</option>`;
+                        });
+                    } catch (e) { console.error(e); }
+                },
+
+                seleccionarEstrategia: () => {
+                    const index = document.getElementById('select-estrategia').value;
+                    if (index === "") return;
+                    const estrategia = App.prospector.estrategiasCache[index];
+                    if (estrategia && estrategia.playbook_data) {
+                        document.getElementById('txt-estrategia-prompt').value = estrategia.playbook_data.instruccion_scraper_ia || estrategia.playbook_data.titulo_nicho;
+                    }
+                },
+
+                ejecutarEstrategia: async () => {
+                    if (!App.suscripcion.activo) return alert("⛔ Acceso denegado. Tu suscripción ha vencido.");
+
+                    const index = document.getElementById('select-estrategia').value;
+                    const cantidad = document.getElementById('select-cantidad').value;
+                    const instruccion = document.getElementById('txt-estrategia-prompt').value;
+
+                    if (index === "" && !instruccion) return alert("Por favor selecciona una estrategia de la lista.");
+
+                    const nichoTitulo = (index !== "" && App.prospector.estrategiasCache[index]) ? App.prospector.estrategiasCache[index].playbook_data.titulo_nicho : "Búsqueda Personalizada";
+                    
+                    const tbody = document.getElementById('tabla-resultados');
+                    const model = document.getElementById('global-model-selector').value;
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-blue-600 font-bold animate-pulse">🤖 Ejecutando búsqueda con ${model} (${cantidad} leads)...</td></tr>`;
+                    
+                    // Obtener prompt personalizado si existe
+                    const customPromptTemplate = App.entrenar.getPrompt('prospector_ia');
+                    
+                    try {
+                        const res = await fetch('/api/buscar-leads', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ 
+                                nicho: nichoTitulo, 
+                                instruccion: instruccion, 
+                                motor: model, 
+                                cantidad,
+                                custom_prompt: customPromptTemplate // Enviar el prompt entrenado
+                            }) 
+                        });
+                        const data = await res.json();
+
+                        tbody.innerHTML = data.data.map(lead => {
+                            // Lógica de Colores del Marcador
+                            const score = lead.score_calidad || 0;
+                            
+                            // Cálculo de Ángulo para la aguja (-90deg a 90deg)
+                            const rotation = (score * 1.8) - 90;
+
+                            // Limpieza de WhatsApp
+                            const rawPhone = lead.telefono || '';
+                            const cleanPhone = rawPhone.replace(/\D/g, '');
+                            const esValido = lead.estado_whatsapp === 'VALIDO';
+                            
+                            const waLink = (cleanPhone && esValido) ? `https://wa.me/${cleanPhone}` : '#';
+                            const waDisplay = (cleanPhone && esValido) ? rawPhone : '<span class="text-red-300 text-[10px]">Número Inválido</span>';
+                            const waCursor = (cleanPhone && esValido) ? 'cursor-pointer hover:scale-105' : 'cursor-not-allowed opacity-50';
+                            const waIconColor = (cleanPhone && esValido) ? 'text-green-500' : 'text-gray-300';
+
+                            // Lógica del Tooltip
+                            let razones = [];
+                            razones.push(`IA Score: ${score}/100`);
+                            if (esValido) razones.push("WhatsApp Verificado (+50%)");
+                            else razones.push("Sin WhatsApp Válido");
+                            const tooltipText = razones.join(' | ');
+
+                            return `
+                                <tr class="bg-white border-b hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4">
+                                        <div class="flex flex-col items-center w-16 group relative cursor-help mx-auto">
+                                            <svg viewBox="0 0 100 60" class="w-full h-auto overflow-visible">
+                                                <defs>
+                                                    <linearGradient id="gradScore" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                        <stop offset="0%" stop-color="#ef4444" />
+                                                        <stop offset="50%" stop-color="#eab308" />
+                                                        <stop offset="100%" stop-color="#22c55e" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <!-- Arco Fondo -->
+                                                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#e5e7eb" stroke-width="8" stroke-linecap="round" />
+                                                <!-- Arco Color -->
+                                                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gradScore)" stroke-width="8" stroke-linecap="round" />
+                                                
+                                                <!-- Aguja -->
+                                                <g style="--target-rotation: rotate(${rotation}deg); transform-origin: 50px 50px; animation: subirAgujaRotacion 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">
+                                                    <circle cx="50" cy="50" r="4" fill="#1f2937" />
+                                                    <path d="M 50 50 L 50 15" stroke="#1f2937" stroke-width="3" stroke-linecap="round" />
+                                                </g>
+
+                                                <!-- Texto Score -->
+                                                <text x="50" y="70" text-anchor="middle" class="text-[10px] font-bold fill-gray-700">${score}%</text>
+                                            </svg>
+                                            
+                                            <!-- Tooltip -->
+                                            <div class="absolute bottom-full mb-1 hidden group-hover:block w-max bg-gray-800 text-white text-[10px] font-bold rounded py-1 px-2 shadow-lg z-10">
+                                                ${tooltipText}
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 font-medium text-gray-900">${lead.negocio}</td>
+                                    <td class="px-6 py-4">
+                                        <a href="${waLink}" target="_blank" class="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-transform transform ${waCursor}">
+                                            <i class="fab fa-whatsapp text-lg ${waIconColor}"></i>
+                                            <span class="font-mono text-xs text-blue-600">${waDisplay}</span>
+                                            ${esValido ? '<i class="fas fa-check-circle text-green-500 text-[10px]" title="Auditado: Válido"></i>' : ''}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs text-gray-500">${lead.correo || '<span class="text-gray-300">--</span>'}</td>
+                                </tr>
+                            `;
+                        }).join('');
+
+                    } catch (error) {
+                        console.error(error);
+                        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Error al buscar leads.</td></tr>';
+                    }
+                }
+            },
+
+            wizard: {
+                state: { rol: '', nicho: '', currentPlaybook: null, chatHistory: [] },
+
+                reset: () => {
+                    ['step-2', 'step-3', 'step-4'].forEach(id => document.getElementById(id).classList.add('hidden'));
+                    document.getElementById('step-1').classList.remove('hidden');
+                    
+                    // Reset Chat
+                    App.wizard.state.chatHistory = [];
+                    const chatContainer = document.getElementById('wizard-chat-messages');
+                    chatContainer.innerHTML = `
+                        <div class="flex gap-3">
+                            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">IA</div>
+                            <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none text-sm text-gray-600 shadow-sm max-w-[85%]">
+                                Hola, soy tu copiloto de ventas. Para diseñar tu estrategia perfecta, cuéntame: <b>¿Qué producto o servicio quieres vender hoy?</b>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('wizard-chat-input').value = '';
+                },
+
+                enviarMensaje: async () => {
+                    const input = document.getElementById('wizard-chat-input');
+                    const msg = input.value.trim();
+                    if (!msg) return;
+
+                    const chatContainer = document.getElementById('wizard-chat-messages');
+                    const model = document.getElementById('global-model-selector').value;
+                    
+                    // 1. Agregar mensaje usuario
+                    chatContainer.innerHTML += `
+                        <div class="flex gap-3 justify-end">
+                            <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none text-sm shadow-md max-w-[85%]">${msg}</div>
+                        </div>`;
+                    input.value = '';
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                    // 2. Guardar en historial
+                    App.wizard.state.chatHistory.push({ role: 'user', content: msg });
+
+                    // INDICADOR DE CARGA (NUEVO)
+                    const loadingId = 'loading-' + Date.now();
+                    chatContainer.innerHTML += `
+                        <div id="${loadingId}" class="flex gap-3">
+                            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">IA</div>
+                            <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none text-sm text-gray-500 shadow-sm flex items-center gap-2">
+                                <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
+                                <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                                <span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                            </div>
+                        </div>`;
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                    // 3. Consultar IA
+                    try {
+                        const res = await fetch('/api/wizard/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ history: App.wizard.state.chatHistory, model: model })
+                        });
+                        const data = await res.json();
+
+                        // Remover indicador de carga
+                        const loader = document.getElementById(loadingId);
+                        if(loader) loader.remove();
+
+                        // 4. Respuesta IA
+                        chatContainer.innerHTML += `
+                            <div class="flex gap-3">
+                                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">IA</div>
+                                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none text-sm text-gray-600 shadow-sm max-w-[85%] animate-pulse-fast">${data.message}</div>
+                            </div>`;
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        App.wizard.state.chatHistory.push({ role: 'assistant', content: data.message });
+
+                        if (data.ready) {
+                            setTimeout(() => App.wizard.ejecutarAnalisis(data.summary), 1500);
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        const loader = document.getElementById(loadingId);
+                        if(loader) loader.remove();
+                        chatContainer.innerHTML += `<div class="text-center text-xs text-red-400 my-2">Error de conexión. Intenta de nuevo.</div>`;
+                    }
+                },
+
+                ejecutarAnalisis: async (resumen) => {
+                    App.wizard.state.rol = resumen;
+                    // Actualizar título para dar contexto
+                    document.getElementById('wizard-context-text').innerHTML = `Para: <strong>${resumen}</strong>. Elige tu ruta de ataque:`;
+                    const model = document.getElementById('global-model-selector').value;
+                    
+                    document.getElementById('step-1').classList.add('hidden');
+                    document.getElementById('step-2').classList.remove('hidden');
+
+                    try {
+                        const res = await fetch('/api/sugerir-nichos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ rol: resumen, model: model })
+                        });
+                        const data = await res.json();
+                        
+                        const cardsContainer = document.getElementById('wizard-cards');
+                        cardsContainer.innerHTML = data.playbooks.map((pb, index) => `
+                            <div class="bg-white rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-xl transition-all duration-300 overflow-hidden group relative">
+                                <!-- Decoración -->
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 z-0 transition-transform group-hover:scale-110"></div>
+                                
+                                <!-- Cabecera Clickable -->
+                                <div onclick="App.wizard.toggleDetalle(${index})" class="p-6 cursor-pointer relative z-10">
+                                    <div class="flex items-start justify-between mb-4">
+                                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
+                                            <i class="${pb.icon}"></i>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                             <span class="bg-green-100 text-green-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-green-200">Oportunidad</span>
+                                             <i class="fas fa-chevron-down text-slate-300 transition-transform duration-300" id="chevron-${index}"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <h4 class="font-bold text-xl text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">${pb.titulo_nicho}</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed mb-4">${pb.senal_de_compra}</p>
+                                    
+                                    <div class="flex items-center text-blue-600 text-xs font-bold group-hover:translate-x-2 transition-transform">
+                                        Ver Plan de Ataque <i class="fas fa-arrow-right ml-2"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Detalle Expandible -->
+                                <div id="detalle-${index}" class="hidden bg-slate-50 border-t border-slate-100 p-6 space-y-5 relative z-10">
+                                    
+                                    <!-- El Plan -->
+                                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">1</div>
+                                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">La Misión (Búsqueda)</span>
+                                        </div>
+                                        <p class="text-sm text-slate-600 leading-relaxed">${pb.instruccion_scraper_ia}</p>
+                                        
+                                        ${pb.hashtags_instagram ? `
+                                        <div class="mt-4 flex flex-wrap gap-2">
+                                            ${pb.hashtags_instagram.map(tag => `<span class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm">${tag}</span>`).join('')}
+                                        </div>
+                                        ` : ''}
+                                    </div>
+
+                                    <!-- Rompehielos -->
+                                    <div class="bg-white p-4 rounded-xl border border-green-200 shadow-sm relative overflow-hidden">
+                                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">2</div>
+                                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">El Mensaje (Ataque)</span>
+                                        </div>
+                                        <p class="text-sm text-slate-600 italic mb-3">"${pb.rompehielos_whatsapp}"</p>
+                                        <button onclick="navigator.clipboard.writeText('${pb.rompehielos_whatsapp.replace(/'/g, "\\'")}')" class="text-[10px] text-green-600 font-bold hover:underline flex items-center gap-1">
+                                            <i class="fa-regular fa-copy"></i> Copiar Script
+                                        </button>
+                                    </div>
+
+                                    <button onclick='App.wizard.activarPlaybook(${JSON.stringify(pb).replace(/'/g, "&#39;")})' class="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                                        🚀 Activar esta Misión
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        document.getElementById('step-2').classList.add('hidden');
+                        document.getElementById('step-3').classList.remove('hidden');
+                    } catch (e) {
+                        console.error(e);
+                        alert("Error al consultar IA");
+                        App.wizard.reset();
+                    }
+                },
+
+                toggleDetalle: (index) => {
+                    const detalle = document.getElementById(`detalle-${index}`);
+                    const chevron = document.getElementById(`chevron-${index}`);
+                    
+                    // Cerrar otros
+                    document.querySelectorAll('[id^="detalle-"]').forEach(el => {
+                        if(el.id !== `detalle-${index}`) el.classList.add('hidden');
+                    });
+                    document.querySelectorAll('[id^="chevron-"]').forEach(el => {
+                        if(el.id !== `chevron-${index}`) el.classList.remove('rotate-180');
+                    });
+
+                    detalle.classList.toggle('hidden');
+                    chevron.classList.toggle('rotate-180');
+                },
+
+                activarPlaybook: async (playbook) => {
+                    App.wizard.state.currentPlaybook = playbook;
+                    document.getElementById('wizard-selected-niche').innerText = playbook.titulo_nicho;
+                    document.getElementById('step-3').classList.add('hidden');
+                    document.getElementById('step-4').classList.remove('hidden');
+                },
+
+                guardarYSalir: async () => {
+                    const playbook = App.wizard.state.currentPlaybook;
+                    const nombre = document.getElementById('wizard-template-name').value || playbook.titulo_nicho;
+                    
+                    try {
+                        const res = await fetch('/api/guardar-plantilla', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                nombre: nombre, 
+                                rol: App.wizard.state.rol, 
+                                nicho: playbook.titulo_nicho, 
+                                filtros: { ciudad: 'Chile' },
+                                playbook_data: playbook 
+                            })
+                        });
+
+                        if (!res.ok) throw new Error("Error al guardar en base de datos");
+
+                        alert(`✅ Estrategia "${nombre}" guardada correctamente.`);
+                        App.navegacion.ir('buscador');
+                        await App.prospector.cargarEstrategias(); // Esperar a que cargue
+                        App.wizard.reset();
+                    } catch (e) {
+                        console.error(e);
+                        alert("❌ Error: No se pudo guardar la estrategia. Verifica que el servidor esté conectado.");
+                    }
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+            App.wizard.reset(); // Iniciar chat
+        });
+    </script>
+</body>
+</html>
