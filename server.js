@@ -44,6 +44,12 @@ if (!process.env.GEMINI_API_KEY) {
   process.exit(1);
 }
 
+// Configuración de KIMI AI (Moonshot)
+const KIMI_API_KEY = process.env.KIMI_API_KEY;
+if (!KIMI_API_KEY) {
+  console.warn("⚠️ ADVERTENCIA: No se encontró KIMI_API_KEY. El modelo Kimi AI no estará disponible.");
+}
+
 // Limpiar connection string para evitar advertencias de SSL en consola
 let connectionString = process.env.DATABASE_URL;
 if (connectionString && connectionString.includes('sslmode=require')) {
@@ -71,6 +77,136 @@ pool.on('error', (err, client) => {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Define aquí el modelo que te arroje el script check_models.js (ej: gemini-1.5-flash, gemini-pro, etc.)
 const MODEL_NAME = "gemini-2.0-flash"; // Modelo por defecto actualizado
+
+// ============================================================
+// VERIFICACIÓN DE ESTADO DE APIs DE IA
+// ============================================================
+const verificarEstadoIAs = async () => {
+    console.log('\n' + '='.repeat(60));
+    console.log('🤖 VERIFICACIÓN DE APIs DE INTELIGENCIA ARTIFICIAL');
+    console.log('='.repeat(60));
+    
+    const resultados = {
+        gemini: { status: '⏳', color: '\x1b[33m', mensaje: 'Verificando...' },
+        groq: { status: '⏳', color: '\x1b[33m', mensaje: 'Verificando...' },
+        kimi: { status: '⏳', color: '\x1b[33m', mensaje: 'Verificando...' }
+    };
+    
+    const resetColor = '\x1b[0m';
+    const greenColor = '\x1b[32m';
+    const redColor = '\x1b[31m';
+    const yellowColor = '\x1b[33m';
+    
+    // Función para mostrar resultado
+    const mostrarResultado = (nombre, estado) => {
+        const icon = estado.status === '✅' ? '✅' : estado.status === '❌' ? '❌' : '⏳';
+        console.log(`${icon} ${nombre.padEnd(12)} | ${estado.mensaje}`);
+    };
+    
+    // 1. VERIFICAR GEMINI
+    try {
+        if (!process.env.GEMINI_API_KEY) {
+            throw new Error('API Key no configurada');
+        }
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+        const result = await model.generateContent('Responde: OK');
+        const text = result.response.text();
+        
+        if (text && text.includes('OK')) {
+            resultados.gemini = { status: '✅', mensaje: 'ONLINE - Respuesta verificada' };
+        } else {
+            resultados.gemini = { status: '⚠️', mensaje: 'RESPUESTA INESPERADA' };
+        }
+    } catch (error) {
+        resultados.gemini = { 
+            status: '❌', 
+            mensaje: `OFFLINE - ${error.message.substring(0, 40)}...` 
+        };
+    }
+    mostrarResultado('GEMINI', resultados.gemini);
+    
+    // 2. VERIFICAR GROQ
+    try {
+        if (!process.env.GROQ_API_KEY) {
+            throw new Error('API Key no configurada');
+        }
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: [{ role: 'user', content: 'Responde: OK' }],
+                model: 'llama-3.1-8b-instant'
+            })
+        });
+        
+        if (response.ok) {
+            resultados.groq = { status: '✅', mensaje: 'ONLINE - Respuesta verificada' };
+        } else {
+            const data = await response.json();
+            throw new Error(data.error?.message || `HTTP ${response.status}`);
+        }
+    } catch (error) {
+        resultados.groq = { 
+            status: '❌', 
+            mensaje: `OFFLINE - ${error.message.substring(0, 40)}...` 
+        };
+    }
+    mostrarResultado('GROQ', resultados.groq);
+    
+    // 3. VERIFICAR KIMI (MOONSHOT)
+    try {
+        if (!process.env.KIMI_API_KEY) {
+            throw new Error('API Key no configurada');
+        }
+        const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: [{ role: 'user', content: 'Responde: OK' }],
+                model: 'moonshot-v1-8k',
+                temperature: 0.7
+            })
+        });
+        
+        if (response.ok) {
+            resultados.kimi = { status: '✅', mensaje: 'ONLINE - Respuesta verificada' };
+        } else {
+            const data = await response.json();
+            throw new Error(data.error?.message || `HTTP ${response.status}`);
+        }
+    } catch (error) {
+        resultados.kimi = { 
+            status: '❌', 
+            mensaje: `OFFLINE - ${error.message.substring(0, 40)}...` 
+        };
+    }
+    mostrarResultado('KIMI AI', resultados.kimi);
+    
+    console.log('='.repeat(60));
+    
+    // Resumen final
+    const online = Object.values(resultados).filter(r => r.status === '✅').length;
+    const offline = Object.values(resultados).filter(r => r.status === '❌').length;
+    const warning = Object.values(resultados).filter(r => r.status === '⚠️').length;
+    
+    if (online === 3) {
+        console.log(`🎉 TODAS LAS IAs ESTÁN ONLINE (${online}/3)`);
+    } else if (online > 0) {
+        console.log(`⚠️  IAs DISPONIBLES: ${online}/3 | OFFLINE: ${offline} | ADVERTENCIAS: ${warning}`);
+    } else {
+        console.log(`🔴 ALERTA: NINGUNA IA ESTÁ DISPONIBLE - El sistema no podrá generar leads`);
+    }
+    
+    console.log('='.repeat(60) + '\n');
+    
+    return resultados;
+};
 
 // 3. Configuración de Multer (Subida de Archivos)
 const storage = multer.diskStorage({
@@ -118,10 +254,49 @@ const upload = multer({
 
 // --- RUTAS (ENDPOINTS) ---
 
+// 0. Autenticación y Registro
+app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        // Login simple (En producción usar bcrypt para contraseñas)
+        const result = await pool.query(
+            'SELECT id, username, email, plan_id, creditos_restantes FROM usuarios WHERE (username = $1 OR email = $1) AND password = $2', 
+            [username, password]
+        );
+        
+        if (result.rows.length > 0) {
+            res.json({ status: 'success', user: result.rows[0] });
+        } else {
+            res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
+        }
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error en el servidor.' });
+    }
+});
+
+app.post('/api/register', async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        const check = await pool.query('SELECT id FROM usuarios WHERE username = $1 OR email = $2', [username, email]);
+        if (check.rows.length > 0) return res.status(400).json({ error: 'El usuario o correo ya existe.' });
+
+        // Plan 1 = Gratuito (20 créditos de regalo)
+        const result = await pool.query(
+            'INSERT INTO usuarios (username, email, password, plan_id, creditos_restantes, created_at) VALUES ($1, $2, $3, 1, 20, NOW()) RETURNING id, username, creditos_restantes',
+            [username, email, password]
+        );
+        res.json({ status: 'success', user: result.rows[0] });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al registrar usuario.' });
+    }
+});
+
 // Ruta de prueba para ver si el servidor vive
 app.get('/', (req, res) => {
-  // Redirigir a la página principal de la aplicación para una mejor experiencia de usuario.
-  res.redirect('/dashboard_NUEVO.html');
+  // Redirigir a la página de login que luego lleva al dashboard.
+  res.redirect('/generador_prospectos_ia.html');
 });
  
 // Fix para móviles: Redirigir rutas sin extensión a la vista correcta
@@ -129,8 +304,8 @@ app.get('/previo_comando', (req, res) => {
   res.redirect('/previo_comando.html');
 });
 
-app.get('/dashboard_NUEVO', (req, res) => {
-  res.redirect('/dashboard_NUEVO.html');
+app.get('/dashboard', (req, res) => {
+  res.redirect('/dashboard.html');
 });
 
 // Endpoint de Subida de Archivos (Requerimiento Específico)
@@ -196,76 +371,93 @@ app.post('/api/prospectar', async (req, res) => {
   const { prompt, ciudad, model: modelName } = req.body;
   
   try {
-    // Lógica de Fallback: Intentar con el modelo seleccionado, si falla, probar otro.
-    let modelToUse = modelName || MODEL_NAME;
-    let prospectos;
-    let errorInicial;
-
     const intentarGenerar = async (modelo) => {
-        if (modelo.startsWith('openrouter-')) {
-            const orModel = modelo.replace('openrouter-', '').replace(':free', ''); // Limpiar el sufijo :free
-            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-                    'Content-Type': 'application/json',
-                    'HTTP-Referer': 'http://localhost:3000', // Requerido por OpenRouter
-                    'X-Title': 'TuSitioYa OS'
-                },
-                body: JSON.stringify({
-                    messages: [{ role: 'user', content: prompt }],
-                    model: orModel,
-                })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(`OpenRouter API Error: ${data.error?.message || JSON.stringify(data)}`);
-            
-            const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '');
-            const parsed = JSON.parse(text);
-            return Array.isArray(parsed) ? parsed : parsed.prospectos;
-        } else if (modelo.startsWith('groq-') || modelo.includes('llama')) {
-            const groqModel = modelo.replace('groq-', '');
-            const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    messages: [{ role: 'user', content: prompt }],
-                    model: groqModel || 'llama-3.1-8b-instant', // Usamos el modelo seleccionado o el default
-                    temperature: 0.7,
-                    max_tokens: 4096,
-                    response_format: { type: "json_object" }
-                })
-            });
-            const data = await groqResponse.json();
-            if (!groqResponse.ok) throw new Error(`Groq API Error: ${data.error?.message || 'Unknown'}`);
-            const groqContent = JSON.parse(data.choices[0].message.content);
-            return groqContent.prospectos;
-        } else {
-            const aiModel = genAI.getGenerativeModel({ model: modelo }); // Usamos el modelo que viene del HTML
-            const result = await aiModel.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text().replace(/```json/g, '').replace(/```/g, '');
-            const parsed = JSON.parse(text);
-            return Array.isArray(parsed) ? parsed : parsed.prospectos;
+        const controller = new AbortController();
+        // Un timeout generoso de 45 segundos. A veces la primera llamada a la IA es lenta.
+        const timeoutId = setTimeout(() => {
+            console.log(`[PROSPECTAR] ⏰ Timeout para el modelo ${modelo} después de 45 segundos.`);
+            controller.abort();
+        }, 45000);
+
+        try {
+            if (modelo.startsWith('openrouter-')) {
+                const orModel = modelo.replace('openrouter-', '').replace(':free', '');
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': 'http://localhost:3000',
+                        'X-Title': 'TuSitioYa OS'
+                    },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: prompt }], model: orModel }),
+                    signal: controller.signal
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(`OpenRouter: ${data.error?.message || JSON.stringify(data)}`);
+                const text = data.choices[0].message.content.replace(/```json/g, '').replace(/```/g, '');
+                const parsed = JSON.parse(text);
+                return Array.isArray(parsed) ? parsed : parsed.prospectos;
+            } else if (modelo.startsWith('groq-') || modelo.includes('llama')) {
+                const groqModel = modelo.replace('groq-', '');
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: prompt }],
+                        model: groqModel || 'llama-3.1-8b-instant',
+                        response_format: { type: "json_object" }
+                    }),
+                    signal: controller.signal
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(`Groq: ${data.error?.message || 'Error desconocido'}`);
+                const groqContent = JSON.parse(data.choices[0].message.content);
+                return groqContent.prospectos;
+            } else {
+                // Para el SDK de Gemini, que no soporta AbortController, usamos Promise.race
+                const modelToUse = modelo || MODEL_NAME;
+                const model = genAI.getGenerativeModel({ model: modelToUse });
+                
+                const generationPromise = model.generateContent(prompt);
+                const timeoutPromise = new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error(`La petición a Gemini (${modelToUse}) excedió los 45 segundos.`)), 45000)
+                );
+    
+                const result = await Promise.race([generationPromise, timeoutPromise]);
+                const response = await result.response;
+                const text = response.text().replace(/```json/g, '').replace(/```/g, '');
+                const parsed = JSON.parse(text);
+                return Array.isArray(parsed) ? parsed : parsed.prospectos;
+            }
+        } finally {
+            clearTimeout(timeoutId); // Es importante limpiar el timeout
         }
     };
 
+    let prospectos;
+    let errorInicial;
+    let modelToUse = modelName || MODEL_NAME;
+
     try {
+        console.log(`[PROSPECTAR] 🚀 Ejecutando búsqueda con modelo principal: ${modelToUse}`);
         prospectos = await intentarGenerar(modelToUse);
     } catch (e) {
-        console.warn(`⚠️ Falló el modelo principal (${modelToUse}). Intentando fallback...`, e.message);
+        console.warn(`[PROSPECTAR] ⚠️ Falló el modelo principal (${modelToUse}). Intentando fallback...`, e.message);
         errorInicial = e;
         // Fallback: Si falló Gemini, prueba Groq. Si falló Groq, prueba Gemini.
         try {
             const fallbackModel = modelToUse.includes('gemini') ? 'groq-llama-3.1-8b-instant' : 'gemini-2.0-flash';
+            console.log(`[PROSPECTAR] 🚀 Ejecutando fallback con: ${fallbackModel}`);
             prospectos = await intentarGenerar(fallbackModel);
         } catch (e2) {
-            console.warn(`⚠️ Falló el segundo intento. Probando OpenRouter (Gemma 2 Free)...`, e2.message);
+            console.warn(`[PROSPECTAR] ⚠️ Falló el segundo intento. Probando OpenRouter (Gemma 2 Free)...`, e2.message);
             // Tercer intento: OpenRouter (Modelo gratuito de Google)
             try {
+                console.log(`[PROSPECTAR] 🚀 Ejecutando último fallback con: openrouter-google/gemma-2-9b-it`);
                 prospectos = await intentarGenerar('openrouter-google/gemma-2-9b-it'); // Usar el ID limpio
             } catch (e3) {
                 throw new Error(`Todos los modelos fallaron. Gemini: ${errorInicial.message}. Groq: ${e2.message}. OpenRouter: ${e3.message}`);
@@ -273,10 +465,11 @@ app.post('/api/prospectar', async (req, res) => {
         }
     }
 
+    console.log(`[PROSPECTAR] ✅ IA respondió. Procesando ${prospectos?.length || 0} prospectos...`);
     res.json(prospectos);
   } catch (err) {
     if (err.message && err.message.includes('Groq')) {
-      console.error("❌ ERROR GROQ:", err.message);
+      console.error("❌ ERROR GROQ:", err.message); // This might be a quota issue
     } else if (err.message && err.message.includes('404')) {
       console.error("❌ ERROR GEMINI: Modelo no encontrado. Verifica tu API Key.");
     } else if (err.message && (err.message.includes('403') || err.message.includes('SERVICE_DISABLED'))) {
@@ -284,10 +477,12 @@ app.post('/api/prospectar', async (req, res) => {
     } else if (err.message && err.message.includes('429')) {
       console.error("⏳ ERROR GEMINI: Cuota excedida (429). Espera unos momentos.");
       return res.status(429).json({ error: 'La IA está saturada. Por favor espera 1 minuto e intenta de nuevo.' });
+      console.error("⏳ ERROR DE CUOTA (429): Todos los modelos están saturados.");
+      return res.status(429).json({ error: "IA's saturadas (trabajando para liberar cuotas, intenta en 15 minutos)." });
     } else {
       console.error('❌ Error Inesperado en /api/prospectar:', err);
     }
-    res.status(500).json({ error: 'Error generando prospectos' });
+    res.status(500).json({ error: err.message || 'Error generando prospectos' });
   }
 });
 
@@ -558,6 +753,24 @@ app.post('/api/analizar-chat', async (req, res) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(`OpenRouter API Error: ${data.error?.message}`);
+      analisisText = data.choices[0].message.content;
+    } else if (modelName && modelName.startsWith('kimi-')) {
+      // KIMI AI (Moonshot) - API compatible con OpenAI
+      const kimiModel = modelName.replace('kimi-', '');
+      const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              messages: [{ role: 'user', content: detailedPrompt }],
+              model: kimiModel || 'moonshot-v1-8k',
+              temperature: 0.7
+          })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(`Kimi API Error: ${data.error?.message || JSON.stringify(data)}`);
       analisisText = data.choices[0].message.content;
     } else if (modelName && modelName.startsWith('groq-')) {
       const groqModel = modelName.replace('groq-', '');
@@ -918,44 +1131,100 @@ function auditarNumeroWhatsapp(telefono) {
 app.post('/api/buscar-leads', async (req, res) => {
     const { nicho, motor, cantidad, instruccion, custom_prompt } = req.body;
     const limit = cantidad || 10;
-    const usuarioId = 1; // Por ahora hardcodeado al admin, luego vendrá del login
+    const usuarioId = 1;
     
-    if (!nicho && !instruccion) return res.status(400).json({ error: 'Falta el nicho o instrucción' });
+    console.log(`\n🔍 [DEBUG /api/buscar-leads] =========================`);
+    console.log(`🔍 [DEBUG] Nicho: ${nicho}`);
+    console.log(`🔍 [DEBUG] Motor/Modelo: ${motor}`);
+    console.log(`🔍 [DEBUG] Cantidad: ${limit}`);
+    console.log(`🔍 [DEBUG] Instrucción: ${instruccion?.substring(0, 100)}...`);
+    console.log(`🔍 [DEBUG] KIMI_API_KEY exists: ${!!process.env.KIMI_API_KEY}`);
+    console.log(`🔍 [DEBUG] KIMI_API_KEY preview: ${process.env.KIMI_API_KEY ? process.env.KIMI_API_KEY.substring(0, 20) + '...' : 'NO KEY'}`);
+    
+    if (!nicho && !instruccion) {
+        console.log(`🔍 [DEBUG] ERROR: Falta nicho e instrucción`);
+        return res.status(400).json({ error: 'Falta el nicho o instrucción' });
+    }
 
     try {
         // 0. OBTENER EXCEPCIONES (Lógica de 6 Meses)
         let excepciones = "";
         let listaNegociosPrevios = [];
         try {
-            // A. Historial de este usuario en los últimos 6 meses
             const prospectosRes = await pool.query("SELECT negocio FROM prospectos WHERE usuario_id = $1 AND created_at > NOW() - INTERVAL '6 months'", [usuarioId]);
-            
-            // B. Base de Datos Real (Clientes en Neon)
             const clientesRes = await pool.query('SELECT negocio FROM clientes');
-
-            // Unificar y limpiar
             listaNegociosPrevios = [...prospectosRes.rows.map(r => r.negocio), ...clientesRes.rows.map(r => r.negocio)];
             excepciones = [...new Set(listaNegociosPrevios)].filter(n => n).join(', ');
-        } catch (e) { console.warn("No se pudieron cargar excepciones:", e.message); }
+            console.log(`🔍 [DEBUG] Excepciones cargadas: ${excepciones.substring(0, 50)}...`);
+        } catch (e) { 
+            console.warn("🔍 [DEBUG] No se pudieron cargar excepciones:", e.message); 
+        }
 
         const context = instruccion || nicho;
         
-        // A. SYSTEM PROMPT AVANZADO (Nivel Empresarial)
-        // Usar el prompt personalizado del frontend si existe, o el default
-        let promptTemplate = custom_prompt || `Actúa como un Analista de Inteligencia de Ventas Experto... (Default)`;
+        // A. SYSTEM PROMPT AVANZADO
+        let promptTemplate = custom_prompt || `Eres un generador de leads B2B. Tu tarea es encontrar {{CANTIDAD}} negocios reales en Chile que coincidan con el siguiente criterio: {{CONTEXTO}}.
+
+REGLAS OBLIGATORIAS:
+1. Devuelve SOLO un array JSON válido, sin explicaciones, sin markdown, sin texto adicional
+2. Cada objeto debe tener: nombre (string), telefono (string con +569), email (string), rubro (string), direccion (string opcional)
+3. Los teléfonos deben ser reales de Chile (+569XXXXXXXX)
+4. Los emails deben tener dominios reales (.cl, .com, .cl)
+5. NO incluyas estos negocios (ya existen): {{EXCEPCIONES}}
+
+FORMATO DE RESPUESTA (SOLO JSON):
+[
+  {"nombre": "Nombre Negocio", "telefono": "+56912345678", "email": "contacto@negocio.cl", "rubro": "Tipo de negocio", "direccion": "Dirección"}
+]
+
+Genera {{CANTIDAD}} leads ahora.`;
         
-        // Reemplazar variables dinámicas
         const prompt = promptTemplate
             .replace('{{CONTEXTO}}', context)
             .replace('{{CANTIDAD}}', limit)
             .replace('{{EXCEPCIONES}}', excepciones);
         
+        console.log(`🔍 [DEBUG] Prompt generado (primeros 200 chars): ${prompt.substring(0, 200)}...`);
+        
         let rawText = "";
 
         // Función auxiliar para generar texto con fallback
         const generarTexto = async (modelo) => {
-            if (modelo && (modelo.startsWith('groq-') || modelo.includes('llama'))) {
+            console.log(`🔍 [DEBUG] Intentando modelo: ${modelo}`);
+            
+            if (modelo && modelo.startsWith('kimi-')) {
+                console.log(`🔍 [DEBUG] Detectado KIMI AI, llamando a Moonshot API...`);
+                const kimiModel = modelo.replace('kimi-', '');
+                console.log(`🔍 [DEBUG] Modelo Kimi limpio: ${kimiModel}`);
+                
+                const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: prompt }],
+                        model: kimiModel || 'moonshot-v1-8k',
+                        temperature: 0.7
+                    })
+                });
+                
+                console.log(`🔍 [DEBUG] Respuesta Moonshot status: ${response.status}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    console.error(`🔍 [DEBUG] ERROR Moonshot:`, JSON.stringify(data, null, 2));
+                    throw new Error(data.error?.message || JSON.stringify(data));
+                }
+                
+                console.log(`🔍 [DEBUG] Respuesta Kimi exitosa, contenido (primeros 100 chars): ${data.choices?.[0]?.message?.content?.substring(0, 100)}...`);
+                return data.choices[0].message.content;
+                
+            } else if (modelo && (modelo.startsWith('groq-') || modelo.includes('llama'))) {
+                console.log(`🔍 [DEBUG] Detectado GROQ, llamando a Groq API...`);
                 const groqModel = modelo.replace('groq-', '');
+                
                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -967,11 +1236,19 @@ app.post('/api/buscar-leads', async (req, res) => {
                         model: groqModel || 'llama-3.1-8b-instant'
                     })
                 });
+                
+                console.log(`🔍 [DEBUG] Respuesta Groq status: ${response.status}`);
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error?.message || 'Error Groq');
+                
+                if (!response.ok) {
+                    console.error(`🔍 [DEBUG] ERROR Groq:`, JSON.stringify(data, null, 2));
+                    throw new Error(data.error?.message || 'Error Groq');
+                }
                 return data.choices[0].message.content;
+                
             } else {
-                const modelToUse = (modelo && !modelo.includes('groq')) ? modelo : "gemini-2.0-flash";
+                console.log(`🔍 [DEBUG] Usando GEMINI con modelo: ${modelo}`);
+                const modelToUse = (modelo && !modelo.includes('groq') && !modelo.includes('kimi')) ? modelo : "gemini-2.0-flash";
                 const model = genAI.getGenerativeModel({ model: modelToUse });
                 const result = await model.generateContent(prompt);
                 return result.response.text();
@@ -980,9 +1257,13 @@ app.post('/api/buscar-leads', async (req, res) => {
 
         try {
             // 1. Intento Principal
+            console.log(`🔍 [DEBUG] Iniciando intento principal...`);
             rawText = await generarTexto(motor);
+            console.log(`🔍 [DEBUG] Intento principal exitoso`);
         } catch (err1) {
-            console.warn(`⚠️ Falló buscar-leads con ${motor || 'default'}. Intentando fallback Groq...`, err1.message);
+            console.error(`🔍 [DEBUG] ERROR en intento principal:`, err1.message);
+            console.error(`🔍 [DEBUG] Stack trace:`, err1.stack);
+            console.warn(`⚠️ Falló buscar-leads con ${motor || 'default'}. Intentando fallback Groq...`);
             try {
                 // 2. Intento Fallback (Groq)
                 rawText = await generarTexto('groq-llama-3.1-8b-instant');
@@ -995,12 +1276,13 @@ app.post('/api/buscar-leads', async (req, res) => {
 
         // B. PROCESAMIENTO DE DATOS (JSON PARSING)
         const prospectosEncontrados = [];
+        let datosIA = null; // Declarar fuera del try para usar en todo el scope
         
         try {
             // Intentar extraer el JSON del texto (por si la IA incluye ```json ... ```)
             const jsonMatch = rawText.match(/\[[\s\S]*\]/);
             const jsonString = jsonMatch ? jsonMatch[0] : rawText;
-            const datosIA = JSON.parse(jsonString);
+            datosIA = JSON.parse(jsonString);
 
             if (Array.isArray(datosIA)) {
                 for (const p of datosIA) {
@@ -1046,37 +1328,481 @@ app.post('/api/buscar-leads', async (req, res) => {
                         }
                     }
                 }
+                
+                // C. GUARDADO EN BASE DE DATOS (NEON) - Dentro del try para tener acceso a datosIA
+                // Insertamos TODOS (Válidos, Inválidos y Duplicados) para que el sistema aprenda y tenga registro.
+                console.log(`[BUSCAR-LEADS] 💾 Guardando ${datosIA.length} registros en la base de datos para auditoría...`);
+                for (const rawP of datosIA) {
+                    if (rawP.temp_data) {
+                        const p = rawP.temp_data;
+                        await pool.query(
+                            'INSERT INTO prospectos (negocio, categoria_nicho, telefono, correo, score_calidad, segmento, razon_seleccion, estado_whatsapp, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+                            [p.negocio, p.categoria_nicho, p.telefono, p.correo, p.score_calidad, p.segmento, p.razon, p.estado_whatsapp, p.usuario_id]
+                        );
+                    }
+                }
             }
         } catch (e) {
             console.error("Error parseando JSON de IA:", e);
+            console.error("Texto crudo recibido de la IA:", rawText.substring(0, 500)); // Log the raw text for debugging
             // Aquí podrías implementar un fallback a regex si fuera necesario
         }
 
-        // C. GUARDADO EN BASE DE DATOS (NEON)
-        // Insertamos TODOS (Válidos, Inválidos y Duplicados) para que el sistema aprenda y tenga registro.
-        if (Array.isArray(datosIA)) {
-             for (const rawP of datosIA) {
-                if (rawP.temp_data) {
-                    const p = rawP.temp_data;
-                    await pool.query(
-                        'INSERT INTO prospectos (negocio, categoria_nicho, telefono, correo, score_calidad, segmento, razon_seleccion, estado_whatsapp, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                        [p.negocio, p.categoria_nicho, p.telefono, p.correo, p.score_calidad, p.segmento, p.razon, p.estado_whatsapp, p.usuario_id]
-                    );
-                }
-             }
+        // D. OBTENER CRÉDITOS DEL USUARIO
+        let creditosDisponibles = 0;
+        try {
+            const creditosResult = await pool.query('SELECT creditos_restantes FROM usuarios WHERE id = $1', [usuarioId]);
+            creditosDisponibles = creditosResult.rows[0]?.creditos_restantes || 0;
+            console.log(`[CREDITOS] 💳 Usuario ${usuarioId} tiene ${creditosDisponibles} créditos disponibles.`);
+        } catch (e) {
+            console.warn(`[CREDITOS] ⚠️ No se pudieron obtener créditos, usando 0:`, e.message);
+            creditosDisponibles = 0;
         }
 
+        // E. DEDUCIR CRÉDITOS
+        const creditosAConsumir = Math.min(prospectosEncontrados.length, creditosDisponibles);
+        if (creditosAConsumir > 0) {
+            await pool.query(
+                'UPDATE usuarios SET creditos_restantes = creditos_restantes - $1 WHERE id = $2',
+                [creditosAConsumir, usuarioId]
+            );
+            console.log(`[CREDITOS] 💳 Se dedujeron ${creditosAConsumir} créditos al usuario ${usuarioId}.`);
+        }
+
+        console.log(`[BUSCAR-LEADS] ✔️ Proceso finalizado. Enviando ${prospectosEncontrados.length} leads válidos al cliente.`);
         res.json({
             status: 'success',
-            mensaje: `Proceso completado. ${prospectosEncontrados.length} leads nuevos y válidos entregados.`,
-            data: prospectosEncontrados
+            mensaje: `Proceso completado. ${prospectosEncontrados.length} leads válidos entregados. Se consumieron ${creditosAConsumir} créditos.`,
+            data: prospectosEncontrados,
+            creditos_restantes: creditosDisponibles - creditosAConsumir
         });
 
     } catch (error) {
-        console.error('Error en buscar-leads:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error('\n❌ [DEBUG /api/buscar-leads] ERROR CRÍTICO =========================');
+        console.error('❌ [DEBUG] Tipo de error:', error.constructor.name);
+        console.error('❌ [DEBUG] Mensaje:', error.message);
+        console.error('❌ [DEBUG] Stack trace:', error.stack);
+        console.error('❌ [DEBUG] ==========================================================\n');
+        res.status(500).json({ error: 'Error interno del servidor', detalle: error.message });
     }
 });
+
+// 1.5 Endpoint: Auditar Lead con IA (Solicitar devolución de crédito)
+app.post('/api/auditar-lead', async (req, res) => {
+    const { lead, modelo } = req.body;
+    const usuarioId = 1;
+    
+    if (!lead || !lead.telefono) {
+        return res.status(400).json({ error: 'Faltan datos del lead para auditar' });
+    }
+    
+    console.log(`\n🔍 [AUDITORÍA] =========================`);
+    console.log(`🔍 [AUDITORÍA] Iniciando auditoría de lead: ${lead.negocio} (${lead.telefono})`);
+    
+    try {
+        // 1. Verificar si ya está en blacklist
+        const existeBlacklist = await pool.query(
+            'SELECT id FROM blacklist WHERE telefono = $1',
+            [lead.telefono]
+        );
+        
+        if (existeBlacklist.rows.length > 0) {
+            console.log(`🔍 [AUDITORÍA] Lead ya existe en blacklist`);
+            return res.json({
+                valido: false,
+                mensaje: 'Este número ya fue auditado previamente y marcado como inválido.',
+                razon: 'Número previamente auditado',
+                accion: 'blacklist_existente'
+            });
+        }
+        
+        // 2. VALIDACIÓN LOCAL ESTRICTA (antes de llamar a IA)
+        // Esto invalida inmediatamente casos obvios sin gastar tokens de IA
+        const telefono = lead.telefono || '';
+        const cuerpo = telefono.replace(/\D/g, '');
+        const numero9digitos = cuerpo.slice(-9);
+        
+        // 2.1 Patrones de números inválidos
+        const patronesInvalidos = [
+            { regex: /^(\d)\1{8}$/, razon: 'Número inválido: todos los dígitos son idénticos' },
+            { regex: /^(\d)\1{6,}$/, razon: 'Número sospechoso: 7+ dígitos repetidos seguidos' },
+            { regex: /01234567|12345678|23456789/, razon: 'Número sospechoso: secuencia ascendente obvia' },
+            { regex: /98765432|87654321|76543210/, razon: 'Número sospechoso: secuencia descendente obvia' },
+            { regex: /0000000|1111111|2222222|3333333|4444444|5555555|6666666|7777777|8888888/, razon: 'Número sospechoso: patrón de relleno detectado' }
+        ];
+        
+        for (const patron of patronesInvalidos) {
+            if (patron.regex.test(numero9digitos)) {
+                console.log(`🔍 [AUDITORÍA] INVALIDADO LOCALMENTE: ${patron.razon}`);
+                
+                // Agregar a blacklist automáticamente
+                await pool.query(
+                    `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                     VALUES ($1, $2, $3, $4, $5) 
+                     ON CONFLICT (telefono) DO NOTHING`,
+                    [lead.telefono, lead.negocio, patron.razon, 'validacion-local', usuarioId]
+                );
+                
+                // Devolver crédito
+                await pool.query(
+                    'UPDATE usuarios SET creditos_restantes = creditos_restantes + 1 WHERE id = $1',
+                    [usuarioId]
+                );
+                
+                // Actualizar estado
+                await pool.query(
+                    "UPDATE prospectos SET estado_whatsapp = 'INVALIDO' WHERE telefono = $1",
+                    [lead.telefono]
+                );
+                
+                return res.json({
+                    valido: false,
+                    mensaje: `Lead INVALIDADO: ${patron.razon}`,
+                    razon: patron.razon + ` (${telefono})`,
+                    confianza: 98,
+                    accion: 'credito_devuelto',
+                    credito_devuelto: true,
+                    metodo: 'validacion-local-strict'
+                });
+            }
+        }
+        
+        // 2.2 Email obviamente falso
+        const correo = (lead.correo || '').toLowerCase();
+        const emailsInvalidos = ['test@', 'prueba@', 'demo@', 'fake@', 'ejemplo@', 'test@test.com', 'admin@admin'];
+        if (correo && emailsInvalidos.some(e => correo.includes(e))) {
+            const razon = `Email claramente de prueba: ${lead.correo}`;
+            console.log(`🔍 [AUDITORÍA] INVALIDADO LOCALMENTE: ${razon}`);
+            
+            await pool.query(
+                `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                 VALUES ($1, $2, $3, $4, $5) 
+                 ON CONFLICT (telefono) DO NOTHING`,
+                [lead.telefono, lead.negocio, razon, 'validacion-local', usuarioId]
+            );
+            await pool.query('UPDATE usuarios SET creditos_restantes = creditos_restantes + 1 WHERE id = $1', [usuarioId]);
+            await pool.query("UPDATE prospectos SET estado_whatsapp = 'INVALIDO' WHERE telefono = $1", [lead.telefono]);
+            
+            return res.json({
+                valido: false,
+                mensaje: `Lead INVALIDADO: ${razon}`,
+                razon: razon,
+                confianza: 95,
+                accion: 'credito_devuelto',
+                credito_devuelto: true,
+                metodo: 'validacion-local-email'
+            });
+        }
+        
+        // 2.3 Nombre de negocio obviamente falso
+        const negocioLower = (lead.negocio || '').toLowerCase();
+        const nombresInvalidos = ['test', 'prueba ', 'demo ', 'ejemplo', 'fake ', 'falso '];
+        if (nombresInvalidos.some(n => negocioLower.includes(n))) {
+            const razon = `Nombre de negocio claramente de prueba: ${lead.negocio}`;
+            console.log(`🔍 [AUDITORÍA] INVALIDADO LOCALMENTE: ${razon}`);
+            
+            await pool.query(
+                `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                 VALUES ($1, $2, $3, $4, $5) 
+                 ON CONFLICT (telefono) DO NOTHING`,
+                [lead.telefono, lead.negocio, razon, 'validacion-local', usuarioId]
+            );
+            await pool.query('UPDATE usuarios SET creditos_restantes = creditos_restantes + 1 WHERE id = $1', [usuarioId]);
+            await pool.query("UPDATE prospectos SET estado_whatsapp = 'INVALIDO' WHERE telefono = $1", [lead.telefono]);
+            
+            return res.json({
+                valido: false,
+                mensaje: `Lead INVALIDADO: ${razon}`,
+                razon: razon,
+                confianza: 95,
+                accion: 'credito_devuelto',
+                credito_devuelto: true,
+                metodo: 'validacion-local-nombre'
+            });
+        }
+        
+        // 3. Preparar prompt de auditoría para la IA (solo si pasó validaciones locales)
+        const promptAuditoria = `Eres un auditor ESTRICTO de calidad de leads B2B. Tu trabajo es detectar CUALQUIER señal de datos falsos o de prueba.
+
+DATOS DEL LEAD A AUDITAR:
+- Nombre del negocio: ${lead.negocio}
+- Teléfono: ${lead.telefono}
+- Email: ${lead.correo || 'No proporcionado'}
+- Rubro: ${lead.categoria_nicho || 'No especificado'}
+
+⚠️ REGLAS ESTRICTAS - Marca como INVALIDO si detectas CUALQUIERA de estas señales:
+
+1. TELÉFONO SOSPECHOSO (ALTA PRIORIDAD):
+   - Mismo dígito repetido 4+ veces seguidas (ej: +56999999999, +56911111111)
+   - Secuencias consecutivas (ej: +56912345678, +56987654321)
+   - Patrones de relleno (ej: +56900000000, +56900001234)
+   - Longitud incorrecta para Chile (debe ser +569XXXXXXXX = 12 caracteres)
+
+2. EMAIL SOSPECHOSO:
+   - Dominios genéricos de ejemplo (ejemplo@correo.com, test@test.com, admin@admin.com)
+   - Nombres como "test", "prueba", "ejemplo", "demo", "fake"
+   - Sin @ o dominio inválido
+
+3. NOMBRE DE NEGOCIO SOSPECHOSO:
+   - Palabras como "Prueba", "Test", "Ejemplo", "Demo", "Falso", "Fake"
+   - Solo números o caracteres aleatorios
+   - Nombres genéricos sin identidad real ("Negocio", "Empresa XYZ", "Local")
+
+4. COMBINACIÓN SOSPECHOSA:
+   - Teléfono + email + nombre todos parecen de prueba
+   - Datos que parecen generados automáticamente
+
+📋 FORMATO DE RESPUESTA (JSON obligatorio):
+{
+    "valido": false,  // false si detectas CUALQUIER problema, true solo si todo parece 100% real
+    "razon": "Explicación específica del problema detectado o confirmación de validez",
+    "confianza": 95,  // 0-100, más alta si estás seguro de la invalidación
+    "recomendacion": "blacklist"  // "blacklist" si es inválido, "valido" si es bueno
+}
+
+🔴 IMPORTANTE: Sé MUY EXIGENTE. Es mejor rechazar un lead dudoso que aceptar uno falso. Si tienes DUDAS, marca como INVALIDO.
+
+Responde ÚNICAMENTE con el JSON, sin texto adicional.`;
+
+        // 3. Llamar a la IA para evaluar
+        console.log(`🔍 [AUDITORÍA] Consultando a IA (${modelo || 'gemini-2.0-flash'})...`);
+        
+        let evaluacionIA;
+        let modeloUsado = modelo || 'gemini-2.0-flash';
+        
+        try {
+            if (modeloUsado.startsWith('kimi-')) {
+                const kimiModel = modeloUsado.replace('kimi-', '');
+                const response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.KIMI_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: promptAuditoria }],
+                        model: kimiModel || 'moonshot-v1-8k',
+                        temperature: 0.3
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error?.message);
+                evaluacionIA = data.choices[0].message.content;
+            } else if (modeloUsado.startsWith('groq-')) {
+                const groqModel = modeloUsado.replace('groq-', '');
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: promptAuditoria }],
+                        model: groqModel || 'llama-3.1-8b-instant'
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error?.message);
+                evaluacionIA = data.choices[0].message.content;
+            } else {
+                const model = genAI.getGenerativeModel({ model: modeloUsado });
+                const result = await model.generateContent(promptAuditoria);
+                evaluacionIA = result.response.text();
+            }
+            
+            console.log(`🔍 [AUDITORÍA] Respuesta IA recibida`);
+        } catch (iaError) {
+            console.error(`🔍 [AUDITORÍA] Error llamando a IA:`, iaError.message);
+            // Fallback: usar reglas locales
+            evaluacionIA = generarEvaluacionLocal(lead);
+        }
+        
+        // 4. Parsear respuesta de IA
+        let resultadoAuditoria;
+        try {
+            const jsonMatch = evaluacionIA.match(/\{[\s\S]*\}/);
+            resultadoAuditoria = JSON.parse(jsonMatch ? jsonMatch[0] : evaluacionIA);
+        } catch (parseError) {
+            console.error(`🔍 [AUDITORÍA] Error parseando respuesta IA:`, parseError.message);
+            resultadoAuditoria = {
+                valido: true,
+                razon: 'No se pudo evaluar con IA. Se asume válido por defecto.',
+                confianza: 50,
+                recomendacion: 'Verificar manualmente'
+            };
+        }
+        
+        // 5. Si es inválido, agregar a blacklist y devolver crédito
+        if (!resultadoAuditoria.valido) {
+            console.log(`🔍 [AUDITORÍA] Lead marcado como INVÁLIDO`);
+            
+            // Agregar a blacklist
+            await pool.query(
+                `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                 VALUES ($1, $2, $3, $4, $5) 
+                 ON CONFLICT (telefono) DO NOTHING`,
+                [lead.telefono, lead.negocio, resultadoAuditoria.razon, modeloUsado, usuarioId]
+            );
+            
+            // Devolver crédito al usuario
+            await pool.query(
+                'UPDATE usuarios SET creditos_restantes = creditos_restantes + 1 WHERE id = $1',
+                [usuarioId]
+            );
+            
+            // Actualizar estado del prospecto en la base de datos
+            await pool.query(
+                "UPDATE prospectos SET estado_whatsapp = 'INVALIDO' WHERE telefono = $1",
+                [lead.telefono]
+            );
+            
+            console.log(`🔍 [AUDITORÍA] ✅ Crédito devuelto y lead agregado a blacklist`);
+            
+            return res.json({
+                valido: false,
+                mensaje: `Auditoría completada. El lead fue marcado como INVÁLIDO: ${resultadoAuditoria.razon}`,
+                razon: resultadoAuditoria.razon,
+                confianza: resultadoAuditoria.confianza,
+                recomendacion: resultadoAuditoria.recomendacion,
+                accion: 'credito_devuelto',
+                credito_devuelto: true
+            });
+        }
+        
+        // 6. Si es válido
+        console.log(`🔍 [AUDITORÍA] Lead marcado como VÁLIDO`);
+        return res.json({
+            valido: true,
+            mensaje: `Auditoría completada. El lead es VÁLIDO: ${resultadoAuditoria.razon}`,
+            razon: resultadoAuditoria.razon,
+            confianza: resultadoAuditoria.confianza,
+            recomendacion: resultadoAuditoria.recomendacion,
+            accion: 'confirmado_valido',
+            credito_devuelto: false
+        });
+        
+    } catch (error) {
+        console.error('\n❌ [AUDITORÍA] ERROR:', error.message);
+        res.status(500).json({ error: 'Error en auditoría', detalle: error.message });
+    }
+});
+
+// Función auxiliar para evaluación local (fallback si falla la IA)
+function generarEvaluacionLocal(lead) {
+    const telefono = lead.telefono || '';
+    const cuerpo = telefono.replace(/\D/g, '');
+    const numero9digitos = cuerpo.slice(-9); // Últimos 9 dígitos
+    
+    // 1. PATRONES DE NÚMEROS INVÁLIDOS (CHILE)
+    
+    // Todos los dígitos iguales
+    if (/^(\d)\1{8}$/.test(numero9digitos)) {
+        return {
+            valido: false,
+            razon: `Número inválido: todos los dígitos son idénticos (${telefono})`,
+            confianza: 98,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // 4+ dígitos consecutivos iguales
+    if (/(\d)\1{3,}/.test(numero9digitos)) {
+        return {
+            valido: false,
+            razon: `Número sospechoso: dígitos repetitivos detectados (${telefono})`,
+            confianza: 95,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // Secuencias consecutivas ascendentes
+    if (/123456|234567|345678|456789|012345/.test(numero9digitos)) {
+        return {
+            valido: false,
+            razon: `Número sospechoso: secuencia ascendente obvia (${telefono})`,
+            confianza: 95,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // Secuencias consecutivas descendentes
+    if (/987654|876543|765432|654321/.test(numero9digitos)) {
+        return {
+            valido: false,
+            razon: `Número sospechoso: secuencia descendente obvia (${telefono})`,
+            confianza: 95,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // Patrones de relleno (terminan en muchos ceros)
+    if (/00000$|000000$/.test(numero9digitos)) {
+        return {
+            valido: false,
+            razon: `Número sospechoso: patrón de relleno detectado (${telefono})`,
+            confianza: 92,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // 2. EMAILS INVÁLIDOS/GENÉRICOS
+    const emailInvalidos = [
+        'ejemplo', 'test@', 'prueba@', 'demo@', 'fake@', 
+        '@test.com', '@correo.com', '@email.com', '@ejemplo.com',
+        'admin@admin', 'user@user', 'nombre@nombre'
+    ];
+    const correo = (lead.correo || '').toLowerCase();
+    if (correo && emailInvalidos.some(e => correo.includes(e.replace('@', '')))) {
+        return {
+            valido: false,
+            razon: `Email genérico o de prueba detectado (${lead.correo})`,
+            confianza: 90,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // 3. NOMBRES DE NEGOCIO SOSPECHOSOS
+    const nombresInvalidos = ['test', 'prueba', 'demo', 'ejemplo', 'fake', 'falso'];
+    const negocioLower = (lead.negocio || '').toLowerCase();
+    if (nombresInvalidos.some(n => negocioLower.includes(n))) {
+        return {
+            valido: false,
+            razon: `Nombre de negocio claramente de prueba (${lead.negocio})`,
+            confianza: 95,
+            recomendacion: 'blacklist'
+        };
+    }
+    
+    // Nombres genéricos sin identidad
+    const nombresGenericos = ['mi negocio', 'empresa ', 'local ', 'negocio ', 'sin nombre'];
+    if (nombresGenericos.some(n => negocioLower.includes(n))) {
+        return {
+            valido: false,
+            razon: `Nombre de negocio demasiado genérico (${lead.negocio})`,
+            confianza: 75,
+            recomendacion: 'Verificar manualmente'
+        };
+    }
+    
+    // 4. VALIDACIÓN BÁSICA DE TELÉFONO CHILENO
+    // Debe tener formato +569XXXXXXXX (12 caracteres con +, 11 sin +)
+    if (!/^\+569\d{8}$/.test(telefono) && !/^569\d{8}$/.test(telefono) && !/^9\d{8}$/.test(cuerpo.slice(-9))) {
+        return {
+            valido: false,
+            razon: `Formato de teléfono chileno inválido (${telefono})`,
+            confianza: 85,
+            recomendacion: 'Verificar manualmente'
+        };
+    }
+    
+    // Si pasa todas las validaciones
+    return {
+        valido: true,
+        razon: 'Datos verificados: no se detectaron patrones sospechosos.',
+        confianza: 80,
+        recomendacion: 'valido'
+    };
+}
 
 // 2. Endpoint para Leer Base de Datos
 app.get('/api/prospectos', async (req, res) => {
@@ -1089,38 +1815,60 @@ app.get('/api/prospectos', async (req, res) => {
     }
 });
 
+// 2.5 Endpoint: Obtener Blacklist compartida
+app.get('/api/blacklist', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM blacklist ORDER BY created_at DESC LIMIT 1000');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error obteniendo blacklist' });
+    }
+});
+
 // 3. Endpoint: Sugerir Nichos con IA (Wizard)
 app.post('/api/sugerir-nichos', async (req, res) => {
     const { rol, model: modelName } = req.body;
     if (!rol) return res.status(400).json({ error: 'Falta el rol del usuario' });
 
     try {
-        const prompt = `Actúa como un Estratega de Crecimiento B2B/B2C Senior.
-        El usuario vende: "${rol}".
+        const prompt = `Eres Vicente, estratega senior de Aexon LeadGen. El cliente quiere vender: "${rol}".
 
-        Tu misión: Diseñar 3 Estrategias de Prospección (Playbooks) altamente detalladas, profesionales y accionables.
+Tu misión: Diseñar 3 Estrategias de Prospección (Playbooks) COMPLETAMENTE DIFERENTES entre sí.
+
+🎯 REGLAS PARA LAS 3 ESTRATEGIAS:
+1. ESTRATEGIA 1 (Conservadora): Nicho amplio, fácil de encontrar, demanda estable
+2. ESTRATEGIA 2 (Intermedia): Nicho específico, menos competencia, mejor margen  
+3. ESTRATEGIA 3 (Agresiva): Nicho hiper-especializado, pocos leads pero alta conversión
+
+Las 3 deben ser opciones REALES que el cliente pueda elegir según su estilo de venta.
+
+📋 CONTENIDO DE CADA ESTRATEGIA:
+- titulo_nicho: Nombre específico y atractivo del segmento
+- senal_de_compra: Evento/disparador que indica que necesitan la solución AHORA (ej: "Acaban de abrir local", "Publicaron que buscan proveedor")
+- instruccion_scraper_ia: Instrucción DETALLADA para buscar en Google Maps, Instagram y Facebook. Incluye palabras clave específicas, hashtags, ubicaciones
+- hashtags_instagram: 5 hashtags reales y específicos para encontrar estos negocios
+- rompehielos_whatsapp: Mensaje de 15-25 palabras, personalizado para este nicho. Debe mencionar el DOLOR específico + la SOLUCIÓN. Tono: profesional cercano, chileno moderado.
+- icon: Icono FontAwesome 6 que represente el nicho
+
+💡 EJEMPLO DE ROMPEHIELOS BUENO:
+"Hola [Nombre], vi que tienes clínica veterinaria en Providencia. Muchos dueños buscan veterinarios online y no te encuentran. ¿Te interesa que te ayude a aparecer cuando te busquen?"
+
+❌ EJEMPLOS MALOS (NO HACER):
+- "Hola, te vendo páginas web" (genérico)
+- "Espero que estés bien..." (perder tiempo en formalidades)
+- "Soy el mejor desarrollador..." (ego, no empatía)
+
+🚀 IMPORTANTE: Las 3 estrategias deben sentirse como opciones REALES que el cliente puede elegir. Que se sientan tentado a probarlas.
         
-        CRÍTICO:
-        - Si es B2B: Enfócate en cargos específicos, tamaños de empresa, tecnologías que usan y dolores operativos.
-        - Si es B2C: Enfócate en intereses, comportamientos en redes sociales, grupos específicos y momentos de vida.
-        - SIEMPRE incluye búsqueda en: Facebook, Google e Instagram.
-        
-        El tono debe ser profesional pero claro. La "instruccion_scraper_ia" debe ser una orden técnica precisa para un equipo de investigación.
-        
-        Salida OBLIGATORIA en JSON puro con esta estructura:
-        {
-            "playbooks": [
-                { 
-                    "titulo_nicho": "Nombre específico del segmento (Ej: Clínicas Dentales con >3 sucursales)", 
-                    "senal_de_compra": "Trigger o evento que indica necesidad inmediata (Ej: Están contratando recepcionistas en LinkedIn, lo que indica saturación).",
-                    "instruccion_scraper_ia": "Instrucción técnica detallada. Incluye: Palabras clave exactas, Plataformas (Google Maps, LinkedIn, Instagram), Filtros de exclusión y Criterios de calidad. (Ej: 'Buscar en Google Maps: Dentistas en Providencia. Filtrar por: Tiene sitio web pero no tiene pixel de Facebook. Ignorar cadenas grandes').",
-                    "hashtags_instagram": ["#hashtag1", "#hashtag2", "#hashtag3", "#hashtag4", "#hashtag5"],
-                    "rompehielos_whatsapp": "Mensaje de conexión de alto valor. No vendas, aporta valor o haz una pregunta que duela. (Max 2 líneas).",
-                    "icon": "fa-solid fa-user-doctor"
-                }
-            ]
-        }
-        Usa iconos de FontAwesome (versión 6) para "icon".`;
+Salida OBLIGATORIA en JSON puro:
+{
+    "playbooks": [
+        { "titulo_nicho": "...", "senal_de_compra": "...", "instruccion_scraper_ia": "...", "hashtags_instagram": ["..."], "rompehielos_whatsapp": "...", "icon": "..." },
+        { "titulo_nicho": "...", "senal_de_compra": "...", "instruccion_scraper_ia": "...", "hashtags_instagram": ["..."], "rompehielos_whatsapp": "...", "icon": "..." },
+        { "titulo_nicho": "...", "senal_de_compra": "...", "instruccion_scraper_ia": "...", "hashtags_instagram": ["..."], "rompehielos_whatsapp": "...", "icon": "..." }
+    ]
+}`;
 
         // Función auxiliar para intentar generar con reintentos
         const generarConModelo = async (modelo) => {
@@ -1186,7 +1934,7 @@ app.post('/api/sugerir-nichos', async (req, res) => {
 app.get('/api/plantillas', async (req, res) => {
     try {
         // Traemos las plantillas ordenadas por la más reciente
-        const result = await pool.query('SELECT id, nombre_plantilla, playbook_data FROM plantillas_guardadas ORDER BY created_at DESC');
+        const result = await pool.query('SELECT id, nombre_plantilla, rol_usuario, playbook_data FROM plantillas_guardadas ORDER BY created_at DESC');
         res.json(result.rows);
     } catch (error) {
         console.error('Error obteniendo plantillas:', error);
@@ -1194,90 +1942,160 @@ app.get('/api/plantillas', async (req, res) => {
     }
 });
 
+// 3.2 Endpoint: Actualizar Plantilla (Para Entrenar Modelos)
+app.put('/api/plantillas/:id', async (req, res) => {
+    const { id } = req.params;
+    const { playbook_data } = req.body;
+
+    try {
+        const query = `
+            UPDATE plantillas_guardadas
+            SET playbook_data = $1
+            WHERE id = $2
+            RETURNING *
+        `;
+        const result = await pool.query(query, [playbook_data, id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Plantilla no encontrada' });
+        }
+
+        res.json({ status: 'success', data: result.rows[0] });
+    } catch (error) {
+        console.error('Error actualizando plantilla:', error);
+        res.status(500).json({ error: 'Error al actualizar plantilla' });
+    }
+});
+
 // 3.5 Endpoint: Chat del Wizard (Entrevista IA)
 app.post('/api/wizard/chat', async (req, res) => {
     const { history, model: modelName } = req.body;
 
+    // Análisis profundo del historial
+    const historialCompleto = history.map(m => m.content).join(' | ').toLowerCase();
+    
+    // Detectar qué ya tenemos
+    const productosDetectados = [];
+    const publicosDetectados = [];
+    const ubicacionesDetectadas = [];
+    
+    // Productos
+    if (historialCompleto.includes('seguro')) productosDetectados.push('seguros');
+    if (historialCompleto.includes('página web') || historialCompleto.includes('pagina web') || historialCompleto.includes('sitio web')) productosDetectados.push('páginas web');
+    if (historialCompleto.includes('consultoría')) productosDetectados.push('consultoría');
+    if (historialCompleto.includes('software')) productosDetectados.push('software');
+    if (historialCompleto.includes('marketing')) productosDetectados.push('marketing digital');
+    
+    // Públicos
+    if (historialCompleto.includes('pyme')) publicosDetectados.push('pymes');
+    if (historialCompleto.includes('doctor') || historialCompleto.includes('médico')) publicosDetectados.push('doctores');
+    if (historialCompleto.includes('veterinaria')) publicosDetectados.push('veterinarias');
+    if (historialCompleto.includes('logística') || historialCompleto.includes('logistica')) publicosDetectados.push('pymes de logística');
+    if (historialCompleto.includes('trabajador')) publicosDetectados.push('trabajadores');
+    if (historialCompleto.includes('adulto')) publicosDetectados.push('adultos');
+    if (historialCompleto.includes('empresa')) publicosDetectados.push('empresas');
+    if (historialCompleto.includes('persona')) publicosDetectados.push('personas');
+    
+    // Ubicaciones
+    if (historialCompleto.includes('santiago')) ubicacionesDetectadas.push('Santiago');
+    if (historialCompleto.includes('providencia')) ubicacionesDetectadas.push('Providencia');
+    if (historialCompleto.includes('ñuñoa') || historialCompleto.includes('nunoa')) ubicacionesDetectadas.push('Ñuñoa');
+    if (historialCompleto.includes('las condes')) ubicacionesDetectadas.push('Las Condes');
+    if (historialCompleto.includes('chile') && !historialCompleto.includes('santiago')) ubicacionesDetectadas.push('Chile');
+    if (historialCompleto.includes('todo chile') || historialCompleto.includes('nacional')) ubicacionesDetectadas.push('todo Chile');
+    
+    const tieneProducto = productosDetectados.length > 0;
+    const tienePublico = publicosDetectados.length > 0;
+    const tieneUbicacion = ubicacionesDetectadas.length > 0;
+    const datosCompletos = tieneProducto && tienePublico && tieneUbicacion;
+
+    // Si tenemos los 3 datos, forzar finalización
+    if (datosCompletos) {
+        const resumen = `Vende ${productosDetectados[0]} a ${publicosDetectados[0]} en ${ubicacionesDetectadas[0]}`;
+        return res.json({ 
+            ready: true, 
+            message: `¡Perfecto! Entendido: ${resumen}. Voy a diseñar 3 estrategias personalizadas para ti. 🚀`, 
+            summary: resumen 
+        });
+    }
+
     try {
-        const prompt = `Actúa como un amigo experto en ventas que está ayudando a un colega.
-        Tu objetivo: Entender qué vende tu amigo y a quién (¿Empresas o Personas normales?).
-        
-        Historial de conversación:
-        ${history.map(m => `${m.role === 'user' ? 'Usuario' : 'Tú'}: ${m.content}`).join('\n')}
+        const prompt = `Eres "Vicente", estratega de ventas de Aexon LeadGen. Tu trabajo es entender el negocio del cliente en 3 datos y NADA MÁS.
 
-        Instrucciones de Personalidad:
-        - Habla relajado, usa emojis, sé breve. Cero formalismos.
-        - No uses palabras raras como "segmento", "target", "scraper". Usa "gente", "clientes", "buscar".
-        - Si te falta info, pregunta directo: "¿Pero le vendes a empresas o a gente normal?" o "¿En qué ciudad estás?".
-        - Si ya entendiste, di que estás listo.
+DATOS NECESARIOS:
+1. PRODUCTO: ¿Qué vende?
+2. PÚBLICO: ¿A quién?
+3. UBICACIÓN: ¿Dónde?
 
-        FORMATO RESPUESTA OBLIGATORIO (JSON):
-        Si faltan datos:
-        { "ready": false, "message": "Tu pregunta aquí..." }
+⚠️ REGLAS ABSOLUTAS:
+- Si ya tienes los 3 datos, DICES "Listo" y NADA MÁS
+- NO repitas preguntas
+- NO pidas clarificación de algo que ya se dijo
+- 1 pregunta por mensaje, máximo
+- Máximo 15 palabras por respuesta
 
-        Si tienes los datos suficientes:
-        { "ready": true, "message": "¡Listo! Ya te entendí. Voy a armarte 3 planes para conseguir esos clientes. Dame un segundo...", "summary": "Resumen simple (Ej: Vende seguros a papás primerizos)" }
-        `;
+❌ MALO:
+"Ya sabemos que vendes X y a Y, pero ¿dónde están?"
 
-        // Función auxiliar para intentar con diferentes modelos (Fallback System)
-        const intentarModelo = async (modelo) => {
-            if (modelo.includes('groq') || modelo.includes('llama')) {
-                 // Lógica para Groq (Respaldo Rápido)
-                 const groqModel = modelo.replace('groq-', '');
-                 const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        messages: [{ role: 'user', content: prompt }],
-                        model: groqModel || 'llama-3.1-8b-instant',
-                        response_format: { type: "json_object" }
-                    })
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error?.message || 'Error Groq');
-                return JSON.parse(data.choices[0].message.content);
-            } else {
-                // Lógica para Gemini (Principal)
-                const aiModel = genAI.getGenerativeModel({ 
-                    model: modelo,
-                    generationConfig: { responseMimeType: "application/json" }
-                });
-                const result = await aiModel.generateContent(prompt);
-                const response = await result.response;
-                const text = response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-                return JSON.parse(text);
+✅ BUENO:
+"¿Dónde están esas pymes?"
+
+HISTORIAL:
+${history.map(m => `${m.role === 'user' ? 'C' : 'V'}: ${m.content}`).join('\n')}
+
+ESTADO ACTUAL:
+- Producto: ${tieneProducto ? productosDetectados[0] : 'FALTA'}
+- Público: ${tienePublico ? publicosDetectados[0] : 'FALTA'}
+- Ubicación: ${tieneUbicacion ? ubicacionesDetectadas[0] : 'FALTA'}
+
+INSTRUCCIÓN:
+Si faltan datos, pregunta SOLO lo que falta, en máximo 15 palabras.
+Si están todos los datos, confirma y termina.
+
+JSON:
+{ "ready": ${datosCompletos}, "message": "..." }`;        
+
+        // Si faltan datos, usar respuesta predefinida inteligente para evitar errores de IA
+        if (!datosCompletos) {
+            let mensaje = '';
+            
+            if (!tieneProducto) {
+                mensaje = '¿Qué producto o servicio vendes?';
+            } else if (!tienePublico) {
+                mensaje = `¿A quién le vendes ${productosDetectados[0]}?`;
+            } else if (!tieneUbicacion) {
+                mensaje = `¿Dónde están esos ${publicosDetectados[0]}?`;
             }
-        };
-
-        let resultado;
-        try {
-            // 1. Intento Principal (Modelo seleccionado o Default)
-            resultado = await intentarModelo(modelName || MODEL_NAME);
-        } catch (err1) {
-            console.warn(`⚠️ Falló modelo principal (${modelName || MODEL_NAME}). Intentando fallback...`, err1.message);
-            try {
-                // 2. Intento Fallback (Groq Llama 3)
-                if (!process.env.GROQ_API_KEY) throw new Error("No hay API Key de Groq configurada.");
-                resultado = await intentarModelo('groq-llama-3.1-8b-instant');
-            } catch (err2) {
-                console.warn(`⚠️ Falló Groq. Intentando Gemini 1.5 Flash...`, err2.message);
-                // 3. Último Intento (Gemini 1.5 Flash - suele ser más estable)
-                resultado = await intentarModelo('gemini-1.5-flash');
-            }
+            
+            return res.json({ ready: false, message: mensaje });
         }
 
-        res.json(resultado);
+        // Si llegamos aquí, debería estar completo pero igual llamamos a la IA
+        const aiModel = genAI.getGenerativeModel({ 
+            model: modelName || MODEL_NAME,
+            generationConfig: { responseMimeType: "application/json" }
+        });
+        
+        const result = await aiModel.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        res.json(JSON.parse(text));
+        
     } catch (error) {
-        console.error('Error en wizard chat (Todos los modelos fallaron):', error);
+        console.error('Error en wizard chat:', error);
         
-        let mensajeError = "Tuve un pequeño lapso. ¿Podrías repetirme qué vendes?";
-        if (error.message && error.message.includes('429')) {
-            mensajeError = "⏳ Todas las IAs están saturadas. Por favor espera 30 segundos e intenta de nuevo.";
+        // Fallback: respuesta simple según lo que falte
+        if (!tieneProducto) {
+            res.json({ ready: false, message: '¿Qué vendes?' });
+        } else if (!tienePublico) {
+            res.json({ ready: false, message: `¿A quién vendes ${productosDetectados[0]}?` });
+        } else if (!tieneUbicacion) {
+            res.json({ ready: false, message: '¿Dónde están esos clientes?' });
+        } else {
+            const resumen = `Vende ${productosDetectados[0]} a ${publicosDetectados[0]} en ${ubicacionesDetectadas[0]}`;
+            res.json({ ready: true, message: '¡Listo! Voy a preparar tus estrategias. 🚀', summary: resumen });
         }
-        res.json({ ready: false, message: mensajeError });
     }
 });
 
@@ -1299,26 +2117,30 @@ app.post('/api/guardar-plantilla', async (req, res) => {
 });
 
 // 5. Endpoint: Verificar Suscripción (Sistema de Cobro)
-app.get('/api/suscripcion/estado', async (req, res) => {
-    // NOTA: En un sistema real, aquí tomarías el ID del usuario logueado.
-    // Por ahora, usamos el usuario ID 1 por defecto.
+app.get('/api/usuario/estado', async (req, res) => {
+    const usuarioId = req.headers['x-user-id'];
+    if (!usuarioId) return res.status(401).json({ error: "No autorizado" });
+
     try {
-        const result = await pool.query('SELECT suscripcion_hasta FROM usuarios WHERE id = 1');
+        const result = await pool.query('SELECT plan_id, creditos_restantes, fecha_renovacion FROM usuarios WHERE id = $1', [usuarioId]);
         
         if (result.rows.length === 0) {
-            return res.json({ activo: false, dias_restantes: 0, mensaje: "Usuario no encontrado" });
+            return res.status(404).json({ error: "Usuario no encontrado" });
         }
 
-        const fechaVencimiento = new Date(result.rows[0].suscripcion_hasta);
-        const hoy = new Date();
-        const diferenciaTiempo = fechaVencimiento - hoy;
-        const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+        const usuario = result.rows[0];
+        const planes = {
+            1: { nombre: "Gratuito", creditos_totales: 20 },
+            2: { nombre: "Piloto", creditos_totales: 350 },
+            3: { nombre: "Profesional", creditos_totales: 2000 },
+            4: { nombre: "Agencia", creditos_totales: 6000 }
+        };
 
-        if (diasRestantes > 0) {
-            res.json({ activo: true, dias_restantes: diasRestantes });
-        } else {
-            res.json({ activo: false, dias_restantes: 0 });
-        }
+        res.json({
+            plan: planes[usuario.plan_id] || { nombre: "Desconocido" },
+            creditos_restantes: usuario.creditos_restantes,
+            fecha_renovacion: usuario.fecha_renovacion
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error verificando suscripción' });
@@ -1326,12 +2148,34 @@ app.get('/api/suscripcion/estado', async (req, res) => {
 });
 
 // 6. Endpoint Admin: Recargar Días (Para cobrar)
-// Uso: POST /api/admin/recargar { "dias": 10 }
-app.post('/api/admin/recargar', async (req, res) => {
-    const { dias } = req.body;
-    // Sumar días a la fecha actual
-    await pool.query(`UPDATE usuarios SET suscripcion_hasta = NOW() + INTERVAL '${dias} days' WHERE id = 1`);
-    res.json({ status: 'success', mensaje: `Se han agregado ${dias} días de acceso.` });
+// Uso: POST /api/admin/asignar-plan { "usuario_id": 1, "plan_id": 3 }
+app.post('/api/admin/asignar-plan', async (req, res) => {
+    const { usuario_id, plan_id } = req.body;
+    const planes = {
+        1: { creditos: 20 },
+        2: { creditos: 350 },
+        3: { creditos: 2000 },
+        4: { creditos: 6000 }
+    };
+
+    if (!planes[plan_id]) {
+        return res.status(400).json({ error: 'Plan ID inválido.' });
+    }
+
+    const creditos = planes[plan_id].creditos;
+    const fechaRenovacion = new Date();
+    fechaRenovacion.setMonth(fechaRenovacion.getMonth() + 1);
+
+    try {
+        await pool.query(
+            'UPDATE usuarios SET plan_id = $1, creditos_restantes = $2, fecha_renovacion = $3 WHERE id = $4',
+            [plan_id, creditos, fechaRenovacion, usuario_id]
+        );
+        res.json({ status: 'success', message: `Plan ${plan_id} asignado al usuario ${usuario_id} con ${creditos} créditos.` });
+    } catch (error) {
+        console.error('Error asignando plan:', error);
+        res.status(500).json({ error: 'Error al asignar el plan.' });
+    }
 });
 
 
@@ -1397,47 +2241,81 @@ async function startServer() {
         console.warn('⚠️ Error verificando tabla prospectos:', e.message);
     }
 
-    // AUTO-FIX: Crear tabla usuarios y asignar 100 días de prueba (Solicitado)
+    // AUTO-FIX: Crear tabla usuarios y asignar plan de prueba
     try {
+        // 1. Crear tabla si no existe (con la estructura mínima para evitar errores)
         await client.query(`
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
                 email VARCHAR(255) UNIQUE,
-                suscripcion_hasta TIMESTAMP,
+                username VARCHAR(255) UNIQUE,
+                password VARCHAR(255),
                 created_at TIMESTAMP DEFAULT NOW()
             );
         `);
-        // Upsert para garantizar 100 días al usuario ID 1
+
+        // 2. Migración de Esquema: Añadir columnas del nuevo modelo de créditos si no existen.
+        // Esto asegura que si la tabla ya existía con un esquema antiguo, se actualice.
+        await client.query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS plan_id INTEGER DEFAULT 1;');
+        await client.query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS creditos_restantes INTEGER DEFAULT 20;');
+        await client.query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS fecha_renovacion DATE;');
+        await client.query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS username VARCHAR(255) UNIQUE;');
+        await client.query('ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS password VARCHAR(255);');
+
+        // 3. Limpieza: Eliminar la columna del sistema de suscripción antiguo si existe.
+        await client.query('ALTER TABLE usuarios DROP COLUMN IF EXISTS suscripcion_hasta;');
+
+        // 4. Crear tabla de blacklist compartida
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS blacklist (
+                    id SERIAL PRIMARY KEY,
+                    telefono VARCHAR(20) UNIQUE NOT NULL,
+                    negocio VARCHAR(255),
+                    razon TEXT,
+                    modelo VARCHAR(100),
+                    usuario_id INTEGER DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            console.log('🔧 Esquema verificado: Tabla "blacklist" lista.');
+        } catch (e) {
+            console.warn('⚠️ Error verificando tabla blacklist:', e.message);
+        }
+
+        // 5. Upsert para garantizar tu usuario Admin (ID 1)
         await client.query(`
-            INSERT INTO usuarios (id, email, suscripcion_hasta) 
-            VALUES (1, 'admin@tusitioya.cl', NOW() + INTERVAL '100 days')
-            ON CONFLICT (id) DO UPDATE 
-            SET suscripcion_hasta = NOW() + INTERVAL '100 days';
+            INSERT INTO usuarios (id, email, username, password, plan_id, creditos_restantes) 
+            VALUES (1, 'admin@tusitioya.cl', 'alexisferrada', '123654', 4, 10000)
+            ON CONFLICT (id) DO UPDATE SET username = 'alexisferrada', password = '123654', plan_id = 4, creditos_restantes = 10000;
         `);
-        console.log('🎁 Modo Pruebas: Usuario Admin recargado con 100 días.');
+        console.log('🎁 Usuario Admin "alexisferrada" configurado con Plan Agencia.');
     } catch (e) {
         console.warn('⚠️ Error configurando usuarios:', e.message);
     }
 
     client.release();
 
-    // 2. Iniciar el servidor Express SOLO si la BD está OK
-    const startApp = (portToTry) => {
-      const server = app.listen(portToTry, () => {
-        console.log(`Servidor corriendo en puerto ${portToTry} | IA: ${MODEL_NAME}`);
-      });
+    // 2. VERIFICAR ESTADO DE APIs DE IA
+    await verificarEstadoIAs();
 
-      server.on('error', (e) => {
+    // 3. Iniciar el servidor Express SOLO en puerto 3000
+    const server = app.listen(3000, () => {
+        console.log(`✅ Servidor corriendo en http://localhost:3000 | IA: ${MODEL_NAME}`);
+        console.log(`📁 Dashboard: http://localhost:3000/dashboard.html`);
+        console.log(`🏠 Landing: http://localhost:3000/index.html`);
+    });
+
+    server.on('error', (e) => {
         if (e.code === 'EADDRINUSE') {
-          console.log(`⚠️ Puerto ${portToTry} ocupado, probando con ${portToTry + 1}...`);
-          startApp(portToTry + 1);
+            console.error('❌ ERROR: Puerto 3000 está ocupado. Cierra otras ventanas de Node.js y reinicia.');
+            console.error('   Ejecuta: taskkill /F /IM node.exe');
+            process.exit(1);
         } else {
-          console.error('❌ Error al iniciar el servidor:', e);
+            console.error('❌ Error al iniciar el servidor:', e);
+            process.exit(1);
         }
-      });
-    };
-
-    startApp(port);
+    });
   } catch (err) {
     console.error('❌ ERROR FATAL: No se pudo conectar a la Base de Datos. El servidor NO se iniciará.');
     console.error(err.stack);

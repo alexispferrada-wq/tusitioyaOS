@@ -1,4 +1,4 @@
-﻿﻿﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <title>TuSitioYa | Dashboard High Velocity</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚀%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     
     <script>
@@ -201,7 +201,7 @@
             <div class="absolute right-0 top-0 text-9xl text-teal-50 opacity-40 pointer-events-none -mr-8 -mt-8 group-hover:opacity-60 transition-opacity animate-[spin_20s_linear_infinite]"><i class="fa-solid fa-microchip"></i></div>
             <div class="pl-3">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">CEREBRO IA</span>
+                    <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">🚀 KIMI AI - CEREBRO TUSITIOYA</span>
                     <div class="flex items-center gap-2">
                         <span id="ia-capacity-text" class="text-[9px] font-bold text-teal-500">0%</span>
                         <span id="ia-status-badge" class="bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1">
@@ -1258,7 +1258,6 @@
                         <option value="interesado">🚀 Cliente Interesado</option>
                         <option value="enojado">😡 Cliente Enojado</option>
                     </select>
-                    <button onclick="App.ui.probarPrompt()" class="px-4 py-2 bg-cyan-100 text-cyan-700 text-xs font-bold rounded-lg hover:bg-cyan-200 border border-cyan-200 transition-colors flex items-center gap-2"><i class="fa-solid fa-flask"></i> Probar</button>
                 </div>
                 <div class="flex gap-3">
                     <button onclick="App.ui.restaurarPrompt()" class="px-4 py-2 text-slate-500 text-xs font-bold hover:text-red-500">Restaurar Original</button>
@@ -1273,6 +1272,10 @@
 
     <script>
         const GEMINI_MODELS = [
+            // --- KIMI AI (CEREBRO TUSITIOYA) ---
+            "kimi-moonshot-v1-8k",
+            "kimi-moonshot-v1-32k",
+            "kimi-moonshot-v1-128k",
             // --- GROQ (VELOCIDAD EXTREMA) ---
             "groq-llama-3.3-70b-versatile",
             "groq-llama-3.1-8b-instant",
@@ -1296,7 +1299,7 @@
             "gemini-2.5-computer-use-preview-10-2025", "deep-research-pro-preview-12-2025"
         ];
 
-        const PROMPT_TEMPLATE = `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".
+        const PROMPT_TEMPLATE = `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".`;
         const App = {
             datos: { leads: [], blacklist: [] },
             tempLeads: [],
@@ -1444,17 +1447,28 @@
 
                     setTimeout(() => {
                         if (!statusBadge || !bar || !text || !analysis) return; // Doble verificación asíncrona
-                        statusBadge.innerHTML = 'ONLINE <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>';
-                        statusBadge.className = "bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1";
                         
-                        if (model.includes(':free')) {
+                        // Detectar Kimi AI (Cerebro Tusitioya)
+                        if (model.includes('kimi')) {
+                            statusBadge.innerHTML = '🚀 KIMI ONLINE <div class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>';
+                            statusBadge.className = "bg-purple-50 text-purple-600 border border-purple-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1";
+                            bar.style.width = '95%'; text.innerText = 'OPTIMO';
+                            bar.className = "bg-purple-500 h-full transition-all duration-1000 ease-out";
+                            analysis.innerHTML = '🧠 Cerebro Tusitioya Activado | Latencia: 12ms';
+                        } else if (model.includes(':free')) {
                             // Modelos gratuitos de OpenRouter
+                            statusBadge.innerHTML = 'ONLINE <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>';
+                            statusBadge.className = "bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1";
                             bar.style.width = '100%'; text.innerText = '∞';
+                            bar.className = "bg-teal-500 h-full transition-all duration-1000 ease-out";
                             analysis.innerHTML = 'Modelo Gratuito (OpenRouter)';
                         } else {
                             // Simulación para otros modelos
+                            statusBadge.innerHTML = 'ONLINE <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>';
+                            statusBadge.className = "bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded text-[9px] font-bold flex items-center gap-1";
                             let cap = 90 + Math.floor(Math.random() * 10);
                             bar.style.width = `${cap}%`; text.innerText = `${cap}%`;
+                            bar.className = "bg-teal-500 h-full transition-all duration-1000 ease-out";
                             analysis.innerHTML = `Latencia: ${Math.floor(Math.random()*50)+10}ms.`;
                         }
                     }, 800);
@@ -3316,101 +3330,6 @@ Responde SOLO en JSON estricto:
                     const cerradosEnPeriodo = leadsPeriodo.filter(l => l.estado === 'cerrados').length;
 
                     const efectividadTotal = (nuevosEnPeriodo > 0) ? Math.round((cerradosEnPeriodo / nuevosEnPeriodo) * 100) : 0;
-                    document.getElementById('conv-vs-total').innerText = `${efectividadTotal}%`;
-                    document.getElementById('conv-vs-total-detalle').innerText = `${cerradosEnPeriodo} cerrados de ${nuevosEnPeriodo} nuevos`;
-
-                    const poolCualificado = leadsPeriodo.filter(l => l.estado === 'seguimiento' || l.estado === 'cerrados').length;
-                    const efectividadConversando = (poolCualificado > 0) ? Math.round((cerradosEnPeriodo / poolCualificado) * 100) : 0;
-                    document.getElementById('conv-vs-conversando').innerText = `${efectividadConversando}%`;
-                    document.getElementById('conv-vs-conversando-detalle').innerText = `${cerradosEnPeriodo} cerrados de ${poolCualificado} cualificados`;
-
-                    const mesActual = new Date().getMonth(); const anioActual = new Date().getFullYear();
-                    const metaMes = 3 + (mesActual - 1); // Meta 3 para Febrero (mes 1), 4 para Marzo, etc.
-                    const cerradosEsteMes = App.datos.leads.filter(l => l.estado === 'cerrados' && l.created_at && new Date(l.created_at).getMonth() === mesActual && new Date(l.created_at).getFullYear() === anioActual).length;
-                    const efectividadMeta = (metaMes > 0) ? Math.round((cerradosEsteMes / metaMes) * 100) : 0;
-                    document.getElementById('conv-vs-meta').innerText = `${efectividadMeta}%`;
-                    document.getElementById('conv-vs-meta-detalle').innerText = `${cerradosEsteMes} cerrados de ${metaMes} este mes`;
-
-                    // --- TENDENCIAS (Últimos 7 días) ---
-                    const last7Days = Array.from({length: 7}, (_, i) => {
-                        const d = new Date();
-                        d.setDate(d.getDate() - (6 - i));
-                        return d;
-                    });
-
-                    const trendTotal = [];
-                    const trendProgramados = [];
-                    const trendMeta = [];
-
-                    last7Days.forEach(date => {
-                        const dateStr = date.toLocaleDateString(); 
-                        const startOfDay = new Date(date); startOfDay.setHours(0,0,0,0);
-                        const endOfDay = new Date(date); endOfDay.setHours(23,59,59,999);
-
-                        const createdCount = App.datos.leads.filter(l => {
-                            const cDate = new Date(l.created_at);
-                            return cDate >= startOfDay && cDate <= endOfDay;
-                        }).length;
-
-                        const closedCount = App.datos.leads.filter(l => l.estado === 'cerrados' && l.historial && l.historial.some(h => h.nota.includes('VENTA CERRADA') && h.fecha.includes(dateStr))).length;
-                        
-                        const scheduledCount = App.datos.leads.filter(l => l.fecha_agendada && l.fecha_agendada.startsWith(date.toISOString().split('T')[0])).length;
-
-                        // 1. Efectividad Total (Cerrados / Creados)
-                        trendTotal.push(createdCount > 0 ? Math.round((closedCount / createdCount) * 100) : 0);
-
-                        // 2. Tendencia de Programación (Programados / Creados)
-                        trendProgramados.push(createdCount > 0 ? Math.round((scheduledCount / createdCount) * 100) : 0);
-
-                        // 3. Meta (Volumen de Ventas Diario)
-                        trendMeta.push(closedCount);
-                    });
-
-                    App.ui.renderSparkline('chart-conv-total', trendTotal, '#10b981');
-                    App.ui.renderSparkline('chart-conv-programados', trendProgramados, '#0d9488'); // Teal-600
-                    App.ui.renderSparkline('chart-conv-meta', trendMeta, '#059669'); // Emerald-600
-                }
-            },
-
-            conversion: {
-                periodo: 'hoy',
-                init: function() {
-                    this.render();
-                },
-                cambiarPeriodo: function(nuevoPeriodo) {
-                    this.periodo = nuevoPeriodo;
-                    document.querySelectorAll('#conversion-filtros button').forEach(btn => btn.classList.remove('active'));
-                    document.querySelector(`#conversion-filtros button[onclick="App.conversion.cambiarPeriodo('${nuevoPeriodo}')"]`).classList.add('active');
-                    this.render();
-                },
-                render: function() {
-                    const hoy = new Date();
-                    hoy.setHours(0, 0, 0, 0);
-                    let startDate, endDate = new Date();
-                    endDate.setHours(23, 59, 59, 999);
-
-                    switch (this.periodo) {
-                        case 'hoy': startDate = hoy; break;
-                        case 'ayer':
-                            startDate = new Date(hoy); startDate.setDate(hoy.getDate() - 1);
-                            endDate = new Date(hoy); endDate.setDate(hoy.getDate() - 1); endDate.setHours(23, 59, 59, 999);
-                            break;
-                        case 'semana':
-                            startDate = new Date(hoy);
-                            const diaSemana = hoy.getDay();
-                            const diff = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
-                            startDate.setDate(diff);
-                            break;
-                        case 'mes':
-                            startDate = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-                            break;
-                    }
-
-                    const leadsPeriodo = App.datos.leads.filter(l => l.created_at && new Date(l.created_at) >= startDate && new Date(l.created_at) <= endDate);
-                    const nuevosEnPeriodo = leadsPeriodo.length;
-                    const cerradosEnPeriodo = leadsPeriodo.filter(l => l.estado === 'cerrados').length;
-
-                    const efectividadTotal = (nuevosEnPeriodo > 0) ? Math.round((cerradosEnPeriodo / nuevosEnPeriodo) * 100) : 0;
                     const elTotal = document.getElementById('conv-vs-total');
                     elTotal.innerText = `${efectividadTotal}%`;
                     // Alerta visual si es menor al 3%
@@ -3859,8 +3778,7 @@ Responde SOLO en JSON estricto:
                 },
                 toggleZenMode: () => {
                     document.body.classList.toggle('zen-mode');
-                }
-                ,
+                },
                 configurarPrompt: () => {
                     const currentPrompt = localStorage.getItem('analysis_prompt') || DEFAULT_ANALYSIS_PROMPT;
                     document.getElementById('config-prompt-input').value = currentPrompt;

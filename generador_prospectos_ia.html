@@ -10,47 +10,105 @@
 
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Generador de Leads IA</h1>
-            <p class="text-gray-500 text-sm mt-2">Ingresa a tu panel de control</p>
+            <h1 class="text-2xl font-bold text-gray-800">Prospector IA 🇨🇱</h1>
+            <p class="text-gray-500 text-sm mt-2">Tu motor de ventas automático</p>
         </div>
 
-        <form id="loginForm" class="space-y-6">
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" id="email" name="email" 
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
-                       placeholder="ejemplo@correo.com">
-            </div>
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-200 mb-6">
+            <button onclick="switchTab('login')" id="tab-login" class="flex-1 py-2 text-blue-600 border-b-2 border-blue-600 font-bold text-sm">Ingresar</button>
+            <button onclick="switchTab('register')" id="tab-register" class="flex-1 py-2 text-gray-500 font-medium text-sm hover:text-blue-500">Crear Cuenta Gratis</button>
+        </div>
 
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4">
             <div>
-                <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                <input type="password" id="password" name="password" 
-                       class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
-                       placeholder="••••••••">
+                <label class="block text-sm font-medium text-gray-700">Usuario o Email</label>
+                <input type="text" id="login-user" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="alexisferrada">
             </div>
-
-            <button type="submit" 
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <input type="password" id="login-pass" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="••••••••">
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
                 Ingresar al Sistema
             </button>
         </form>
 
-        <div class="mt-4 text-center">
-            <p class="text-xs text-gray-400">Modo Desarrollo: El acceso está libre (vacío).</p>
-        </div>
+        <!-- Register Form -->
+        <form id="registerForm" class="space-y-4 hidden">
+            <div class="bg-green-50 p-3 rounded-lg border border-green-200 mb-4">
+                <p class="text-xs text-green-700 font-bold text-center">🎁 ¡Regístrate y recibe 20 Créditos Gratis!</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Nombre de Usuario</label>
+                <input type="text" id="reg-user" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500" placeholder="juanperez">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="reg-email" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500" placeholder="juan@empresa.cl">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <input type="password" id="reg-pass" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500" placeholder="••••••••">
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors">
+                Crear Cuenta y Recibir Créditos
+            </button>
+        </form>
+
+        <p id="error-msg" class="text-red-500 text-xs text-center mt-4 hidden"></p>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
-            // Evitamos que la página se recargue (comportamiento por defecto del formulario)
-            event.preventDefault();
-            
-            // Aquí no validamos nada. No importa si los campos están vacíos.
-            console.log("Login simulado exitoso. Redirigiendo...");
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const regForm = document.getElementById('registerForm');
+            const tabLogin = document.getElementById('tab-login');
+            const tabReg = document.getElementById('tab-register');
+            document.getElementById('error-msg').classList.add('hidden');
 
-            // Redirigimos directamente al dashboard. 
-            // Asegúrate de crear un archivo llamado "dashboard.html" en la misma carpeta.
-            window.location.href = 'dashboard.html';
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.className = "flex-1 py-2 text-blue-600 border-b-2 border-blue-600 font-bold text-sm";
+                tabReg.className = "flex-1 py-2 text-gray-500 font-medium text-sm hover:text-blue-500";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.className = "flex-1 py-2 text-green-600 border-b-2 border-green-600 font-bold text-sm";
+                tabLogin.className = "flex-1 py-2 text-gray-500 font-medium text-sm hover:text-blue-500";
+            }
+        }
+
+        async function handleAuth(url, body) {
+            const errorEl = document.getElementById('error-msg');
+            errorEl.classList.add('hidden');
+            try {
+                const res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('usuario_id', data.user.id);
+                    localStorage.setItem('usuario_nombre', data.user.username);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorEl.innerText = data.error || 'Error desconocido';
+                    errorEl.classList.remove('hidden');
+                }
+            } catch (e) {
+                errorEl.innerText = 'Error de conexión con el servidor.';
+                errorEl.classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleAuth('/api/login', { username: document.getElementById('login-user').value, password: document.getElementById('login-pass').value });
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleAuth('/api/register', { username: document.getElementById('reg-user').value, email: document.getElementById('reg-email').value, password: document.getElementById('reg-pass').value });
         });
     </script>
 
