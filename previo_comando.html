@@ -1309,7 +1309,6 @@
             init: async function() {
                 try {
                     this.datos.blacklist = JSON.parse(localStorage.getItem('blacklist') || '[]');
-                    this.entrenar.init(); // Iniciar módulo de entrenamiento
                     this.ui.actualizarBlacklistCount();
                     this.models.cargarLista();
                     // Intentar cargar estado visual IA sin bloquear la app si falla
