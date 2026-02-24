@@ -899,6 +899,290 @@ app.post('/api/movimientos', async (req, res) => {
     }
 });
 
+// ═══════════════════════════════════════════════════════════════
+// 💰 SISTEMA DE PAGOS MENSUALES / SUSCRIPCIONES
+// ═══════════════════════════════════════════════════════════════
+
+// Obtener todas las suscripciones activas
+app.get('/api/suscripciones', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT s.*, c.nombre as cliente_nombre, c.negocio as cliente_negocio, c.whatsapp
+            FROM suscripciones s
+            JOIN clientes c ON s.cliente_id = c.id
+            WHERE s.estado_suscripcion = 'activa'
+            ORDER BY s.fecha_proximo_pago ASC
+        `);
+        res.json(result.rows);
+    } catch (e) {
+        console.error('❌ Error obteniendo suscripciones:', e);
+        res.status(500).json({ error: 'Error al obtener suscripciones' });
+    }
+});
+
+// Obtener suscripción de un cliente específico
+app.get('/api/suscripciones/cliente/:cliente_id', async (req, res) => {
+    const { cliente_id } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT * FROM suscripciones WHERE cliente_id = $1 ORDER BY created_at DESC LIMIT 1',
+            [cliente_id]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No hay suscripción activa para este cliente' });
+        }
+        res.json(result.rows[0]);
+    } catch (e) {
+        console.error('❌ Error obteniendo suscripción:', e);
+        res.status(500).json({ error: 'Error al obtener suscripción' });
+    }
+});
+
+// Crear nueva suscripción para un cliente
+app.post('/api/suscripciones', async (req, res) => {
+    const { cliente_id, plan_nombre, plan_tipo, monto_mensual, dia_cobro, notas } = req.body;
+    
+    try {
+        // Calcular fecha próximo pago
+        const hoy = new Date();
+        const diaCobro = dia_cobro || 1;
+        let fechaProximoPago = new Date(hoy.getFullYear(), hoy.getMonth(), diaCobro);
+        
+        if (fechaProximoPago < hoy) {
+            fechaProximoPago.setMonth(fechaProximoPago.getMonth() + 1);
+        }
+        
+        const result = await pool.query(
+            `INSERT INTO suscripciones 
+             (cliente_id, plan_nombre, plan_tipo, monto_mensual, dia_cobro, fecha_proximo_pago, notas) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [cliente_id, plan_nombre || 'Básico', plan_tipo || 'mensual', monto_mensual || 0, diaCobro, fechaProximoPago, notas]
+        );
+        
+        // Actualizar cliente
+        await pool.query(
+            `UPDATE clientes SET 
+             tiene_suscripcion = true, 
+             tipo_suscripcion = $1, 
+             monto_mensual = $2,
+             estado_pago = 'al_dia'
+             WHERE id = $3`,
+            [plan_tipo || 'mensual', monto_mensual || 0, cliente_id]
+        );
+        
+        res.json({ status: 'success', suscripcion: result.rows[0] });
+    } catch (e) {
+        console.error('❌ Error creando suscripción:', e);
+        res.status(500).json({ error: 'Error al crear suscripción' });
+    }
+});
+
+// Actualizar suscripción
+app.put('/api/suscripciones/:id', async (req, res) => {
+    const { id } = req.params;
+    const { plan_nombre, monto_mensual, estado_suscripcion, dia_cobro, notas } = req.body;
+    
+    try {
+        const result = await pool.query(
+            `UPDATE suscripciones 
+             SET plan_nombre = $1, monto_mensual = $2, estado_suscripcion = $3, 
+                 dia_cobro = $4, notas = $5, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $6 RETURNING *`,
+            [plan_nombre, monto_mensual, estado_suscripcion, dia_cobro, notas, id]
+        );
+        res.json({ status: 'success', suscripcion: result.rows[0] });
+    } catch (e) {
+        console.error('❌ Error actualizando suscripción:', e);
+        res.status(500).json({ error: 'Error al actualizar suscripción' });
+    }
+});
+
+// Cancelar suscripción
+app.post('/api/suscripciones/:id/cancelar', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const suscripcion = await pool.query(
+            'UPDATE suscripciones SET estado_suscripcion = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING cliente_id',
+            ['cancelada', id]
+        );
+        
+        if (suscripcion.rows.length > 0) {
+            await pool.query(
+                'UPDATE clientes SET tiene_suscripcion = false, tipo_suscripcion = $1 WHERE id = $2',
+                ['ninguna', suscripcion.rows[0].cliente_id]
+            );
+        }
+        
+        res.json({ status: 'success', message: 'Suscripción cancelada' });
+    } catch (e) {
+        console.error('❌ Error cancelando suscripción:', e);
+        res.status(500).json({ error: 'Error al cancelar suscripción' });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 💳 REGISTRO DE PAGOS RECIBIDOS
+// ═══════════════════════════════════════════════════════════════
+
+// Obtener historial de pagos
+app.get('/api/pagos-recibidos', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT p.*, c.nombre as cliente_nombre, c.negocio as cliente_negocio
+            FROM pagos_recibidos p
+            JOIN clientes c ON p.cliente_id = c.id
+            ORDER BY p.fecha_pago DESC
+            LIMIT 100
+        `);
+        res.json(result.rows);
+    } catch (e) {
+        console.error('❌ Error obteniendo pagos:', e);
+        res.status(500).json({ error: 'Error al obtener pagos' });
+    }
+});
+
+// Obtener pagos de un cliente
+app.get('/api/pagos-recibidos/cliente/:cliente_id', async (req, res) => {
+    const { cliente_id } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT * FROM pagos_recibidos WHERE cliente_id = $1 ORDER BY fecha_pago DESC',
+            [cliente_id]
+        );
+        res.json(result.rows);
+    } catch (e) {
+        console.error('❌ Error obteniendo pagos del cliente:', e);
+        res.status(500).json({ error: 'Error al obtener pagos' });
+    }
+});
+
+// Registrar nuevo pago
+app.post('/api/pagos-recibidos', async (req, res) => {
+    const { cliente_id, suscripcion_id, monto, metodo_pago, concepto, mes_pagado, anio_pagado, notas } = req.body;
+    
+    try {
+        // Insertar el pago
+        const pagoResult = await pool.query(
+            `INSERT INTO pagos_recibidos 
+             (cliente_id, suscripcion_id, monto, metodo_pago, concepto, mes_pagado, anio_pagado, notas) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [cliente_id, suscripcion_id, monto, metodo_pago || 'transferencia', concepto, mes_pagado, anio_pagado, notas]
+        );
+        
+        // Actualizar suscripción (fecha último pago y próximo pago)
+        if (suscripcion_id) {
+            const hoy = new Date();
+            const proximoPago = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 1);
+            
+            await pool.query(
+                `UPDATE suscripciones 
+                 SET fecha_ultimo_pago = CURRENT_DATE, 
+                     fecha_proximo_pago = $1,
+                     updated_at = CURRENT_TIMESTAMP
+                 WHERE id = $2`,
+                [proximoPago, suscripcion_id]
+            );
+        }
+        
+        // Actualizar estado del cliente
+        await pool.query(
+            `UPDATE clientes SET 
+             estado_pago = 'al_dia',
+             dias_mora = 0,
+             fecha_pago = CURRENT_TIMESTAMP
+             WHERE id = $1`,
+            [cliente_id]
+        );
+        
+        res.json({ status: 'success', pago: pagoResult.rows[0] });
+    } catch (e) {
+        console.error('❌ Error registrando pago:', e);
+        res.status(500).json({ error: 'Error al registrar pago' });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 📊 DASHBOARD DE PAGOS Y MOROSIDAD
+// ═══════════════════════════════════════════════════════════════
+
+// Obtener resumen de pagos pendientes/vencidos
+app.get('/api/pagos/pendientes', async (req, res) => {
+    try {
+        // Pagos vencidos (fecha_proximo_pago < hoy)
+        const vencidos = await pool.query(`
+            SELECT s.*, c.nombre, c.negocio, c.whatsapp, c.estado_pago,
+                   CURRENT_DATE - s.fecha_proximo_pago as dias_vencido
+            FROM suscripciones s
+            JOIN clientes c ON s.cliente_id = c.id
+            WHERE s.estado_suscripcion = 'activa'
+            AND s.fecha_proximo_pago < CURRENT_DATE
+            ORDER BY s.fecha_proximo_pago ASC
+        `);
+        
+        // Pagos de esta semana
+        const estaSemana = await pool.query(`
+            SELECT s.*, c.nombre, c.negocio, c.whatsapp
+            FROM suscripciones s
+            JOIN clientes c ON s.cliente_id = c.id
+            WHERE s.estado_suscripcion = 'activa'
+            AND s.fecha_proximo_pago BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
+            ORDER BY s.fecha_proximo_pago ASC
+        `);
+        
+        // Total recaudado este mes
+        const recaudado = await pool.query(`
+            SELECT COALESCE(SUM(monto), 0) as total
+            FROM pagos_recibidos
+            WHERE fecha_pago >= DATE_TRUNC('month', CURRENT_DATE)
+        `);
+        
+        res.json({
+            vencidos: vencidos.rows,
+            totalVencidos: vencidos.rows.length,
+            estaSemana: estaSemana.rows,
+            recaudadoEsteMes: recaudado.rows[0].total
+        });
+    } catch (e) {
+        console.error('❌ Error obteniendo pagos pendientes:', e);
+        res.status(500).json({ error: 'Error al obtener pagos pendientes' });
+    }
+});
+
+// Verificar vencimientos (job para ejecutar diariamente)
+app.post('/api/pagos/verificar-vencimientos', async (req, res) => {
+    try {
+        // Actualizar clientes en mora
+        await pool.query(`
+            UPDATE clientes 
+            SET estado_pago = 'mora',
+                dias_mora = CURRENT_DATE - s.fecha_proximo_pago
+            FROM suscripciones s
+            WHERE clientes.id = s.cliente_id
+            AND s.estado_suscripcion = 'activa'
+            AND s.fecha_proximo_pago < CURRENT_DATE
+            AND clientes.estado_pago != 'mora'
+        `);
+        
+        // Obtener lista de clientes en mora
+        const enMora = await pool.query(`
+            SELECT c.id, c.nombre, c.whatsapp, c.dias_mora, s.monto_mensual
+            FROM clientes c
+            JOIN suscripciones s ON c.id = s.cliente_id
+            WHERE c.estado_pago = 'mora'
+            AND s.estado_suscripcion = 'activa'
+        `);
+        
+        res.json({ 
+            status: 'success', 
+            clientesEnMora: enMora.rows,
+            totalEnMora: enMora.rows.length
+        });
+    } catch (e) {
+        console.error('❌ Error verificando vencimientos:', e);
+        res.status(500).json({ error: 'Error al verificar vencimientos' });
+    }
+});
+
 // C. Actualizar Pagos (Cuando detectas el comprobante)
 app.post('/api/pagos/:id', async (req, res) => {
   const { id } = req.params;

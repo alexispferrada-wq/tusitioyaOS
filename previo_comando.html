@@ -1434,10 +1434,16 @@
         </div>
     </div>
 
-    <!-- Sonido de Alerta -->
-    <audio id="alert-sound" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_c6cc1ee19f.mp3?filename=notification-sound-7062.mp3" preload="auto"></audio>
+    <!-- Sonido de Alerta (base64 beep simple) -->
+    <audio id="alert-sound" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmFgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" preload="auto"></audio>
 
     <script>
+        // 🚨 DETECTOR DE ERRORES GLOBAL (Para que sepas por qué no carga)
+        window.onerror = function(msg, url, line, col, error) {
+            if (msg.includes('ResizeObserver')) return; // Ignorar error benigno
+            alert("⚠️ Error Crítico del Sistema:\n" + msg + "\nLínea: " + line + "\n\nPor favor, revisa el código o recarga.");
+        };
+
         const GEMINI_MODELS = [
             // --- KIMI AI (CEREBRO TUSITIOYA) ---
             "kimi-moonshot-v1-8k",
@@ -1467,6 +1473,15 @@
         ];
 
         const PROMPT_TEMPLATE = `Actúa como un experto en prospección digital. Eres Alexis Ferrada de la agencia "TuSitioYa".`;
+        
+        // CONSTANTES FALTANTES (Agregadas para evitar errores)
+        const DEFAULT_ANALYSIS_PROMPT = `Actúa como un experto en ventas y analiza esta conversación.`;
+        const EXAMPLE_CONVERSATIONS = {
+            precio: "Cliente: Es muy caro...",
+            interesado: "Cliente: Me interesa...",
+            enojado: "Cliente: No me llamen más..."
+        };
+
         const App = {
             datos: { leads: [], blacklist: [] },
             tempLeads: [],
@@ -1532,32 +1547,86 @@
             },
 
             auth: {
-                USERNAME: 'alexisferrada',
-                PASSWORD: '123654',
                 SESSION_KEY: 'tusitioya_session',
                 
                 init: function() {
-                    // Verificar si hay sesión activa
-                    if (sessionStorage.getItem(App.auth.SESSION_KEY) === 'active') {
-                        App.auth.mostrarApp();
-                    }
+                    try {
+                        if (sessionStorage.getItem(App.auth.SESSION_KEY) === 'active') {
+                            App.auth.mostrarApp();
+                        }
+                    } catch(e) { console.error(e); }
                 },
                 
-                login: function(e) {
-                    e.preventDefault();
+                login: async function(e) {
+                    if(e) e.preventDefault();
                     const userInput = document.getElementById('login-user');
                     const passInput = document.getElementById('login-password');
                     const error = document.getElementById('login-error');
+                    const btn = e && e.target ? e.target.querySelector('button') : document.querySelector('#login-screen button');
                     
-                    if (userInput.value.trim() === App.auth.USERNAME && passInput.value === App.auth.PASSWORD) {
+                    // Feedback visual
+                    const originalText = btn ? btn.innerHTML : 'Ingresar';
+                    if(btn) {
+                        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
+                        btn.disabled = true;
+                    }
+                    
+                    const username = userInput.value.trim();
+                    const password = passInput.value.trim();
+                    
+                    // LOGIN LOCAL HARDCODEADO (bypass del servidor)
+                    if (username === 'alexisferrada' && password === '123654') {
                         sessionStorage.setItem(App.auth.SESSION_KEY, 'active');
                         error.classList.add('hidden');
                         App.auth.mostrarApp();
                         passInput.value = '';
-                    } else {
+                        if(btn) {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                        return;
+                    }
+                    
+                    try {
+                        console.log("Intentando login con:", username);
+
+                        const res = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                username: username, 
+                                password: password 
+                            })
+                        });
+                        
+                        // Verificar si la respuesta es válida
+                        const contentType = res.headers.get("content-type");
+                        if (!contentType || !contentType.includes("application/json")) {
+                             throw new Error(`Error del servidor (${res.status})`);
+                        }
+
+                        const data = await res.json();
+                        
+                        if (res.ok && data.status === 'success') {
+                            sessionStorage.setItem(App.auth.SESSION_KEY, 'active');
+                            error.classList.add('hidden');
+                            App.auth.mostrarApp();
+                            passInput.value = '';
+                        } else {
+                            throw new Error(data.error || 'Credenciales incorrectas');
+                        }
+                    } catch (err) {
+                        console.error("Login error:", err);
+
+                        error.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> ${err.message}`;
                         error.classList.remove('hidden');
                         passInput.classList.add('border-red-300');
                         setTimeout(() => passInput.classList.remove('border-red-300'), 2000);
+                    } finally {
+                        if(btn) {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
                     }
                 },
                 
@@ -1568,6 +1637,8 @@
                 
                 mostrarApp: function() {
                     document.getElementById('login-screen').style.display = 'none';
+                    const screen = document.getElementById('login-screen');
+                    if(screen) screen.style.display = 'none';
                     document.body.style.overflow = '';
                 }
             },
@@ -1615,8 +1686,6 @@
             },
 
             movimientos: {
-                lista: JSON.parse(localStorage.getItem('movimientos_log')) || [],
-                agregar: (tipo, descripcion, monto = null) => {
                 lista: [],
                 init: async () => {
                     try {
@@ -1635,17 +1704,8 @@
                         tipo, // 'pago', 'gasto', 'interaccion', 'venta'
                         descripcion,
                         monto,
-                        hora: new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'}),
-                        fecha: new Date().toLocaleDateString('es-CL', {day: '2-digit', month: 'short'})
                         fecha: `${fecha} ${hora}`
                     };
-                    setInterval(update, 1000);
-                    update();
-                    this.util.iniciarReloj();
-                    App.movimientos.lista.unshift(mov);
-                    if (App.movimientos.lista.length > 30) App.movimientos.lista.pop();
-                    localStorage.setItem('movimientos_log', JSON.stringify(App.movimientos.lista));
-                    App.movimientos.render();
                     
                     // Guardar en DB
                     try {
@@ -1675,7 +1735,6 @@
                         return `
                             <div class="flex items-center gap-2 p-2 rounded-lg ${bg} border border-transparent hover:border-slate-200 transition-all">
                                 <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm ${color} text-[10px]"><i class="fa-solid ${icon}"></i></div>
-                                <div class="flex-1 min-w-0"><p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p><p class="text-[8px] text-slate-400">${m.fecha} ${m.hora}</p></div>
                                 <div class="flex-1 min-w-0"><p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p><p class="text-[8px] text-slate-400">${m.fecha}</p></div>
                                 ${montoHtml}
                             </div>`;
@@ -4594,7 +4653,7 @@ Responde SOLO en JSON estricto:
                     }
                 },
                 
-                agregarGastoServicio: function() {
+                agregarGastoServicio: async function() {
                     const select = document.getElementById('select-servicio');
                     const inputOtro = document.getElementById('input-servicio-otro');
                     const inputMonto = document.getElementById('input-servicio-monto');
@@ -4649,7 +4708,7 @@ Responde SOLO en JSON estricto:
                     }
                 },
                 
-                agregarGastoAds: function() {
+                agregarGastoAds: async function() {
                     const select = document.getElementById('select-ads');
                     const inputOtro = document.getElementById('input-ads-otro');
                     const inputMonto = document.getElementById('input-ads-monto');
@@ -4720,7 +4779,7 @@ Responde SOLO en JSON estricto:
                     const otro = document.createElement('option'); otro.value = 'otro'; otro.textContent = '+ Otro...'; select.appendChild(otro);
                 },
                 
-                guardarGasto: function() {
+                guardarGasto: async function() {
                     const tipo = document.getElementById('gasto-tipo');
                     const conceptoSelect = document.getElementById('gasto-concepto');
                     const conceptoOtro = document.getElementById('gasto-concepto-otro');
@@ -4837,6 +4896,11 @@ Responde SOLO en JSON estricto:
                 observer.observe(loginScreen, { attributes: true, attributeFilter: ['style'] });
             }
         };
+
+        // Verificación de integridad
+        if (typeof App === 'undefined') {
+            alert("❌ Error Crítico: La aplicación no se cargó correctamente. Revisa la consola (F12) para ver errores de sintaxis.");
+        }
     </script>
 </body>
 </html>
