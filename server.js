@@ -838,6 +838,67 @@ app.post('/api/analizar-chat', async (req, res) => {
   }
 });
 
+// G. Gestión de Transacciones (Gastos/Ingresos manuales)
+app.get('/api/transacciones', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM transacciones ORDER BY fecha DESC');
+        res.json(result.rows);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al obtener transacciones' });
+    }
+});
+
+app.post('/api/transacciones', async (req, res) => {
+    const { tipo, concepto, monto, fecha } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO transacciones (tipo, concepto, monto, fecha) VALUES ($1, $2, $3, $4) RETURNING *',
+            [tipo, concepto, monto, fecha]
+        );
+        res.json(result.rows[0]);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al guardar transacción' });
+    }
+});
+
+app.delete('/api/transacciones/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM transacciones WHERE id = $1', [id]);
+        res.json({ status: 'success' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al eliminar transacción' });
+    }
+});
+
+// H. Gestión de Movimientos (Log Global)
+app.get('/api/movimientos', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM movimientos ORDER BY created_at DESC LIMIT 50');
+        res.json(result.rows);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al obtener movimientos' });
+    }
+});
+
+app.post('/api/movimientos', async (req, res) => {
+    const { tipo, descripcion, monto, fecha } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO movimientos (tipo, descripcion, monto, fecha) VALUES ($1, $2, $3, $4) RETURNING *',
+            [tipo, descripcion, monto, fecha]
+        );
+        res.json(result.rows[0]);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al guardar movimiento' });
+    }
+});
+
 // C. Actualizar Pagos (Cuando detectas el comprobante)
 app.post('/api/pagos/:id', async (req, res) => {
   const { id } = req.params;
@@ -3265,6 +3326,40 @@ async function startServer() {
             console.log('🔧 Esquema verificado: Tabla "blacklist" lista.');
         } catch (e) {
             console.warn('⚠️ Error verificando tabla blacklist:', e.message);
+        }
+
+        // AUTO-FIX: Crear tabla transacciones si no existe (Para Gastos)
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS transacciones (
+                    id SERIAL PRIMARY KEY,
+                    tipo VARCHAR(50),
+                    concepto VARCHAR(255),
+                    monto INTEGER DEFAULT 0,
+                    fecha TIMESTAMP DEFAULT NOW(),
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            console.log('🔧 Esquema verificado: Tabla "transacciones" lista.');
+        } catch (e) {
+            console.warn('⚠️ Error verificando tabla transacciones:', e.message);
+        }
+
+        // AUTO-FIX: Crear tabla movimientos si no existe (Log Global)
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS movimientos (
+                    id SERIAL PRIMARY KEY,
+                    tipo VARCHAR(50),
+                    descripcion TEXT,
+                    monto INTEGER DEFAULT 0,
+                    fecha VARCHAR(50),
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            console.log('🔧 Esquema verificado: Tabla "movimientos" lista.');
+        } catch (e) {
+            console.warn('⚠️ Error verificando tabla movimientos:', e.message);
         }
 
         // 4.5 Crear tabla de auditoría de créditos (para tracking inteligente)

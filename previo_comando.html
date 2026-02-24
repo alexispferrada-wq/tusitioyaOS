@@ -1517,6 +1517,7 @@
                 this.ui.renderizarListas(); // Esto ya llama a las demás actualizaciones
                 if (this.finanzas) this.finanzas.actualizarDesdeClientes(); // Actualizar dashboard financiero
                 this.monitor.init();
+                this.movimientos.init(); // Cargar historial global desde DB
                 this.monitor.sincronizar(); // Sincronizar clientes con el monitor
                 this.conversion.init();
                 this.auth.init(); // Inicializar sistema de autenticación
@@ -1616,12 +1617,27 @@
             movimientos: {
                 lista: JSON.parse(localStorage.getItem('movimientos_log')) || [],
                 agregar: (tipo, descripcion, monto = null) => {
+                lista: [],
+                init: async () => {
+                    try {
+                        const res = await fetch('/api/movimientos');
+                        if (res.ok) {
+                            App.movimientos.lista = await res.json();
+                            App.movimientos.render();
+                        }
+                    } catch (e) { console.error("Error cargando movimientos", e); }
+                },
+                agregar: async (tipo, descripcion, monto = null) => {
+                    const hora = new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'});
+                    const fecha = new Date().toLocaleDateString('es-CL', {day: '2-digit', month: 'short'});
+                    
                     const mov = {
                         tipo, // 'pago', 'gasto', 'interaccion', 'venta'
                         descripcion,
                         monto,
                         hora: new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'}),
                         fecha: new Date().toLocaleDateString('es-CL', {day: '2-digit', month: 'short'})
+                        fecha: `${fecha} ${hora}`
                     };
                     setInterval(update, 1000);
                     update();
@@ -1630,6 +1646,17 @@
                     if (App.movimientos.lista.length > 30) App.movimientos.lista.pop();
                     localStorage.setItem('movimientos_log', JSON.stringify(App.movimientos.lista));
                     App.movimientos.render();
+                    
+                    // Guardar en DB
+                    try {
+                        await fetch('/api/movimientos', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(mov)
+                        });
+                        // Recargar lista para mostrar el ID real y orden correcto
+                        App.movimientos.init();
+                    } catch (e) { console.error("Error guardando movimiento", e); }
                 },
                 render: () => {
                     const container = document.getElementById('activity-log-container');
@@ -1649,6 +1676,7 @@
                             <div class="flex items-center gap-2 p-2 rounded-lg ${bg} border border-transparent hover:border-slate-200 transition-all">
                                 <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm ${color} text-[10px]"><i class="fa-solid ${icon}"></i></div>
                                 <div class="flex-1 min-w-0"><p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p><p class="text-[8px] text-slate-400">${m.fecha} ${m.hora}</p></div>
+                                <div class="flex-1 min-w-0"><p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p><p class="text-[8px] text-slate-400">${m.fecha}</p></div>
                                 ${montoHtml}
                             </div>`;
                     }).join('');
@@ -4288,24 +4316,23 @@ Responde SOLO en JSON estricto:
                     ultimoGasto: null
                 },
                 
-                init: function() {
-                    this.cargarDatos();
+                init: async function() {
+                    await this.cargarDatos();
                     this.renderizar();
                     const hoy = new Date().toISOString().split('T')[0];
                     const fechaInput = document.getElementById('gasto-fecha');
                     if (fechaInput) fechaInput.value = hoy;
                 },
                 
-                cargarDatos: function() {
-                    const guardado = localStorage.getItem('finanzas_gastos');
-                    if (guardado) {
-                        this.data.gastos = JSON.parse(guardado);
-                        this.data.ultimoGasto = this.data.gastos[this.data.gastos.length - 1] || null;
+                cargarDatos: async function() {
+                    try {
+                        const res = await fetch('/api/transacciones');
+                        if (res.ok) {
+                            this.data.gastos = await res.json();
+                        }
+                    } catch (e) {
+                        console.error("Error cargando gastos:", e);
                     }
-                },
-                
-                guardarDatos: function() {
-                    localStorage.setItem('finanzas_gastos', JSON.stringify(this.data.gastos));
                 },
                 
                 calcularIngresosDesdeClientes: function() {
@@ -4577,16 +4604,29 @@ Responde SOLO en JSON estricto:
                     
                     if (!concepto || !monto) { alert('Completa todos los campos'); return; }
                     
-                    const gasto = { id: Date.now(), tipo: 'servicio', concepto, monto, fecha: new Date().toISOString().split('T')[0], timestamp: new Date().toISOString() };
-                    this.data.gastos.push(gasto);
-                    this.data.ultimoGasto = gasto;
-                    this.guardarDatos();
-                    this.renderizar();
+                    const fecha = new Date().toISOString();
                     
-                    select.value = ''; inputOtro.value = ''; inputMonto.value = '';
-                    document.getElementById('input-servicio-container').classList.add('hidden');
-                    
-                    App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                    try {
+                        const res = await fetch('/api/transacciones', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tipo: 'servicio', concepto, monto, fecha })
+                        });
+                        
+                        if (res.ok) {
+                            const gasto = await res.json();
+                            this.data.gastos.push(gasto);
+                            this.renderizar();
+                            
+                            select.value = ''; inputOtro.value = ''; inputMonto.value = '';
+                            document.getElementById('input-servicio-container').classList.add('hidden');
+                            
+                            App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        App.ui.notificar('Error al guardar gasto', 'Error', 'error');
+                    }
                 },
                 
                 mostrarInputAds: function() {
@@ -4619,16 +4659,29 @@ Responde SOLO en JSON estricto:
                     
                     if (!concepto || !monto) { alert('Completa todos los campos'); return; }
                     
-                    const gasto = { id: Date.now(), tipo: 'ads', concepto, monto, fecha: new Date().toISOString().split('T')[0], timestamp: new Date().toISOString() };
-                    this.data.gastos.push(gasto);
-                    this.data.ultimoGasto = gasto;
-                    this.guardarDatos();
-                    this.renderizar();
+                    const fecha = new Date().toISOString();
                     
-                    select.value = ''; inputOtro.value = ''; inputMonto.value = '';
-                    document.getElementById('input-ads-container').classList.add('hidden');
-                    
-                    App.ui.notificar(`Publicidad: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                    try {
+                        const res = await fetch('/api/transacciones', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tipo: 'ads', concepto, monto, fecha })
+                        });
+                        
+                        if (res.ok) {
+                            const gasto = await res.json();
+                            this.data.gastos.push(gasto);
+                            this.renderizar();
+                            
+                            select.value = ''; inputOtro.value = ''; inputMonto.value = '';
+                            document.getElementById('input-ads-container').classList.add('hidden');
+                            
+                            App.ui.notificar(`Publicidad: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        App.ui.notificar('Error al guardar gasto', 'Error', 'error');
+                    }
                 },
                 
                 abrirModalGasto: function(tipo = 'otro') {
@@ -4680,40 +4733,46 @@ Responde SOLO en JSON estricto:
                     
                     if (!concepto || !monto || !fecha) { alert('Completa todos los campos'); return; }
                     
-                    const gasto = { id: Date.now(), tipo: tipo.value, concepto, monto, fecha, timestamp: new Date().toISOString() };
-                    this.data.gastos.push(gasto);
-                    this.data.ultimoGasto = gasto;
-                    this.guardarDatos();
-                    this.renderizar();
-                    this.cerrarModalGasto();
-                    
-                    App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                    try {
+                        const res = await fetch('/api/transacciones', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ tipo: tipo.value, concepto, monto, fecha })
+                        });
+                        
+                        if (res.ok) {
+                            const gasto = await res.json();
+                            this.data.gastos.push(gasto);
+                            this.renderizar();
+                            this.cerrarModalGasto();
+                            
+                            App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        App.ui.notificar('Error al guardar gasto', 'Error', 'error');
+                    }
                 },
                 
-                eliminarGasto: function(id) {
+                eliminarGasto: async function(id) {
                     if (!confirm('¿Estás seguro de eliminar este gasto?')) return;
                     
-                    const gastoIndex = this.data.gastos.findIndex(g => g.id === id);
-                    if (gastoIndex === -1) {
-                        App.ui.notificar('Gasto no encontrado', 'Error', 'error');
-                        return;
+                    try {
+                        const res = await fetch(`/api/transacciones/${id}`, { method: 'DELETE' });
+                        if (res.ok) {
+                            const gastoIndex = this.data.gastos.findIndex(g => g.id === id);
+                            if (gastoIndex !== -1) {
+                                const gastoEliminado = this.data.gastos[gastoIndex];
+                                this.data.gastos.splice(gastoIndex, 1);
+                                this.renderizar();
+                                if (App.logros) App.logros.actualizarMetaMensual();
+                                App.ui.notificar(`Gasto eliminado: ${gastoEliminado.concepto}`, 'Gasto Eliminado', 'exito');
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        App.ui.notificar('Error al eliminar gasto', 'Error', 'error');
                     }
-                    
-                    const gastoEliminado = this.data.gastos[gastoIndex];
-                    this.data.gastos.splice(gastoIndex, 1);
-                    
-                    // Actualizar último gasto si era el que eliminamos
-                    if (this.data.ultimoGasto && this.data.ultimoGasto.id === id) {
-                        this.data.ultimoGasto = this.data.gastos[this.data.gastos.length - 1] || null;
-                    }
-                    
-                    this.guardarDatos();
-                    this.renderizar();
-                    
-                    // Actualizar meta mensual y dashboard
-                    if (App.logros) App.logros.actualizarMetaMensual();
-                    
-                    App.ui.notificar(`Gasto eliminado: ${gastoEliminado.concepto} +$${gastoEliminado.monto.toLocaleString()}`, 'Gasto Eliminado', 'exito');
                 },
                 
                 actualizarDesdeClientes: function() {
