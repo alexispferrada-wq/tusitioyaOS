@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="scroll-smooth scroll-pt-24">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,12 +125,12 @@
         <div class="absolute top-0 left-0 w-full h-full bg-[#0f172a]/90 backdrop-blur-[2px]"></div>
     </div>
 
-    <nav class="fixed w-full z-50 bg-brand-dark/80 backdrop-blur-md border-b border-white/10">
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-300 bg-transparent border-b border-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-laptop-code text-brand-primary text-2xl"></i>
-                    <span class="font-bold text-xl tracking-tight">TuSitioYa</span>
+                <div class="flex items-end gap-1">
+                    <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1771962014/tusitioya_logo-removebg-preview_t0fhnu.png" alt="TuSitioYa" class="h-16 w-auto">
+                    <span class="font-bold text-[10px] tracking-widest text-gray-300 mb-3">by Aexon</span>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -145,6 +145,32 @@
                             <i class="fa-solid fa-terminal"></i> Comando Central
                         </a>
                     </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none transition-colors">
+                        <span class="sr-only">Abrir menú</span>
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="hidden md:hidden bg-brand-dark/95 backdrop-blur-xl border-b border-white/10 absolute w-full left-0 top-16 shadow-2xl" id="mobile-menu">
+            <div class="px-4 pt-4 pb-6 space-y-2">
+                <a href="#inicio" onclick="toggleMobileMenu()" class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-3 rounded-lg text-base font-medium transition-colors">Inicio</a>
+                <a href="#planes" onclick="toggleMobileMenu()" class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-3 rounded-lg text-base font-medium transition-colors">Páginas Web</a>
+                <a href="#prospector-ia" onclick="toggleMobileMenu()" class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-3 rounded-lg text-base font-medium transition-colors">Kimi Prospector</a>
+                <a href="#comando-central" onclick="toggleMobileMenu()" class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-3 rounded-lg text-base font-medium transition-colors">Comando Central</a>
+                
+                <div class="border-t border-white/10 my-2 pt-2">
+                    <a href="https://tusitioya.cl/dashboard.html#top" target="_blank" class="text-purple-400 hover:bg-purple-500/10 block px-3 py-3 rounded-lg text-base font-bold transition-colors">
+                        <i class="fa-solid fa-robot mr-2"></i> Entrar al Prospector
+                    </a>
+                    <a href="https://tusitioya.cl/previo_comando.html#top" target="_blank" class="text-emerald-400 hover:bg-emerald-500/10 block px-3 py-3 rounded-lg text-base font-bold transition-colors">
+                        <i class="fa-solid fa-terminal mr-2"></i> Comando Central
+                    </a>
                 </div>
             </div>
         </div>
@@ -644,9 +670,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                 
                 <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <i class="fa-solid fa-laptop-code text-brand-primary text-xl"></i>
-                        <span class="font-bold text-lg text-white">TuSitioYa</span>
+                    <div class="flex items-end gap-1 mb-6">
+                        <img src="https://res.cloudinary.com/dqsz4ua73/image/upload/v1771962014/tusitioya_logo-removebg-preview_t0fhnu.png" alt="TuSitioYa" class="h-24 w-auto">
+                        <span class="font-bold text-[10px] tracking-widest text-gray-300 mb-4">by Aexon</span>
                     </div>
                     <p class="text-gray-400 leading-relaxed mb-4">
                         Plataforma avanzada de soluciones SaaS para la gestión comercial. Desarrollamos tecnología para automatizar puntos de venta (POS) y logística de eventos en tiempo real.
@@ -757,7 +783,7 @@
         </button>
 
         <!-- Chat Window -->
-        <div id="lola-chat-window" class="hidden absolute bottom-20 right-0 w-[320px] sm:w-[350px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 transform translate-y-4 opacity-0">
+        <div id="lola-chat-window" class="hidden absolute bottom-20 right-0 w-[85vw] sm:w-[350px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 transform translate-y-4 opacity-0">
             <!-- Header -->
             <div class="bg-green-600 p-4 text-white flex items-center gap-3">
                 <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-green-600 text-xl font-bold">L</div>
@@ -1307,6 +1333,30 @@
             setTimeout(() => {
                 lolaSendMessage(lolaSteps[0].message, 'bot');
             }, 300);
+        }
+
+        // Navbar Scroll Effect
+        const nav = document.getElementById('main-nav');
+        function updateNav() {
+            if (window.scrollY > 20) {
+                nav.classList.remove('bg-transparent', 'border-transparent');
+                nav.classList.add('bg-brand-dark/90', 'backdrop-blur-md', 'border-white/10', 'shadow-lg');
+            } else {
+                nav.classList.add('bg-transparent', 'border-transparent');
+                nav.classList.remove('bg-brand-dark/90', 'backdrop-blur-md', 'border-white/10', 'shadow-lg');
+            }
+        }
+        window.addEventListener('scroll', updateNav);
+        updateNav(); // Init state
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
         }
     </script>
 </body>
