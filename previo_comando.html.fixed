@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuSitioYa - Soluciones SaaS & Desarrollo Web | Aexon Software</title>
+    <meta name="description" content="Plataforma de desarrollo web y soluciones SaaS. Diseño + Hosting + Dominio .CL incluido. Operado por Aexon Software Solutions.">
+    
+    <meta property="og:type" content="business.business">
+    <meta property="og:url" content="https://tusitioya.cl/">
+    <meta property="og:title" content="TuSitioYa - Desarrollo Web & Software">
+    <meta property="og:description" content="Desarrollo de software a medida, integraciones API y soluciones web.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop">
+    <meta property="business:contact_data:street_address" content="Av. Américo Vespucio 1501">
+    <meta property="business:contact_data:locality" content="Cerrillos">
+    <meta property="business:contact_data:region" content="Santiago">
+    <meta property="business:contact_data:country_name" content="Chile">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚀%3C/text%3E%3C/svg%3E">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Comfortaa', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            primary: '#2563eb', 
+                            accent: '#10b981',
+                        },
+                    },
+                    animation: {
+                        blob: "blob 7s infinite",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos para el Modal Legal */
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-white font-sans antialiased relative">
+
+    <div class="fixed inset-0 z-[-1] w-full h-full overflow-hidden bg-brand-dark">
+        <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="absolute top-0 left-0 w-full h-full object-cover opacity-50">
+            <source src="https://cdn.pixabay.com/video/2020/03/29/34956-402489370_large.mp4" type="video/mp4">
+        </video>
+        <div class="absolute top-0 left-0 w-full h-full bg-[#0f172a]/90 backdrop-blur-[2px]"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 bg-brand-dark/80 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-laptop-code text-brand-primary text-2xl"></i>
+                    <span class="font-bold text-xl tracking-tight">TuSitioYa</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#inicio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Inicio</a>
+                        <a href="#planes" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Planes</a>
+                        <a href="#portafolio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Portafolio</a>
+                        <a href="#nosotros" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Tecnología</a>
+                        <a href="https://wa.me/56992818104?text=Hola,%20quiero%20cotizar%20una%20web" target="_blank" class="bg-brand-accent hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold transition flex items-center gap-2">
+                            <i class="fa-brands fa-whatsapp"></i> Cotizar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+                Desarrollo de Software & Web<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-accent">SaaS para Empresas</span>
+            </h1>
+            <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-8">
+                Soluciones tecnológicas avanzadas operadas por <strong>Aexon Software Solutions</strong>. Puntos de venta, sistemas de tickets y administración web con máxima seguridad y rendimiento.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-3 mb-10">
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-brands fa-node-js text-green-500 mr-2"></i> Node.js
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-database text-emerald-400 mr-2"></i> Neon DB
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-brands fa-cloudflare text-orange-400 mr-2"></i> Cloudflare
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-brain text-purple-400 mr-2"></i> 🚀 Kimi AI
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-wind text-cyan-400 mr-2"></i> Tailwind
+                </span>
+                <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
+                    <i class="fa-solid fa-server text-purple-400 mr-2"></i> Cloud VPS
+                </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#planes" class="px-8 py-4 bg-brand-primary hover:bg-blue-600 rounded-lg font-bold text-lg transition shadow-lg shadow-blue-500/30">
+                    Ver Soluciones
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVA SECCIÓN: EXPERIENCIA DE CLIENTE (Hoja de Ruta + Nube) -->
+    <section id="experiencia" class="py-20 bg-brand-dark relative overflow-hidden">
+        <!-- Decoración de fondo -->
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 blur-[100px] -z-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">No es solo una web, es una <span class="text-brand-primary">Experiencia</span> 🚀</h2>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Olvídate de perseguir al programador. Te damos herramientas profesionales para que veas el avance en tiempo real.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1: Hoja de Ruta -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-brand-primary/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 bg-blue-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-map-location-dot text-2xl text-blue-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Hoja de Ruta en Vivo</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Te entregamos un enlace único donde verás el progreso de tu proyecto paso a paso (0% a 100%). Sin incertidumbre, transparencia total.
+                    </p>
+                </div>
+
+                <!-- Card 2: Nube Privada -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-brand-accent/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 bg-emerald-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-emerald-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Tu Nube Privada</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Olvídate de enviar fotos por WhatsApp. Tendrás una carpeta segura en la nube para subir tu logo, fotos y textos de forma ordenada.
+                    </p>
+                </div>
+
+                <!-- Card 3: Velocidad -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-purple-500/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 bg-purple-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-bolt text-2xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Velocidad Extreme</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Gracias a nuestro sistema <strong>TuSitioYa OS</strong>, automatizamos la configuración de servidores para entregar proyectos en tiempo récord (48h hábiles).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: ORQUESTADOR IA - LA ESTRELLA DEL PROYECTO -->
+    <section id="orquestador-ia" class="py-20 bg-gradient-to-b from-brand-dark via-purple-900/30 to-brand-dark relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(168, 85, 247, 0.4) 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[150px] -z-10"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1 bg-purple-500/20 text-purple-300 text-sm font-bold rounded-full mb-4 border border-purple-500/30 animate-pulse">⭐ ESTRELLA DEL PROYECTO</span>
+                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Orquestador IA: <span class="text-purple-400">El Futuro</span> de las Ventas</h2>
+                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">Nuestro sistema <strong>Prospector IA</strong> revoluciona la forma de conseguir clientes. Automatización inteligente que encuentra, analiza y cierra prospectos mientras duermes.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-robot text-2xl text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Prospección Automática</h3>
+                            <p class="text-gray-400 text-sm">El Orquestador escanea el mercado en tiempo real, identifica negocios potenciales y genera leads calificados sin intervención humana.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-brain text-2xl text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Análisis Predictivo</h3>
+                            <p class="text-gray-400 text-sm">🚀 Kimi AI evalúa la probabilidad de cierre de cada prospecto, sugiere estrategias personalizadas y optimiza el funnel de ventas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-comments-dollar text-2xl text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Scripts de Cierre IA</h3>
+                            <p class="text-gray-400 text-sm">Genera respuestas persuasivas basadas en psicología de ventas y neuroventas. Cada mensaje está optimizado para convertir.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-orange-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-infinity text-2xl text-orange-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Escalado Infinito</h3>
+                            <p class="text-gray-400 text-sm">Procesa cientos de prospectos simultáneamente. Mientras la competencia duerme, nuestro Orquestador nunca para de trabajar.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-8 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-blue-600/5"></div>
+                <div class="relative z-10">
+                    <p class="text-purple-300 text-lg font-medium mb-2">🧠 Powered by Kimi AI</p>
+                    <p class="text-gray-400 text-sm max-w-2xl mx-auto mb-4">Kimi es el protagonista absoluto de nuestro Orquestador. La inteligencia artificial más avanzada del mercado latinoamericano, entrenada específicamente para dominar el arte de las ventas digitales.</p>
+                    <div class="inline-flex items-center gap-2 bg-purple-500/10 px-4 py-2 rounded-full border border-purple-500/20">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                        </span>
+                        <span class="text-xs font-bold text-purple-300">Sistema Activo 24/7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: KIMI AI - CEREBRO DE TUSITIOYA -->
+    <section id="kimi-ai" class="py-20 bg-gradient-to-b from-brand-dark to-purple-900/20 relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(168, 85, 247, 0.3) 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1 bg-purple-500/20 text-purple-300 text-sm font-bold rounded-full mb-4 border border-purple-500/30">🚀 INTELIGENCIA ARTIFICIAL</span>
+                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Kimi AI: El <span class="text-purple-400">Cerebro</span> Detrás de Todo</h2>
+                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">Desde la prospección de clientes hasta el desarrollo de código, Kimi está presente en cada paso. La tecnología que nos hace imparables.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-magnifying-glass-chart text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Prospección Inteligente</h3>
+                    <p class="text-gray-400 text-sm">Kimi encuentra tus clientes ideales analizando datos en tiempo real de múltiples fuentes.</p>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-comments-dollar text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Estrategias de Cierre</h3>
+                    <p class="text-gray-400 text-sm">Analiza conversaciones y sugiere respuestas persuasivas basadas en psicología de ventas.</p>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-code text-3xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Desarrollo Optimizado</h3>
+                    <p class="text-gray-400 text-sm">Genera código limpio, optimizado y siguiendo las mejores prácticas de la industria.</p>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-2xl p-8 text-center">
+                <p class="text-purple-300 text-lg font-medium mb-2">🧠 Powered by Kimi AI</p>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">La misma tecnología que usamos internamente para escalar nuestro negocio, ahora disponible para potenciar el crecimiento de tu empresa.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="planes" class="py-20" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1 bg-blue-500/20 text-blue-300 text-sm font-bold rounded-full mb-4 border border-blue-500/30">🚀 SITIOS ESCALABLES</span>
+                <h2 class="text-3xl font-bold text-white sm:text-4xl mb-4">Páginas Web <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Escalables</span></h2>
+                <p class="mt-4 text-gray-400 max-w-3xl mx-auto">
+                    ¿Qué significa <strong class="text-white">escalable</strong>? Significa que tu web crece contigo. 
+                    Empiezas con lo básico y, cuando necesites, sumamos funcionalidades sin reconstruir desde cero. 
+                    <span class="text-emerald-400">Tu inversión está protegida.</span>
+                </p>
+                <div class="mt-6 flex flex-wrap justify-center gap-3 text-xs">
+                    <span class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-gray-400">
+                        <i class="fa-solid fa-layer-group text-blue-400 mr-1"></i> Arquitectura modular
+                    </span>
+                    <span class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-gray-400">
+                        <i class="fa-solid fa-arrow-trend-up text-emerald-400 mr-1"></i> Crece según tu negocio
+                    </span>
+                    <span class="bg-white/5 px-3 py-1 rounded-full border border-white/10 text-gray-400">
+                        <i class="fa-solid fa-code-branch text-purple-400 mr-1"></i> Sin empezar de nuevo
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 relative border-brand-accent transform hover:-translate-y-2 transition duration-300" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="absolute top-0 right-0 bg-brand-accent text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg text-white">MÁS VENDIDO</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Emprendedor</h3>
+                    <p class="text-gray-400 text-sm mb-6">Ideal para servicios y oficios.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$72.000</span>
+                        <div class="ml-3 flex flex-col items-start">
+                            <span class="text-sm text-gray-500 line-through">$90.000</span>
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded animate-pulse shadow-lg shadow-red-500/50">20% OFF</span>
+                        </div>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Landing Page (One Page)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Diseño Móvil (Responsive)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> 2 Correos Corporativos</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Botón WhatsApp Flotante</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Hosting + Dominio .CL Gratis (1 año)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-accent mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($45.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-brand-accent mr-2"></i> Entrega: 48 Horas Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-brand-accent mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Emprendedor%20de%2072mil" target="_blank" class="block w-full text-center bg-brand-accent hover:bg-green-600 text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 transform hover:-translate-y-2 transition duration-300" data-aos="zoom-in" data-aos-delay="200">
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Pyme Pro</h3>
+                    <p class="text-gray-400 text-sm mb-6">Para empresas que buscan seriedad.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$144.000</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Sitio Multi-Página (Hasta 5)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Formulario de Contacto Pro</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> 20 Correos Corporativos</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Certificado SSL (Candado)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Hosting + Dominio .CL Gratis</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-brand-primary mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($90.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-brand-primary mr-2"></i> Entrega: 5 a 7 Días Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-brand-primary mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Pyme%20Pro" target="_blank" class="block w-full text-center bg-brand-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 transform hover:-translate-y-2 transition duration-300 border-gray-700" data-aos="zoom-in" data-aos-delay="300">
+                    <h3 class="text-xl font-bold text-white mb-2">Plan Catálogo / Sistema</h3>
+                    <p class="text-gray-400 text-sm mb-6">Autoadministrable con Base de Datos.</p>
+                    <div class="flex items-center mb-6">
+                        <span class="text-4xl font-extrabold text-white">$280.000</span>
+                    </div>
+                    <ul class="space-y-4 mb-8 text-gray-300 text-sm">
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Panel de Administración</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Gestión de Productos/Stock</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Base de Datos (SQL)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Desarrollo en Python/Django</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Servidor VPS Optimizado</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-purple-500 mr-2"></i> Renovación Anual <span class="text-yellow-400 font-bold ml-1">50% OFF</span> ($175.000)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-clock text-purple-500 mr-2"></i> Entrega: 10 a 15 Días Hábiles</li>
+                        <li class="flex items-center"><i class="fa-solid fa-hand-holding-dollar text-purple-500 mr-2"></i> Pago: 50% al iniciar / 50% al entregar</li>
+                    </ul>
+                    <a href="https://wa.me/56992818104?text=Hola,%20me%20interesa%20el%20Plan%20Sistema" target="_blank" class="block w-full text-center border border-white hover:bg-white hover:text-brand-dark text-white font-bold py-3 rounded-lg transition">
+                        Solicitar Ahora
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="py-12 bg-gradient-to-r from-red-900/40 to-brand-dark border-y border-red-500/20 relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-red-600/5 blur-3xl -z-10"></div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <div class="inline-flex items-center bg-red-600/20 border border-red-500 text-red-400 font-bold px-4 py-1 rounded-full text-sm mb-6 animate-pulse">
+                <i class="fa-solid fa-circle-exclamation mr-2"></i> ALTA DEMANDA DETECTADA
+            </div>
+            <h3 class="text-2xl md:text-4xl font-bold text-white mb-4">
+                ¡Atención! Los cupos de <span id="mes-actual" class="capitalize">este mes</span> se están agotando 📉
+            </h3>
+            <p class="text-gray-300 mb-8 text-lg max-w-2xl mx-auto">
+                Debido a la oferta especial del <span class="text-yellow-400 font-bold">20% OFF en el Plan Emprendedor</span>, nuestra capacidad de desarrollo está al límite. Solo aceptamos un número limitado de proyectos para garantizar la máxima calidad.
+            </p>
+            <div class="bg-gray-800/50 border border-gray-700 rounded-full h-8 w-full max-w-lg mx-auto mb-3 relative overflow-hidden shadow-inner">
+                <div id="barra-progreso" class="bg-gradient-to-r from-orange-500 to-red-600 h-full rounded-full transition-all duration-1000 relative" style="width: 70%"></div>
+                <p class="absolute inset-0 flex items-center justify-center text-sm font-bold text-white drop-shadow-md tracking-wide">
+                    <span id="cupos-vendidos">14</span> / 20 Cupos Vendidos
+                </p>
+            </div>
+            <p class="text-red-400 font-bold text-xl mb-8">
+                ¡Solo quedan <span id="cupos-restantes" class="text-3xl underline decoration-red-500 decoration-4 underline-offset-4">6</span> cupos disponibles!
+            </p>
+            <a href="https://wa.me/56992818104?text=Hola,%20quiero%20reservar%20mi%20cupo%20antes%20que%20se%20agoten" target="_blank" class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-10 rounded-xl transition transform hover:scale-105 shadow-lg shadow-red-600/40 border border-red-500">
+                <i class="fa-solid fa-lock mr-3"></i> Reservar mi Cupo Ahora
+            </a>
+            <p class="text-gray-500 text-xs mt-4">* Los cupos se asignan por orden de llegada.</p>
+        </div>
+    </section>
+
+    <!-- SECCIÓN INVITACIÓN A CONOCER LA TECNOLOGÍA -->
+    <section class="py-16 bg-gradient-to-b from-[#0b0f19] to-purple-900/20 relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 70%);"></div>
+        </div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-500/30 px-4 py-2 rounded-full mb-6">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                </span>
+                <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">Descubre lo que nadie tiene</span>
+            </div>
+            
+            <h3 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                ¿Quieres ver la <span class="text-purple-400">tecnología</span> que usa <span class="text-emerald-400">TuSitioYa</span> para dominar el mercado?
+            </h3>
+            
+            <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
+                Mientras la competencia usa métodos tradicionales, nosotros hemos construido un <strong class="text-white">Orquestador de IA</strong> que trabaja 24/7. 
+                Esto es lo que nos hace diferentes:
+            </p>
+            
+            <a href="#construyendo-futuro" class="group inline-flex flex-col items-center gap-3 cursor-pointer" onclick="document.getElementById('construyendo-futuro').scrollIntoView({behavior: 'smooth'})">
+                <div class="flex items-center gap-3 bg-gradient-to-r from-purple-600 to-emerald-600 hover:from-purple-500 hover:to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition transform group-hover:scale-105 shadow-lg shadow-purple-500/25 border border-white/10">
+                    <i class="fa-solid fa-microchip text-xl"></i>
+                    <span>Revisa nuestra Tecnología IA</span>
+                    <i class="fa-solid fa-arrow-down animate-bounce"></i>
+                </div>
+                <span class="text-xs text-purple-400 font-medium">El Prospector IA que está revolucionando las ventas</span>
+            </a>
+
+            <div class="mt-10 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+                <div class="text-center">
+                    <p class="text-2xl font-black text-purple-400">40+</p>
+                    <p class="text-[10px] text-gray-500 uppercase">Leads/hora</p>
+                </div>
+                <div class="text-center border-x border-white/10">
+                    <p class="text-2xl font-black text-emerald-400">IA</p>
+                    <p class="text-[10px] text-gray-500 uppercase">Prospección</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-black text-blue-400">24/7</p>
+                    <p class="text-[10px] text-gray-500 uppercase">Automático</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVA SECCIÓN: DETALLE DEL ORQUESTADOR IA - LO QUE ESTAMOS CONSTRUYENDO -->
+    <section id="construyendo-futuro" class="py-20 bg-gradient-to-b from-[#0b0f19] via-purple-900/10 to-[#0b0f19] border-y border-purple-500/20 relative overflow-hidden" data-aos="fade-up">
+        <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px), linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
+        
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-1 bg-emerald-500/20 text-emerald-300 text-sm font-bold rounded-full mb-4 border border-emerald-500/30">🚀 CONSTRUYENDO EL FUTURO</span>
+                <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Hey, Nos Haremos <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-emerald-400">Grandes</span> 💪</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">Tú y yo. Tenemos un compromiso y ya lo estamos cumpliendo. Esto es lo que estamos construyendo <strong>ahora mismo</strong>:</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Card 1: El Dashboard -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fa-solid fa-gauge-high text-2xl text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Dashboard de Control</h3>
+                            <span class="text-xs text-emerald-400 font-bold">EN PRODUCCIÓN</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Un panel de mando completo donde ves en tiempo real todos tus leads, su temperatura de compra, y las acciones que 🚀 Kimi recomienda.</p>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Monitor de prospectos en vivo</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Discador automático inteligente</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Métricas de conversión en tiempo real</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2: El Prospector -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-emerald-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Prospector IA</h3>
+                            <span class="text-xs text-emerald-400 font-bold">MODO AGRESIVO</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Describe el rubro y la ciudad. 🚀 Kimi encuentra negocios reales con datos de contacto verificados. De 0 a 40 leads en segundos.</p>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Búsqueda por rubro + ubicación</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Detección automática de duplicados</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Blacklist de números inválidos</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3: El Cierre -->
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
+                            <i class="fa-solid fa-handshake text-2xl text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Cierre Inteligente</h3>
+                            <span class="text-xs text-blue-400 font-bold">NEUROVENTAS</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">Analiza la conversación del cliente y genera la respuesta perfecta usando técnicas de Cialdini, escasez y prueba social.</p>
+                    <ul class="space-y-2 text-xs text-gray-500">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> 6 tácticas de cierre pre-programadas</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Scripts personalizados por rubro</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Detección de objeciones automática</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Quote épico -->
+            <div class="mt-16 text-center relative">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-full max-w-2xl h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
+                </div>
+                <div class="relative z-10 bg-[#0b0f19] px-8 inline-block">
+                    <p class="text-2xl md:text-3xl font-bold text-white italic mb-2">"Mientras otros duermen, nuestro Orquestador nunca para"</p>
+                    <p class="text-purple-400 text-sm font-bold">— Alexis Ferrada & 🚀 Kimi AI</p>
+                </div>
+            </div>
+
+            <!-- Stats del proyecto -->
+            <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                    <p class="text-3xl font-black text-purple-400">40+</p>
+                    <p class="text-xs text-gray-500 uppercase">Leads/hora</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                    <p class="text-3xl font-black text-emerald-400">24/7</p>
+                    <p class="text-xs text-gray-500 uppercase">Operación</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                    <p class="text-3xl font-black text-blue-400">0s</p>
+                    <p class="text-xs text-gray-500 uppercase">Tiempo de pausa</p>
+                </div>
+                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                    <p class="text-3xl font-black text-orange-400">∞</p>
+                    <p class="text-xs text-gray-500 uppercase">Escalabilidad</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN PORTAFOLIO / MONITOR -->
+    <section id="portafolio" class="py-20 bg-[#0b0f19] border-t border-white/5" data-aos="fade-up">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full mb-4">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Sistemas Operativos</span>
+                </div>
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">Monitor de Red & Clientes 🌐</h2>
+                <p class="mt-4 text-gray-400">Nuestra infraestructura mantiene activos proyectos críticos en tiempo real.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Monitor Card 1 -->
+                <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-emerald-500/50 transition group relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition">EntradasYa.cl</h3>
+                            <a href="https://www.entradasya.cl" target="_blank" class="text-xs text-gray-500 hover:text-white font-mono">https://www.entradasya.cl</a>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-500/20">ONLINE</div>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-gray-400 font-mono">
+                        <span><i class="fa-solid fa-server mr-1"></i> VPS-01</span>
+                        <span class="text-emerald-500"><i class="fa-solid fa-bolt mr-1"></i> <span class="ping-value">24</span>ms</span>
+                    </div>
+                </div>
+
+                <!-- Monitor Card 2 -->
+                <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-blue-500/50 transition group relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition">TurboPOS.cl</h3>
+                            <a href="https://www.turbopos.cl" target="_blank" class="text-xs text-gray-500 hover:text-white font-mono">https://www.turbopos.cl</a>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-500/20">ONLINE</div>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-gray-400 font-mono">
+                        <span><i class="fa-solid fa-server mr-1"></i> VPS-02</span>
+                        <span class="text-emerald-500"><i class="fa-solid fa-bolt mr-1"></i> <span class="ping-value">32</span>ms</span>
+                    </div>
+                </div>
+
+                <!-- Monitor Card 3 -->
+                <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-purple-500/50 transition group relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition">TuSitioYa App</h3>
+                            <span class="text-xs text-gray-500 font-mono">Internal Dashboard</span>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded border border-emerald-500/20">ONLINE</div>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-gray-400 font-mono">
+                        <span><i class="fa-solid fa-database mr-1"></i> NEON DB</span>
+                        <span class="text-emerald-500"><i class="fa-solid fa-bolt mr-1"></i> <span class="ping-value">18</span>ms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-[#0b0f19] pt-16 pb-8 border-t border-gray-800 text-sm relative z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-laptop-code text-brand-primary text-xl"></i>
+                        <span class="font-bold text-lg text-white">TuSitioYa</span>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        Plataforma avanzada de soluciones SaaS para la gestión comercial. Desarrollamos tecnología para automatizar puntos de venta (POS) y logística de eventos en tiempo real.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="https://www.facebook.com/profile.php?id=61587974109595" target="_blank" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-facebook text-xl"></i></a>
+                        <a href="https://www.linkedin.com/in/alexisferrada/" target="_blank" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-xs">Infraestructura Segura</h4>
+                    <div class="flex gap-4 text-2xl text-gray-400 mb-4">
+                        <i class="fa-brands fa-python hover:text-yellow-400 transition" title="Python"></i>
+                        <i class="fa-brands fa-aws hover:text-orange-400 transition" title="Cloud AWS"></i>
+                        <i class="fa-solid fa-database hover:text-blue-400 transition" title="PostgreSQL"></i>
+                        <i class="fa-solid fa-lock hover:text-green-400 transition" title="SSL Secure"></i>
+                    </div>
+                    <p class="text-gray-500 text-xs leading-relaxed">
+                        Infraestructura impulsada por Python & Django. Conexiones cifradas SSL y protección de datos bajo estándares internacionales.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-xs">Centro Legal</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <button onclick="openModal('privacy')" class="text-gray-400 hover:text-brand-primary transition flex items-center gap-2 text-left">
+                                <i class="fa-solid fa-shield-halved text-xs"></i> Política de Privacidad
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="openModal('terms')" class="text-gray-400 hover:text-brand-primary transition flex items-center gap-2 text-left">
+                                <i class="fa-solid fa-file-contract text-xs"></i> Términos y Condiciones
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="openModal('whatsapp')" class="text-gray-400 hover:text-brand-accent transition flex items-center gap-2 text-left">
+                                <i class="fa-brands fa-whatsapp text-xs"></i> Política de Datos WhatsApp
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="openModal('cookies')" class="text-gray-400 hover:text-brand-primary transition flex items-center gap-2 text-left">
+                                <i class="fa-solid fa-cookie text-xs"></i> Política de Cookies
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-xs">Contacto Verificado</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-location-dot mt-1 text-brand-primary"></i>
+                            <span>Av. Américo Vespucio 1501,<br>Cerrillos, Santiago, Chile.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope text-brand-primary"></i>
+                            <a href="mailto:contacto@tusitioya.cl" class="hover:text-white">contacto@tusitioya.cl</a>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i class="fa-brands fa-whatsapp text-brand-accent"></i>
+                            <a href="https://wa.me/56992818104" target="_blank" class="hover:text-white">+56 9 9281 8104</a>
+                        </li>
+                        <li class="flex items-start gap-3 text-xs text-gray-500">
+                            <i class="fa-solid fa-clock mt-0.5"></i>
+                            <div>
+                                <p>Lun - Vie: 09:00 - 21:00</p>
+                                <p>Sáb: 10:00 - 16:00</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-600 text-xs">
+                <p class="mb-2">
+                    &copy; 2026 TuSitioYa. Todos los derechos reservados.
+                </p>
+                <p>
+                    <strong>TuSitioYa es una marca comercial operada por Aexon Software Solutions.</strong><br>
+                    El uso de esta plataforma y la integración con la API de WhatsApp Business cumple estrictamente con las normativas de Meta Platforms, Inc. y la legislación chilena sobre protección de datos y comercio electrónico.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="legalModal" class="modal fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-gray-900 border border-gray-700 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8 relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+            
+            <div id="modalContent" class="text-gray-300 text-sm leading-relaxed space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // Lógica de Escasez / Cupos
+        document.addEventListener('DOMContentLoaded', function() {
+            const total = 20;
+            const today = new Date();
+            const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('mes-actual').innerText = meses[today.getMonth()];
+
+            // Hardcodeo de cupos según la petición (14 vendidos / 6 restantes)
+            const vendidos = 14;
+            document.getElementById('cupos-vendidos').innerText = vendidos;
+            document.getElementById('cupos-restantes').innerText = total - vendidos;
+            document.getElementById('barra-progreso').style.width = (vendidos / total * 100) + '%';
+        });
+
+        // Sistema de Modal Legal
+        const modal = document.getElementById('legalModal');
+        const content = document.getElementById('modalContent');
+        
+        const legalTexts = {
+            privacy: `
+                <h3 class="text-xl font-bold text-white mb-4">Política de Privacidad</h3>
+                <p>En <strong>Aexon Software Solutions (TuSitioYa)</strong>, nos tomamos muy en serio la privacidad de sus datos. Esta política describe cómo recopilamos, usamos y protegemos su información personal.</p>
+                <p class="mt-2"><strong>1. Recopilación de Información:</strong> Recopilamos información que usted nos proporciona directamente, como nombre, correo electrónico y número de teléfono, estrictamente para fines de prestación del servicio contratado.</p>
+                <p class="mt-2"><strong>2. Uso de la Información:</strong> Utilizamos sus datos para gestionar sus pedidos, proporcionar soporte técnico y enviar notificaciones transaccionales críticas relacionadas con el estado de su servicio.</p>
+                <p class="mt-2"><strong>3. Protección de Datos:</strong> Implementamos medidas de seguridad técnicas y organizativas para proteger sus datos contra el acceso no autorizado. No compartimos su información con terceros sin su consentimiento explícito.</p>
+            `,
+            terms: `
+                <h3 class="text-xl font-bold text-white mb-4">Términos y Condiciones</h3>
+                <p>Bienvenido a TuSitioYa. Al utilizar nuestros servicios, usted acepta los siguientes términos:</p>
+                <p class="mt-2"><strong>1. Servicios:</strong> TuSitioYa proporciona servicios de desarrollo web y software SaaS. Los pagos son únicos por desarrollo, con tarifas anuales de renovación claramente estipuladas.</p>
+                <p class="mt-2"><strong>2. Propiedad Intelectual:</strong> Todo el código y diseño desarrollado pertenece a Aexon Software Solutions hasta que se complete el pago total acordado.</p>
+            `,
+            whatsapp: `
+                <h3 class="text-xl font-bold text-green-400 mb-4"><i class="fa-brands fa-whatsapp"></i> Política de Datos de WhatsApp</h3>
+                <p>Esta sección explica específicamente cómo interactuamos con la API de WhatsApp Business:</p>
+                <p class="mt-2"><strong>1. Naturaleza de los Mensajes:</strong> Aexon Software Solutions utiliza la API de WhatsApp exclusivamente para enviar notificaciones transaccionales solicitadas por el usuario (ej: confirmaciones de pedido, tickets de soporte, alertas de sistema) y respuestas a consultas iniciadas por el usuario.</p>
+                <p class="mt-2"><strong>2. Consentimiento (Opt-in):</strong> Solo enviamos mensajes a usuarios que han proporcionado su número explícitamente y han aceptado recibir comunicaciones.</p>
+                <p class="mt-2"><strong>3. No Spam:</strong> No utilizamos WhatsApp para envío masivo de publicidad no solicitada. Respetamos estrictamente las políticas de comercio de Meta.</p>
+            `,
+            cookies: `
+                <h3 class="text-xl font-bold text-white mb-4">Política de Cookies</h3>
+                <p>Utilizamos cookies esenciales para garantizar el funcionamiento correcto de nuestro sitio web y cookies analíticas para mejorar su experiencia. Usted puede configurar su navegador para rechazar estas cookies, aunque esto podría afectar la funcionalidad del sitio.</p>
+            `
+        };
+
+        function openModal(type) {
+            content.innerHTML = legalTexts[type];
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Simulación de Ping para el Monitor
+        setInterval(() => {
+            document.querySelectorAll('.ping-value').forEach(el => {
+                // Variación aleatoria pequeña para simular latencia real
+                const base = parseInt(el.innerText);
+                const variation = Math.floor(Math.random() * 5) - 2;
+                let newVal = base + variation;
+                if(newVal < 10) newVal = 12;
+                if(newVal > 60) newVal = 55;
+                el.innerText = newVal;
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

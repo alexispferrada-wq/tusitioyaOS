@@ -29,6 +29,7 @@
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
+    <div id="top"></div>
 
     <!-- Script de bloqueo inmediato - evita acceso directo sin login -->
     <script>
@@ -2276,7 +2277,19 @@
                 globalModelSelector.addEventListener('change', verificarKimi);
                 verificarKimi(); // Verificar al cargar
             }
+            
+            // Forzar scroll al inicio al cargar la página
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
         });
+        
+        // Forzar scroll al inicio cuando la página termine de cargar completamente
+        window.onload = function() {
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        };
     </script>
 </body>
 </html>

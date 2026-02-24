@@ -1,0 +1,23 @@
+# Render Infrastructure as Code
+# Este archivo configura automáticamente el servicio en Render.com
+
+services:
+  - type: web
+    name: tusitioya-os
+    runtime: node
+    plan: starter  # Cambiar a 'standard' para producción con más tráfico
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false  # Configurar manualmente en el dashboard de Render
+      - key: GEMINI_API_KEY
+        sync: false  # Configurar manualmente en el dashboard de Render
+      - key: GROQ_API_KEY
+        sync: false  # Configurar manualmente en el dashboard de Render
+      - key: KIMI_API_KEY
+        sync: false  # Configurar manualmente en el dashboard de Render
+    autoDeploy: true  # Deploy automático cuando hay cambios en git

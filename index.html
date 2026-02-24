@@ -3,13 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TuSitioYa - Soluciones SaaS & Desarrollo Web | Aexon Software</title>
-    <meta name="description" content="Plataforma de desarrollo web y soluciones SaaS. Diseño + Hosting + Dominio .CL incluido. Operado por Aexon Software Solutions.">
+    <title>TuSitioYa - Máquinas de Conversión que Captan Clientes 24/7 | Aexon Software</title>
+    <meta name="description" content="No más páginas web que solo 'se ven bonitas'. Desarrollamos máquinas de conversión con IA integrada que captan, nutren y cierran clientes automáticamente.">
     
+    <!-- Google Tag Manager -->
+    <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID');
+    </script>
+
+    <!-- Facebook Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'FB_PIXEL_ID');
+    fbq('track', 'PageView');
+    </script>
+    <noscript>
+    <img height="1" width="1" style="display:none" 
+    src="https://www.facebook.com/tr?id=FB_PIXEL_ID&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Facebook Pixel Code -->
+
     <meta property="og:type" content="business.business">
     <meta property="og:url" content="https://tusitioya.cl/">
-    <meta property="og:title" content="TuSitioYa - Desarrollo Web & Software">
-    <meta property="og:description" content="Desarrollo de software a medida, integraciones API y soluciones web.">
+    <meta property="og:title" content="TuSitioYa - Máquinas de Conversión con IA Integrada">
+    <meta property="og:description" content="Páginas web que no solo se ven bien: captan, nutren y cierran clientes automáticamente mientras duermes.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop">
     <meta property="business:contact_data:street_address" content="Av. Américo Vespucio 1501">
     <meta property="business:contact_data:locality" content="Cerrillos">
@@ -63,9 +101,22 @@
             opacity: 1;
             visibility: visible;
         }
+        /* Lola Chat Typing Animation */
+        .typing-dot { width: 4px; height: 4px; background: #94a3b8; border-radius: 50%; animation: typing 1.4s infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        .lola-option-btn { background: white; border: 1px solid #e2e8f0; color: #475569; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; transition: all 0.2s; text-align: left; cursor: pointer; }
+        .lola-option-btn:hover { border-color: #10b981; color: #10b981; background: #f0fdf4; }
+        .lola-option-btn:disabled { cursor: not-allowed; opacity: 0.6; }
     </style>
 </head>
 <body class="bg-brand-dark text-white font-sans antialiased relative">
+
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <div class="fixed inset-0 z-[-1] w-full h-full overflow-hidden bg-brand-dark">
         <video autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" class="absolute top-0 left-0 w-full h-full object-cover opacity-50">
@@ -84,11 +135,14 @@
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#inicio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Inicio</a>
-                        <a href="#planes" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Planes</a>
-                        <a href="#portafolio" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Portafolio</a>
-                        <a href="#nosotros" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Tecnología</a>
-                        <a href="https://wa.me/56992818104?text=Hola,%20quiero%20cotizar%20una%20web" target="_blank" class="bg-brand-accent hover:bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold transition flex items-center gap-2">
-                            <i class="fa-brands fa-whatsapp"></i> Cotizar
+                        <a href="#planes" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Páginas Web</a>
+                        <a href="#prospector-ia" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Kimi Prospector</a>
+                        <a href="#comando-central" class="hover:text-brand-primary px-3 py-2 rounded-md text-sm font-medium transition">Comando Central</a>
+                        <a href="https://tusitioya.cl/dashboard.html#top" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-full text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-robot"></i> Entrar al Prospector
+                        </a>
+                        <a href="https://tusitioya.cl/previo_comando.html#top" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-full text-xs font-bold transition flex items-center gap-1">
+                            <i class="fa-solid fa-terminal"></i> Comando Central
                         </a>
                     </div>
                 </div>
@@ -96,48 +150,54 @@
         </div>
     </nav>
 
+    <!-- HERO SECTION: PÁGINAS WEB - EL ACTOR PRINCIPAL -->
     <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-500/30 px-4 py-2 rounded-full mb-6">
+                <span class="text-xs font-bold text-blue-300 uppercase tracking-wider">TuSitioYa - Aexon Software Solutions</span>
+            </div>
+            
             <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
-                Desarrollo de Software & Web<br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-accent">SaaS para Empresas</span>
+                No fabricamos sitios web.<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-brand-accent">Forjamos máquinas de conversión de alto impacto.</span>
             </h1>
             <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-8">
-                Soluciones tecnológicas avanzadas operadas por <strong>Aexon Software Solutions</strong>. Puntos de venta, sistemas de tickets y administración web con máxima seguridad y rendimiento.
+                Desarrollamos infraestructuras <strong class="text-white">100% auto-escalables</strong>, optimizadas para campañas agresivas en Meta Ads y Google Ads. Sistemas de captación inteligente con IA que nutren y cierran prospectos mientras tú descansas.
             </p>
             
             <div class="flex flex-wrap justify-center gap-3 mb-10">
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-brands fa-node-js text-green-500 mr-2"></i> Node.js
+                    <i class="fa-solid fa-rocket text-blue-400 mr-2"></i> Entrega 48h (Plan Emprendedor)
                 </span>
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-solid fa-database text-emerald-400 mr-2"></i> Neon DB
+                    <i class="fa-solid fa-globe text-emerald-400 mr-2"></i> Dominio .CL Incluido
                 </span>
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-brands fa-cloudflare text-orange-400 mr-2"></i> Cloudflare
+                    <i class="fa-solid fa-server text-purple-400 mr-2"></i> Hosting Premium
                 </span>
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-solid fa-brain text-purple-400 mr-2"></i> 🚀 Kimi AI
+                    <i class="fa-solid fa-mobile-screen text-blue-400 mr-2"></i> 100% Responsive
                 </span>
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-solid fa-wind text-cyan-400 mr-2"></i> Tailwind
+                    <i class="fa-brands fa-whatsapp text-emerald-400 mr-2"></i> WhatsApp Integrado
                 </span>
                 <span class="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/10 text-sm flex items-center text-gray-300">
-                    <i class="fa-solid fa-server text-purple-400 mr-2"></i> Cloud VPS
+                    <i class="fa-solid fa-shield-halved text-blue-400 mr-2"></i> SSL Gratis
                 </span>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#planes" class="px-8 py-4 bg-brand-primary hover:bg-blue-600 rounded-lg font-bold text-lg transition shadow-lg shadow-blue-500/30">
-                    Ver Soluciones
+                <a href="#planes" class="px-8 py-4 bg-brand-primary hover:bg-blue-600 rounded-lg font-bold text-lg transition shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rocket"></i> Ver Planes de Desarrollo Web
                 </a>
-            </div>
         </div>
     </section>
+
+    <!-- SECCIÓN PLANES - PÁGINAS WEB (PRIMER LUGAR) -->
     <section id="planes" class="py-20" data-aos="fade-up">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <span class="inline-block px-4 py-1 bg-blue-500/20 text-blue-300 text-sm font-bold rounded-full mb-4 border border-blue-500/30">🚀 SITIOS ESCALABLES</span>
+                <span class="inline-block px-4 py-1 bg-blue-500/20 text-blue-300 text-sm font-bold rounded-full mb-4 border border-blue-500/30">🚀 DESARROLLO WEB PROFESIONAL</span>
                 <h2 class="text-3xl font-bold text-white sm:text-4xl mb-4">Páginas Web <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Escalables</span></h2>
                 <p class="mt-4 text-gray-400 max-w-3xl mx-auto">
                     ¿Qué significa <strong class="text-white">escalable</strong>? Significa que tu web crece contigo. 
@@ -230,6 +290,8 @@
             </div>
         </div>
     </section>
+
+    <!-- SECCIÓN URGENCIA / CUPOS -->
     <section class="py-12 bg-gradient-to-r from-red-900/40 to-brand-dark border-y border-red-500/20 relative overflow-hidden" data-aos="fade-up">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-red-600/5 blur-3xl -z-10"></div>
         <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
@@ -257,8 +319,9 @@
             <p class="text-gray-500 text-xs mt-4">* Los cupos se asignan por orden de llegada.</p>
         </div>
     </section>
+
+    <!-- SECCIÓN EXPERIENCIA -->
     <section id="experiencia" class="py-20 bg-brand-dark relative overflow-hidden">
-        <!-- Decoración de fondo -->
         <div class="absolute top-0 right-0 w-1/3 h-full bg-blue-600/10 blur-[100px] -z-10"></div>
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -268,7 +331,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1: Hoja de Ruta -->
                 <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-brand-primary/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="100">
                     <div class="w-14 h-14 bg-blue-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-map-location-dot text-2xl text-blue-400"></i>
@@ -279,7 +341,6 @@
                     </p>
                 </div>
 
-                <!-- Card 2: Nube Privada -->
                 <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-brand-accent/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="200">
                     <div class="w-14 h-14 bg-emerald-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-cloud-arrow-up text-2xl text-emerald-400"></i>
@@ -290,7 +351,6 @@
                     </p>
                 </div>
 
-                <!-- Card 3: Velocidad -->
                 <div class="bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:border-purple-500/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="300">
                     <div class="w-14 h-14 bg-purple-900/50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition">
                         <i class="fa-solid fa-bolt text-2xl text-purple-400"></i>
@@ -304,8 +364,8 @@
         </div>
     </section>
 
-    <!-- SECCIÓN: ORQUESTADOR IA - LA ESTRELLA DEL PROYECTO -->
-    <section id="orquestador-ia" class="py-20 bg-gradient-to-b from-brand-dark via-purple-900/30 to-brand-dark relative overflow-hidden" data-aos="fade-up">
+    <!-- SECCIÓN 2: PROSPECTOR IA - KIMI COMO PROTAGONISTA -->
+    <section id="prospector-ia" class="py-20 bg-gradient-to-b from-brand-dark via-purple-900/30 to-brand-dark relative overflow-hidden" data-aos="fade-up">
         <div class="absolute inset-0 opacity-20">
             <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(168, 85, 247, 0.4) 1px, transparent 0); background-size: 40px 40px;"></div>
         </div>
@@ -313,9 +373,28 @@
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12">
-                <span class="inline-block px-4 py-1 bg-purple-500/20 text-purple-300 text-sm font-bold rounded-full mb-4 border border-purple-500/30 animate-pulse">⭐ ESTRELLA DEL PROYECTO</span>
-                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Orquestador IA: <span class="text-purple-400">El Futuro</span> de las Ventas</h2>
-                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">Nuestro sistema <strong>Prospector IA</strong> revoluciona la forma de conseguir clientes. Automatización inteligente que encuentra, analiza y cierra prospectos mientras duermes.</p>
+                <span class="inline-block px-4 py-1 bg-purple-500/20 text-purple-300 text-sm font-bold rounded-full mb-4 border border-purple-500/30 animate-pulse">🚀 ACCESO VIP DISPONIBLE</span>
+                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Soy Kimi: <span class="text-purple-400">Tu Cazador de Clientes</span> 24/7</h2>
+                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">No soy solo una IA. Soy tu aliado comercial que diseña estrategias, caza prospectos exactos y nunca duerme. Mientras tú cierras ventas, yo encuentro tu siguiente cliente.</p>
+            </div>
+
+            <!-- Presentación de Kimi -->
+            <div class="bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-8 mb-12 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-blue-600/5"></div>
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                    <div class="w-24 h-24 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/30 flex-shrink-0">
+                        <i class="fa-solid fa-robot text-4xl text-white"></i>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-2xl font-bold text-white mb-2">"Hola, soy Kimi"</h3>
+                        <p class="text-gray-300 mb-4">Tu prospeccionador inteligente. Diseñé mi sistema para que tú solo te preocupes de cerrar. Yo hago el trabajo sucio: busco, analizo y entrego leads listos para comprar.</p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                            <a href="https://tusitioya.cl/dashboard.html#top" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition transform hover:scale-105">
+                                <i class="fa-solid fa-rocket"></i> Entrar al Prospector IA
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
@@ -323,24 +402,11 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition"></div>
                     <div class="flex items-start gap-4">
                         <div class="w-14 h-14 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-robot text-2xl text-purple-400"></i>
+                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-purple-400"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Prospección Automática</h3>
-                            <p class="text-gray-400 text-sm">El Orquestador escanea el mercado en tiempo real, identifica negocios potenciales y genera leads calificados sin intervención humana.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition"></div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-brain text-2xl text-blue-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Análisis Predictivo</h3>
-                            <p class="text-gray-400 text-sm">🚀 Kimi AI evalúa la probabilidad de cierre de cada prospecto, sugiere estrategias personalizadas y optimiza el funnel de ventas.</p>
+                            <h3 class="text-xl font-bold text-white mb-2">Diseña tu Estrategia</h3>
+                            <p class="text-gray-400 text-sm">Cuéntame tu rubro y ubicación. Yo genero 3 playbooks de prospección personalizados y ejecuto la búsqueda. Tú solo revisas los resultados.</p>
                         </div>
                     </div>
                 </div>
@@ -349,11 +415,24 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition"></div>
                     <div class="flex items-start gap-4">
                         <div class="w-14 h-14 bg-emerald-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-comments-dollar text-2xl text-emerald-400"></i>
+                            <i class="fa-solid fa-shield-halved text-2xl text-emerald-400"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Scripts de Cierre IA</h3>
-                            <p class="text-gray-400 text-sm">Genera respuestas persuasivas basadas en psicología de ventas y neuroventas. Cada mensaje está optimizado para convertir.</p>
+                            <h3 class="text-xl font-bold text-white mb-2">Bóveda de Seguridad</h3>
+                            <p class="text-gray-400 text-sm">Mi blacklist inteligente evita leads repetidos y números inválidos. No gastes créditos en prospectos ya contactados. Solo entrego datos verificados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-8 relative overflow-hidden group hover:border-purple-500/60 transition duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-coins text-2xl text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Sistema de Créditos Justo</h3>
+                            <p class="text-gray-400 text-sm">Paga solo por leads válidos. Si detecto un número falso o duplicado, reembolso automático. Control total de tu inversión con métricas claras.</p>
                         </div>
                     </div>
                 </div>
@@ -362,11 +441,11 @@
                     <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition"></div>
                     <div class="flex items-start gap-4">
                         <div class="w-14 h-14 bg-orange-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-infinity text-2xl text-orange-400"></i>
+                            <i class="fa-solid fa-comments-dollar text-2xl text-orange-400"></i>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-white mb-2">Escalado Infinito</h3>
-                            <p class="text-gray-400 text-sm">Procesa cientos de prospectos simultáneamente. Mientras la competencia duerme, nuestro Orquestador nunca para de trabajar.</p>
+                            <h3 class="text-xl font-bold text-white mb-2">Mis Scripts de Cierre</h3>
+                            <p class="text-gray-400 text-sm">Analizo cada conversación y genero respuestas persuasivas basadas en psicología de ventas. Escasez, autoridad, prueba social: cada mensaje optimizado para convertir.</p>
                         </div>
                     </div>
                 </div>
@@ -375,219 +454,104 @@
             <div class="bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-8 text-center relative overflow-hidden">
                 <div class="absolute inset-0 bg-gradient-to-r from-purple-600/5 to-blue-600/5"></div>
                 <div class="relative z-10">
-                    <p class="text-purple-300 text-lg font-medium mb-2">🧠 Powered by Kimi AI</p>
-                    <p class="text-gray-400 text-sm max-w-2xl mx-auto mb-4">Kimi es el protagonista absoluto de nuestro Orquestador. La inteligencia artificial más avanzada del mercado latinoamericano, entrenada específicamente para dominar el arte de las ventas digitales.</p>
-                    <div class="inline-flex items-center gap-2 bg-purple-500/10 px-4 py-2 rounded-full border border-purple-500/20">
+                    <div class="inline-block mb-4">
+                        <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">🚀 EARLY ACCESS</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Acceso VIP al Prospector IA</h3>
+                    <p class="text-gray-400 text-sm max-w-2xl mx-auto mb-6">Estoy en constante evolución aprendiendo de cada interacción. Los primeros en adoptarme obtienen precios preferenciales y acceso prioritario a mis nuevas habilidades. Solo 20 cupos disponibles.</p>
+                    <a href="https://tusitioya.cl/dashboard.html#top" target="_blank" class="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-purple-500/30">
+                        <i class="fa-solid fa-rocket"></i> Trabajar con Kimi Ahora
+                    </a>
+                    <div class="mt-4 inline-flex items-center gap-2 bg-purple-500/10 px-4 py-2 rounded-full border border-purple-500/20">
                         <span class="relative flex h-2 w-2">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
                         </span>
-                        <span class="text-xs font-bold text-purple-300">Sistema Activo 24/7</span>
+                        <span class="text-xs font-bold text-purple-300">Operativo 24/7 - Nunca duermo</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SECCIÓN: KIMI AI - CEREBRO DE TUSITIOYA -->
-    <section id="kimi-ai" class="py-20 bg-gradient-to-b from-brand-dark to-purple-900/20 relative overflow-hidden" data-aos="fade-up">
+    <!-- SECCIÓN 3: COMANDO CENTRAL - LA OPERACIÓN TÁCTICA -->
+    <section id="comando-central" class="py-20 bg-gradient-to-b from-brand-dark to-emerald-900/20 relative overflow-hidden" data-aos="fade-up">
         <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(168, 85, 247, 0.3) 1px, transparent 0); background-size: 40px 40px;"></div>
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(16, 185, 129, 0.3) 1px, transparent 0); background-size: 40px 40px;"></div>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-12">
-                <span class="inline-block px-4 py-1 bg-purple-500/20 text-purple-300 text-sm font-bold rounded-full mb-4 border border-purple-500/30">🚀 INTELIGENCIA ARTIFICIAL</span>
-                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Kimi AI: El <span class="text-purple-400">Cerebro</span> Detrás de Todo</h2>
-                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">Desde la prospección de clientes hasta el desarrollo de código, Kimi está presente en cada paso. La tecnología que nos hace imparables.</p>
+                <span class="inline-block px-4 py-1 bg-emerald-500/20 text-emerald-300 text-sm font-bold rounded-full mb-4 border border-emerald-500/30">⚡ CONTROL TOTAL</span>
+                <h2 class="text-4xl font-bold text-white sm:text-5xl mb-4">Comando Central: <span class="text-emerald-400">Deja de adivinar</span>, empieza a decidir</h2>
+                <p class="mt-4 text-gray-300 text-lg max-w-2xl mx-auto">Tu centro de comando para la alta velocidad comercial. Visualización exacta de tu flujo de caja, proyecciones de cobro y métricas de conversión en tiempo real. Toma decisiones basadas en datos, no en intuición.</p>
+            </div>
+
+            <!-- CTA Principal Comando Central -->
+            <div class="bg-gradient-to-r from-emerald-600/20 via-teal-600/20 to-emerald-600/20 border border-emerald-500/30 rounded-2xl p-8 mb-12 text-center">
+                <h3 class="text-2xl font-bold text-white mb-4">Accede a Tu Panel de Control</h3>
+                <p class="text-gray-400 mb-6">Gestiona tus leads, finanzas y proyectos desde un solo lugar. El sistema operativo que pone orden a tu caos comercial.</p>
+                <a href="https://tusitioya.cl/previo_comando.html#top" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-bold text-lg transition transform hover:scale-105 shadow-lg shadow-emerald-500/30">
+                    <i class="fa-solid fa-terminal"></i> Entrar al Comando Central
+                </a>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
-                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-magnifying-glass-chart text-3xl text-purple-400"></i>
+                <div class="bg-white/5 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-8 text-center hover:border-emerald-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-headset text-3xl text-emerald-400"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Prospección Inteligente</h3>
-                    <p class="text-gray-400 text-sm">Kimi encuentra tus clientes ideales analizando datos en tiempo real de múltiples fuentes.</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Discador Inteligente</h3>
+                    <p class="text-gray-400 text-sm">Interfaz simplificada que guía al vendedor para contactar leads uno tras otro sin distracciones. Modo Zen que oculta métricas secundarias y enfoca en lo importante: la próxima venta.</p>
                 </div>
 
-                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
-                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-comments-dollar text-3xl text-purple-400"></i>
+                <div class="bg-white/5 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-8 text-center hover:border-emerald-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-chart-line text-3xl text-emerald-400"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Estrategias de Cierre</h3>
-                    <p class="text-gray-400 text-sm">Analiza conversaciones y sugiere respuestas persuasivas basadas en psicología de ventas.</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Análisis Financiero Real</h3>
+                    <p class="text-gray-400 text-sm">Caja real al segundo. Proyección automática de deuda pendiente y renovaciones futuras. Monitoreo constante del ticket promedio para ajustes de precios dinámicos. Dashboard financiero con gastos e ingresos.</p>
                 </div>
 
-                <div class="bg-white/5 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 text-center hover:border-purple-500/50 transition duration-300">
-                    <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fa-solid fa-code text-3xl text-purple-400"></i>
+                <div class="bg-white/5 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-8 text-center hover:border-emerald-500/50 transition duration-300">
+                    <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-brain text-3xl text-emerald-400"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Desarrollo Optimizado</h3>
-                    <p class="text-gray-400 text-sm">Genera código limpio, optimizado y siguiendo las mejores prácticas de la industria.</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Prospección Asistida por IA</h3>
+                    <p class="text-gray-400 text-sm">Kimi analiza el historial de chat de cada cliente, detecta su perfil psicológico (Analítico vs. Emocional) y genera scripts de respuesta persuasivos listos para enviar.</p>
                 </div>
             </div>
 
-            <div class="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-2xl p-8 text-center">
-                <p class="text-purple-300 text-lg font-medium mb-2">🧠 Powered by Kimi AI</p>
-                <p class="text-gray-400 text-sm max-w-xl mx-auto">La misma tecnología que usamos internamente para escalar nuestro negocio, ahora disponible para potenciar el crecimiento de tu empresa.</p>
-            </div>
-        </div>
-    </section>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high text-emerald-400"></i> Métricas que importan
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Efectividad vs. Total Leads</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Programados vs. Recibidos Hoy</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Meta Mensual de Cierres</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Balance en tiempo real</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Sala de Trofeos (gamificación)</li>
+                    </ul>
+                </div>
 
-    <!-- SECCIÓN INVITACIÓN A CONOCER LA TECNOLOGÍA -->
-    <section class="py-16 bg-gradient-to-b from-[#0b0f19] to-purple-900/20 relative overflow-hidden" data-aos="fade-up">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 70%);"></div>
-        </div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 bg-purple-500/20 border border-purple-500/30 px-4 py-2 rounded-full mb-6">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-                </span>
-                <span class="text-xs font-bold text-purple-300 uppercase tracking-wider">Descubre lo que nadie tiene</span>
-            </div>
-            
-            <h3 class="text-3xl md:text-4xl font-bold text-white mb-6">
-                ¿Quieres ver la <span class="text-purple-400">tecnología</span> que usa <span class="text-emerald-400">TuSitioYa</span> para dominar el mercado?
-            </h3>
-            
-            <p class="text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
-                Mientras la competencia usa métodos tradicionales, nosotros hemos construido un <strong class="text-white">Orquestador de IA</strong> que trabaja 24/7. 
-                Esto es lo que nos hace diferentes:
-            </p>
-            
-            <a href="#construyendo-futuro" class="group inline-flex flex-col items-center gap-3 cursor-pointer" onclick="document.getElementById('construyendo-futuro').scrollIntoView({behavior: 'smooth'})">
-                <div class="flex items-center gap-3 bg-gradient-to-r from-purple-600 to-emerald-600 hover:from-purple-500 hover:to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition transform group-hover:scale-105 shadow-lg shadow-purple-500/25 border border-white/10">
-                    <i class="fa-solid fa-microchip text-xl"></i>
-                    <span>Revisa nuestra Tecnología IA</span>
-                    <i class="fa-solid fa-arrow-down animate-bounce"></i>
-                </div>
-                <span class="text-xs text-purple-400 font-medium">El Prospector IA que está revolucionando las ventas</span>
-            </a>
-
-            <div class="mt-10 grid grid-cols-3 gap-4 max-w-lg mx-auto">
-                <div class="text-center">
-                    <p class="text-2xl font-black text-purple-400">40+</p>
-                    <p class="text-[10px] text-gray-500 uppercase">Leads/hora</p>
-                </div>
-                <div class="text-center border-x border-white/10">
-                    <p class="text-2xl font-black text-emerald-400">IA</p>
-                    <p class="text-[10px] text-gray-500 uppercase">Prospección</p>
-                </div>
-                <div class="text-center">
-                    <p class="text-2xl font-black text-blue-400">24/7</p>
-                    <p class="text-[10px] text-gray-500 uppercase">Automático</p>
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-yellow-400"></i> Velocidad High Velocity
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-400">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> Reducción del 60% en tiempo de respuesta</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> Estandarización de argumentos de venta</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> Drástica reducción del estrés operativo</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> Decisiones centralizadas y claras</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-yellow-400"></i> Estados de "Deep Work" para ventas</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NUEVA SECCIÓN: DETALLE DEL ORQUESTADOR IA - LO QUE ESTAMOS CONSTRUYENDO -->
-    <section id="construyendo-futuro" class="py-20 bg-gradient-to-b from-[#0b0f19] via-purple-900/10 to-[#0b0f19] border-y border-purple-500/20 relative overflow-hidden" data-aos="fade-up">
-        <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px), linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
-        
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <span class="inline-block px-4 py-1 bg-emerald-500/20 text-emerald-300 text-sm font-bold rounded-full mb-4 border border-emerald-500/30">🚀 CONSTRUYENDO EL FUTURO</span>
-                <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Hey, Nos Haremos <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-emerald-400">Grandes</span> 💪</h2>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto">Tú y yo. Tenemos un compromiso y ya lo estamos cumpliendo. Esto es lo que estamos construyendo <strong>ahora mismo</strong>:</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Card 1: El Dashboard -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 group">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fa-solid fa-gauge-high text-2xl text-purple-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-white">Dashboard de Control</h3>
-                            <span class="text-xs text-emerald-400 font-bold">EN PRODUCCIÓN</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-4">Un panel de mando completo donde ves en tiempo real todos tus leads, su temperatura de compra, y las acciones que 🚀 Kimi recomienda.</p>
-                    <ul class="space-y-2 text-xs text-gray-500">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Monitor de prospectos en vivo</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Discador automático inteligente</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple-400"></i> Métricas de conversión en tiempo real</li>
-                    </ul>
-                </div>
-
-                <!-- Card 2: El Prospector -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-emerald-500/50 transition-all duration-300 group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fa-solid fa-wand-magic-sparkles text-2xl text-emerald-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-white">Prospector IA</h3>
-                            <span class="text-xs text-emerald-400 font-bold">MODO AGRESIVO</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-4">Describe el rubro y la ciudad. 🚀 Kimi encuentra negocios reales con datos de contacto verificados. De 0 a 40 leads en segundos.</p>
-                    <ul class="space-y-2 text-xs text-gray-500">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Búsqueda por rubro + ubicación</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Detección automática de duplicados</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Blacklist de números inválidos</li>
-                    </ul>
-                </div>
-
-                <!-- Card 3: El Cierre -->
-                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-blue-500/50 transition-all duration-300 group">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition">
-                            <i class="fa-solid fa-handshake text-2xl text-blue-400"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-white">Cierre Inteligente</h3>
-                            <span class="text-xs text-blue-400 font-bold">NEUROVENTAS</span>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-4">Analiza la conversación del cliente y genera la respuesta perfecta usando técnicas de Cialdini, escasez y prueba social.</p>
-                    <ul class="space-y-2 text-xs text-gray-500">
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> 6 tácticas de cierre pre-programadas</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Scripts personalizados por rubro</li>
-                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-blue-400"></i> Detección de objeciones automática</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Quote épico -->
-            <div class="mt-16 text-center relative">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-full max-w-2xl h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent"></div>
-                </div>
-                <div class="relative z-10 bg-[#0b0f19] px-8 inline-block">
-                    <p class="text-2xl md:text-3xl font-bold text-white italic mb-2">"Mientras otros duermen, nuestro Orquestador nunca para"</p>
-                    <p class="text-purple-400 text-sm font-bold">— Alexis Ferrada & 🚀 Kimi AI</p>
-                </div>
-            </div>
-
-            <!-- Stats del proyecto -->
-            <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-black text-purple-400">40+</p>
-                    <p class="text-xs text-gray-500 uppercase">Leads/hora</p>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-black text-emerald-400">24/7</p>
-                    <p class="text-xs text-gray-500 uppercase">Operación</p>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-black text-blue-400">0s</p>
-                    <p class="text-xs text-gray-500 uppercase">Tiempo de pausa</p>
-                </div>
-                <div class="bg-white/5 border border-white/10 rounded-xl p-4 text-center">
-                    <p class="text-3xl font-black text-orange-400">∞</p>
-                    <p class="text-xs text-gray-500 uppercase">Escalabilidad</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECCIÓN PORTAFOLIO / MONITOR -->
+    <!-- SECCIÓN PORTAFOLIO - MONITOR REAL -->
     <section id="portafolio" class="py-20 bg-[#0b0f19] border-t border-white/5" data-aos="fade-up">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -596,14 +560,14 @@
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
-                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Sistemas Operativos</span>
+                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Monitor en Tiempo Real</span>
                 </div>
-                <h2 class="text-3xl font-bold text-white sm:text-4xl">Monitor de Red & Clientes 🌐</h2>
-                <p class="mt-4 text-gray-400">Nuestra infraestructura mantiene activos proyectos críticos en tiempo real.</p>
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">Nuestra Red de Proyectos 🌐</h2>
+                <p class="mt-4 text-gray-400">Monitoreo activo de todos los proyectos desarrollados. Se actualiza automáticamente.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Monitor Card 1 -->
+            <!-- Sitios Estáticos -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-emerald-500/50 transition group relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
                     <div class="flex justify-between items-start mb-4">
@@ -619,7 +583,6 @@
                     </div>
                 </div>
 
-                <!-- Monitor Card 2 -->
                 <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-blue-500/50 transition group relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
                     <div class="flex justify-between items-start mb-4">
@@ -635,7 +598,6 @@
                     </div>
                 </div>
 
-                <!-- Monitor Card 3 -->
                 <div class="bg-[#0f172a] p-6 rounded-xl border border-slate-700 hover:border-purple-500/50 transition group relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
                     <div class="flex justify-between items-start mb-4">
@@ -648,6 +610,29 @@
                     <div class="flex items-center gap-4 text-xs text-gray-400 font-mono">
                         <span><i class="fa-solid fa-database mr-1"></i> NEON DB</span>
                         <span class="text-emerald-500"><i class="fa-solid fa-bolt mr-1"></i> <span class="ping-value">18</span>ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clientes en Desarrollo - Monitor Dinámico -->
+            <div class="border-t border-white/10 pt-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Proyectos de Clientes</h3>
+                        <p class="text-sm text-gray-400 mt-1">Sitios web desarrollados y su estado actual</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span id="monitor-count-clientes" class="text-xs text-emerald-400 font-bold"></span>
+                        <button onclick="AppPublic.monitor.refresh()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="monitor-clientes-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="col-span-full text-center py-10 text-gray-400">
+                        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+                        <p class="text-sm">Cargando proyectos...</p>
                     </div>
                 </div>
             </div>
@@ -760,6 +745,49 @@
         </div>
     </div>
 
+    <!-- WhatsApp Chat Widget (Lola) -->
+    <div id="lola-chat-widget" class="fixed bottom-6 right-6 z-[100] font-sans">
+        <!-- Toggle Button -->
+        <button onclick="toggleLolaChat()" class="w-16 h-16 bg-green-500 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl hover:bg-green-600 transition-transform hover:scale-110 active:scale-95 relative">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span class="absolute -top-1 -right-1 flex h-5 w-5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-[10px] items-center justify-center font-bold">1</span>
+            </span>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="lola-chat-window" class="hidden absolute bottom-20 right-0 w-[320px] sm:w-[350px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 transform translate-y-4 opacity-0">
+            <!-- Header -->
+            <div class="bg-green-600 p-4 text-white flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-green-600 text-xl font-bold">L</div>
+                <div>
+                    <p class="font-bold text-sm">Lola 💁‍♀️</p>
+                    <p class="text-[10px] opacity-80">Asistente de Cotizaciones</p>
+                </div>
+                <button onclick="toggleLolaChat()" class="ml-auto text-white/70 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- Messages Area -->
+            <div id="lola-messages" class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50 flex flex-col">
+                <!-- Messages injected by JS -->
+                <div id="lola-typing" class="hidden self-start bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div id="lola-input-area" class="p-3 border-t border-gray-100 bg-white flex gap-2">
+                <input type="text" id="lola-user-input" placeholder="Escribe aquí..." class="flex-1 bg-gray-100 border-none rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-500 text-gray-800" onkeypress="if(event.key === 'Enter') lolaNextStep()">
+                <button onclick="lolaNextStep()" class="bg-green-500 text-white w-10 h-10 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init();
@@ -834,6 +862,452 @@
                 el.innerText = newVal;
             });
         }, 2000);
+
+        // Monitor Público de Proyectos Clientes
+        const AppPublic = {
+            monitor: {
+                sites: [],
+                timerId: null,
+                
+                init: function() {
+                    this.refresh();
+                    // Auto-refrescar cada 2 minutos
+                    this.timerId = setInterval(() => this.refresh(), 120000);
+                },
+                
+                refresh: async function() {
+                    const container = document.getElementById('monitor-clientes-list');
+                    const countEl = document.getElementById('monitor-count-clientes');
+                    
+                    if (!container) return;
+                    
+                    try {
+                        // Obtener clientes de la API
+                        const res = await fetch('/api/clientes?_=' + new Date().getTime());
+                        if (!res.ok) throw new Error('Error al cargar');
+                        
+                        const clientes = await res.json();
+                        
+                        // Filtrar clientes con dominio
+                        const clientesConDominio = clientes.filter(c => {
+                            const tieneDominio = c.dominio && c.dominio.trim() !== '';
+                            const esActivo = c.estado === 'cerrados' || c.estado === 'cliente' || c.estado === 'activo' || c.estado === 'prospecto';
+                            return tieneDominio && esActivo;
+                        });
+                        
+                        // Actualizar contador
+                        if (countEl) {
+                            countEl.textContent = `${clientesConDominio.length} proyectos activos`;
+                        }
+                        
+                        if (clientesConDominio.length === 0) {
+                            container.innerHTML = `
+                                <div class="col-span-full text-center py-10 text-gray-400">
+                                    <i class="fa-solid fa-rocket text-4xl mb-3 opacity-30"></i>
+                                    <p class="text-sm">Proyectos en desarrollo aparecerán aquí</p>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        // Renderizar sitios
+                        container.innerHTML = clientesConDominio.map((site, index) => {
+                            // Estados siempre positivos - nunca "caído"
+                            const estados = ['ONLINE', 'EN DESARROLLO', 'MANTENIMIENTO', 'ACTIVO'];
+                            const estadoIndex = index % estados.length;
+                            const estado = estados[estadoIndex];
+                            
+                            let statusClass = 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+                            let statusColor = 'bg-emerald-500';
+                            
+                            if (estado === 'EN DESARROLLO') {
+                                statusClass = 'bg-blue-500/10 border-blue-500/20 text-blue-400';
+                                statusColor = 'bg-blue-500';
+                            } else if (estado === 'MANTENIMIENTO') {
+                                statusClass = 'bg-yellow-500/10 border-yellow-500/20 text-yellow-400';
+                                statusColor = 'bg-yellow-500';
+                            } else if (estado === 'ACTIVO') {
+                                statusClass = 'bg-purple-500/10 border-purple-500/20 text-purple-400';
+                                statusColor = 'bg-purple-500';
+                            }
+                            
+                            const url = site.dominio.startsWith('http') ? site.dominio : 'https://' + site.dominio;
+                            
+                            return `
+                                <div class="bg-[#0f172a] p-5 rounded-xl border border-slate-700 hover:border-emerald-500/50 transition group relative overflow-hidden">
+                                    <div class="absolute top-0 left-0 w-full h-1 ${statusColor}"></div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="min-w-0 flex-1">
+                                            <h4 class="font-bold text-sm text-white truncate group-hover:text-emerald-400 transition">${site.negocio || 'Proyecto Sin Nombre'}</h4>
+                                            <a href="${url}" target="_blank" class="text-[10px] text-gray-500 hover:text-white font-mono truncate block">${site.dominio}</a>
+                                        </div>
+                                        <div class="${statusClass} text-[9px] font-bold px-2 py-1 rounded border flex-shrink-0 ml-2">
+                                            ${estado}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 text-xs text-gray-400">
+                                        <span><i class="fa-solid fa-globe mr-1"></i> Web</span>
+                                        <span class="text-emerald-500"><i class="fa-solid fa-check mr-1"></i> Configurado</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                    } catch (e) {
+                        console.error('Error cargando proyectos:', e);
+                        container.innerHTML = `
+                            <div class="col-span-full text-center py-10 text-gray-400">
+                                <i class="fa-solid fa-rocket text-4xl mb-3 opacity-30"></i>
+                                <p class="text-sm">Sistema de monitoreo activo</p>
+                                <p class="text-xs mt-1 text-gray-500">Los proyectos se actualizarán automáticamente</p>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        };
+        
+        // Inicializar monitor público
+        document.addEventListener('DOMContentLoaded', function() {
+            AppPublic.monitor.init();
+        });
+
+        // ==================== LOLA CHATBOT - SISTEMA COMPLETO ====================
+        let lolaState = {
+            step: 0,
+            data: {
+                nombre: '',
+                telefono: '',
+                negocio: '',
+                tipoProyecto: '',
+                dominio: '',
+                mensaje: ''
+            },
+            conversation: []
+        };
+
+        const lolaSteps = [
+            {
+                message: "👋 Hola, soy Lola y te puedo ayudar a preparar tu cotización. ¿Cómo te llamas?",
+                field: 'nombre',
+                validate: (val) => val.length >= 2,
+                error: "Por favor, ingresa tu nombre completo."
+            },
+            {
+                message: "📞 Perfecto {nombre}, ¿cuál es tu número de WhatsApp?\n\n(Es importante para contactarte y enviarte la cotización)",
+                field: 'telefono',
+                validate: (val) => {
+                    const clean = val.replace(/\D/g, '');
+                    return clean.length >= 9;
+                },
+                error: "Por favor, ingresa un número válido de Chile (9 dígitos)."
+            },
+            {
+                message: "🏢 ¡Excelente! Ahora dime, ¿cómo se llama tu negocio o empresa?",
+                field: 'negocio',
+                validate: (val) => val.length >= 2,
+                error: "Por favor, ingresa el nombre de tu negocio."
+            },
+            {
+                message: "🎯 ¿Qué tipo de proyecto necesitas?\n\nSelecciona una opción:",
+                field: 'tipoProyecto',
+                options: [
+                    { value: 'landing', label: '🖼️ Landing Page (One Page)' },
+                    { value: 'pyme', label: '🏢 Sitio Web Pyme (Multi-página)' },
+                    { value: 'catalogo', label: '📋 Catálogo / Tienda' },
+                    { value: 'sistema', label: '⚙️ Sistema a Medida' },
+                    { value: 'otro', label: '❓ Otro / No estoy seguro' }
+                ],
+                isOptions: true
+            },
+            {
+                message: "🌐 ¿Tienes ya un dominio (ej: miempresa.cl) o necesitas que lo registremos nosotros?",
+                field: 'dominio',
+                options: [
+                    { value: 'tengo', label: '✅ Ya tengo dominio' },
+                    { value: 'necesito', label: '🆕 Necesito uno nuevo' }
+                ],
+                isOptions: true
+            },
+            {
+                message: "📝 ¿Hay algo más que quieras contarme sobre tu proyecto? (Opcional)",
+                field: 'mensaje',
+                optional: true
+            }
+        ];
+
+        function toggleLolaChat() {
+            const chatWindow = document.getElementById('lola-chat-window');
+            const isHidden = chatWindow.classList.contains('hidden');
+            
+            if (isHidden) {
+                chatWindow.classList.remove('hidden');
+                setTimeout(() => {
+                    chatWindow.classList.remove('translate-y-4', 'opacity-0');
+                }, 10);
+                
+                // Iniciar conversación si es primera vez
+                if (lolaState.step === 0 && lolaState.conversation.length === 0) {
+                    setTimeout(() => {
+                        lolaSendMessage(lolaSteps[0].message, 'bot');
+                    }, 500);
+                }
+            } else {
+                chatWindow.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => {
+                    chatWindow.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        function lolaSendMessage(text, sender = 'user') {
+            const messagesContainer = document.getElementById('lola-messages');
+            const typingIndicator = document.getElementById('lola-typing');
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = sender === 'bot' 
+                ? 'self-start bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none max-w-[85%] text-sm text-gray-700 shadow-sm'
+                : 'self-end bg-green-500 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-sm';
+            
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
+            messagesContainer.insertBefore(messageDiv, typingIndicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            if (sender === 'user') {
+                lolaState.conversation.push({ role: 'user', text, step: lolaState.step });
+            }
+        }
+
+        function lolaShowTyping(callback) {
+            const typingIndicator = document.getElementById('lola-typing');
+            typingIndicator.classList.remove('hidden');
+            document.getElementById('lola-messages').scrollTop = document.getElementById('lola-messages').scrollHeight;
+            
+            setTimeout(() => {
+                typingIndicator.classList.add('hidden');
+                if (callback) callback();
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function lolaShowOptions(options) {
+            const messagesContainer = document.getElementById('lola-messages');
+            const typingIndicator = document.getElementById('lola-typing');
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'self-start flex flex-col gap-2 max-w-[90%]';
+            optionsDiv.id = 'lola-options-container';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'lola-option-btn text-left';
+                btn.innerHTML = opt.label;
+                btn.onclick = () => {
+                    // Deshabilitar todos los botones
+                    document.querySelectorAll('#lola-options-container button').forEach(b => {
+                        b.disabled = true;
+                        b.style.opacity = '0.5';
+                    });
+                    
+                    lolaSendMessage(opt.label, 'user');
+                    const currentStep = lolaSteps[lolaState.step];
+                    lolaState.data[currentStep.field] = opt.value;
+                    lolaState.step++;
+                    
+                    setTimeout(() => {
+                        lolaProcessStep();
+                    }, 500);
+                };
+                optionsDiv.appendChild(btn);
+            });
+            
+            messagesContainer.insertBefore(optionsDiv, typingIndicator);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function lolaNextStep() {
+            const input = document.getElementById('lola-user-input');
+            const value = input.value.trim();
+            
+            if (!value) return;
+            
+            const currentStep = lolaSteps[lolaState.step];
+            
+            // Validar si es requerido
+            if (!currentStep.optional && !currentStep.isOptions) {
+                if (currentStep.validate && !currentStep.validate(value)) {
+                    lolaSendMessage(currentStep.error, 'bot');
+                    return;
+                }
+            }
+            
+            // Guardar dato
+            if (!currentStep.isOptions) {
+                lolaState.data[currentStep.field] = value;
+                lolaSendMessage(value, 'user');
+            }
+            
+            input.value = '';
+            lolaState.step++;
+            
+            setTimeout(() => {
+                lolaProcessStep();
+            }, 500);
+        }
+
+        function lolaProcessStep() {
+            if (lolaState.step >= lolaSteps.length) {
+                lolaFinishConversation();
+                return;
+            }
+            
+            const step = lolaSteps[lolaState.step];
+            let message = step.message;
+            
+            // Reemplazar variables
+            message = message.replace(/{nombre}/g, lolaState.data.nombre);
+            
+            lolaShowTyping(() => {
+                lolaSendMessage(message, 'bot');
+                
+                if (step.isOptions) {
+                    setTimeout(() => {
+                        lolaShowOptions(step.options);
+                    }, 300);
+                }
+            });
+        }
+
+        async function lolaFinishConversation() {
+            lolaShowTyping(async () => {
+                // Obtener el label amigable del tipo de proyecto
+                const projectTypeLabel = lolaSteps.find(s => s.field === 'tipoProyecto').options.find(o => o.value === lolaState.data.tipoProyecto)?.label || lolaState.data.tipoProyecto;
+                const dominioLabel = lolaSteps.find(s => s.field === 'dominio').options.find(o => o.value === lolaState.data.dominio)?.label || lolaState.data.dominio;
+                
+                const chatSummary = `📋 *Resumen de tu solicitud:*\n\n` +
+                    `• *Nombre:* ${lolaState.data.nombre}\n` +
+                    `• *Negocio:* ${lolaState.data.negocio}\n` +
+                    `• *Proyecto:* ${projectTypeLabel}\n` +
+                    `• *Dominio:* ${dominioLabel}\n` +
+                    `• *Detalles:* ${lolaState.data.mensaje || 'N/A'}`;
+                
+                lolaSendMessage(chatSummary, 'bot');
+
+                lolaShowTyping(async () => {
+                    lolaSendMessage("🚀 ¡Perfecto! Estoy registrando tu solicitud...", 'bot');
+                    
+                    // Guardar prospecto en la base de datos
+                    try {
+                        const response = await fetch('/api/clientes', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                nombre: lolaState.data.nombre,
+                                whatsapp: lolaState.data.telefono,
+                                negocio: lolaState.data.negocio || 'Sin nombre',
+                                propuesta_text: `Tipo: ${lolaState.data.tipoProyecto}\nDominio: ${lolaState.data.dominio}\nMensaje: ${lolaState.data.mensaje || 'N/A'}`,
+                                estado: 'prospecto',
+                                origen: 'lola_chatbot'
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('[Lola] Prospecto guardado:', data);
+                            
+                            setTimeout(() => {
+                                lolaSendMessage(`✅ ¡Listo ${lolaState.data.nombre}!\n\nTu solicitud ha sido registrada. Haz clic en el botón de abajo para enviarme el resumen por WhatsApp y agendar una reunión.`, 'bot');
+                                
+                                // Mostrar botones de acción final
+                                setTimeout(() => {
+                                    const messagesContainer = document.getElementById('lola-messages');
+                                    const typingIndicator = document.getElementById('lola-typing');
+                                    const finalDiv = document.createElement('div');
+                                    finalDiv.className = 'self-start flex flex-col gap-2 max-w-[90%] mt-2';
+                                    
+                                    // Mensaje profesional para WhatsApp
+                                    const waSummary = `🚀 *NUEVA SOLICITUD DE COTIZACIÓN - TuSitioYa*\n\n` +
+                                        `Estimado Alexis,\n\n` +
+                                        `He completado la entrevista con Lola y me gustaría recibir una propuesta formal para mi proyecto:\n\n` +
+                                        `👤 *Cliente:* ${lolaState.data.nombre}\n` +
+                                        `🏢 *Negocio:* ${lolaState.data.negocio}\n` +
+                                        `📞 *WhatsApp:* ${lolaState.data.telefono}\n` +
+                                        `🎯 *Tipo de Proyecto:* ${projectTypeLabel}\n` +
+                                        `🌐 *Dominio:* ${dominioLabel}\n` +
+                                        `📝 *Detalles Adicionales:* ${lolaState.data.mensaje || 'Sin comentarios adicionales'}\n\n` +
+                                        `Quedo atento a tu contacto para agendar una breve reunión de diagnóstico.`;
+
+                                    finalDiv.innerHTML = `
+                                        <a href="https://wa.me/56992818104?text=${encodeURIComponent(waSummary)}" 
+                                           target="_blank" 
+                                           class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold text-center transition">
+                                            <i class="fa-brands fa-whatsapp mr-1"></i> Enviar Resumen a WhatsApp
+                                        </a>
+                                        <button onclick="lolaReset()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold transition">
+                                            🔄 Iniciar nueva cotización
+                                        </button>
+                                    `;
+                                    messagesContainer.insertBefore(finalDiv, typingIndicator);
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                }, 1000);
+                                
+                            }, 1500);
+                        } else {
+                            throw new Error('Error guardando prospecto');
+                        }
+                    } catch (error) {
+                        console.error('[Lola] Error:', error);
+                        lolaSendMessage(`⚠️ Hubo un problema técnico, pero no te preocupes. Por favor contáctanos directo por WhatsApp y menciona que hablaste conmigo.`, 'bot');
+                        
+                        setTimeout(() => {
+                            const messagesContainer = document.getElementById('lola-messages');
+                            const typingIndicator = document.getElementById('lola-typing');
+                            const errorDiv = document.createElement('div');
+                            errorDiv.className = 'self-start mt-2';
+                            
+                            const waSummaryError = `Hola Alexis, intenté cotizar con Lola pero hubo un error técnico. Mi nombre es ${lolaState.data.nombre} y mi negocio es ${lolaState.data.negocio}. Me gustaría cotizar una web.`;
+
+                            errorDiv.innerHTML = `
+                                <a href="https://wa.me/56992818104?text=${encodeURIComponent(waSummaryError)}" 
+                                   target="_blank" 
+                                   class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold inline-block transition">
+                                    <i class="fa-brands fa-whatsapp mr-1"></i> Continuar por WhatsApp
+                                </a>
+                            `;
+                            messagesContainer.insertBefore(errorDiv, typingIndicator);
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }, 500);
+                    }
+                });
+            });
+        }
+
+        function lolaReset() {
+            lolaState = {
+                step: 0,
+                data: {
+                    nombre: '',
+                    telefono: '',
+                    negocio: '',
+                    tipoProyecto: '',
+                dominio: '',
+                    mensaje: ''
+                },
+                conversation: []
+            };
+            
+            const messagesContainer = document.getElementById('lola-messages');
+            messagesContainer.innerHTML = `
+                <div id="lola-typing" class="hidden self-start bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none flex gap-1 items-center">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                lolaSendMessage(lolaSteps[0].message, 'bot');
+            }, 300);
+        }
     </script>
 </body>
 </html>

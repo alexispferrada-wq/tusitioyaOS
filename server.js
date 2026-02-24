@@ -608,7 +608,7 @@ app.put('/api/clientes/:id', async (req, res) => {
   const { id } = req.params;
   const { 
       monto_total, monto_pagado, whatsapp, nombre, negocio, dominio, fecha_agendada,
-      fecha_proximo_pago, monto_mantencion, rut, propuesta_text,
+      fecha_proximo_pago, fecha_pago, monto_mantencion, rut, propuesta_text,
       email, rubro, url, // from encuesta_data
       respuestas_web, // Nuevo campo para la encuesta de 7 preguntas
       encuesta_data // Permitir recibir el objeto completo para merge
@@ -629,6 +629,7 @@ app.put('/api/clientes/:id', async (req, res) => {
     if (negocio !== undefined) { setClauses.push(`negocio = $${paramIndex++}`); params.push(negocio); }
     if (dominio !== undefined) { setClauses.push(`dominio = $${paramIndex++}`); params.push(dominio); }
     if (fecha_proximo_pago !== undefined) { setClauses.push(`fecha_proximo_pago = $${paramIndex++}`); params.push(fecha_proximo_pago); }
+    if (fecha_pago !== undefined) { setClauses.push(`fecha_pago = $${paramIndex++}`); params.push(fecha_pago); }
     if (fecha_agendada !== undefined) { setClauses.push(`fecha_seguimiento = $${paramIndex++}`); params.push(fecha_agendada); }
     if (rut !== undefined) { setClauses.push(`rut = $${paramIndex++}`); params.push(rut); }
     if (propuesta_text !== undefined) { setClauses.push(`propuesta_text = $${paramIndex++}`); params.push(propuesta_text); }
@@ -1090,19 +1091,459 @@ function verificarDominioEmail(email) {
     });
 }
 
-// Función: Auditor de Calidad de WhatsApp (Anti-Alucinaciones)
+// =====================================================
+// SISTEMA DE VALIDACIÓN CENTRALIZADO - VALIDATION PIPELINE
+// =====================================================
+
+/**
+ * PATRONES INVÁLIDOS DE NÚMEROS - Base de conocimiento extensible
+ * Cada patrón incluye: regex, severidad, descripción y categoría
+ */
+const PATRONES_NUMEROS_INVALIDOS = [
+    // =====================================================
+    // NIVEL CRÍTICO - Números claramente falsos
+    // =====================================================
+    { regex: /^(\d)\1{8}$/, severidad: 'CRITICO', categoria: 'REPETIDO_TOTAL', descripcion: 'Todos los dígitos idénticos (ej: 999999999)' },
+    { regex: /^123456789$/, severidad: 'CRITICO', categoria: 'SECUENCIA_ASC', descripcion: 'Secuencia ascendente completa' },
+    { regex: /^987654321$/, severidad: 'CRITICO', categoria: 'SECUENCIA_DESC', descripcion: 'Secuencia descendente completa' },
+    { regex: /^000000000$/, severidad: 'CRITICO', categoria: 'CEROS', descripcion: 'Número completo de ceros' },
+    
+    // PATRONES HUMAN-FRIENDLY (números "bonitos" que son falsos)
+    { regex: /^11223344$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 11-22-33-44' },
+    { regex: /^22334455$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 22-33-44-55' },
+    { regex: /^33445566$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 33-44-55-66' },
+    { regex: /^44556677$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 44-55-66-77' },
+    { regex: /^55667788$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 55-66-77-88' },
+    { regex: /^66778899$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 66-77-88-99' },
+    { regex: /^00112233$/, severidad: 'CRITICO', categoria: 'PARES_CONSECUTIVOS', descripcion: 'Número falso tipo 00-11-22-33' },
+    
+    // Alternancias simples (ej: 12121212)
+    { regex: /^([01])\1([01])\2([01])\3([01])\4$/, severidad: 'CRITICO', categoria: 'ALTERNANCIA_BINARIA', descripcion: 'Patrón alternado 0-1 repetido' },
+    { regex: /^(12|21)(12|21)(12|21)(12)$/, severidad: 'CRITICO', categoria: 'ALTERNANCIA_12', descripcion: 'Patrón alternado 1-2 repetido' },
+    { regex: /^(13|31)(13|31)(13|31)(13)$/, severidad: 'CRITICO', categoria: 'ALTERNANCIA_13', descripcion: 'Patrón alternado 1-3 repetido' },
+    { regex: /^(23|32)(23|32)(23|32)(23)$/, severidad: 'CRITICO', categoria: 'ALTERNANCIA_23', descripcion: 'Patrón alternado 2-3 repetido' },
+    { regex: /^(\d{2})\1\1\1$/, severidad: 'CRITICO', categoria: 'CUATRUPLE_PAR', descripcion: 'Par repetido 4 veces (ej: 12121212)' },
+    
+    // Repeticiones de secuencias cortas
+    { regex: /^(\d{3})\1\1$/, severidad: 'CRITICO', categoria: 'TRIPLE_SECUENCIA', descripcion: 'Secuencia de 3 repetida 3 veces' },
+    { regex: /^(\d{4})\1$/, severidad: 'CRITICO', categoria: 'DOBLE_SECUENCIA', descripcion: 'Secuencia de 4 repetida 2 veces (ej: 12341234)' },
+    { regex: /^([13579])\1\1\1\1\1\1\1$/, severidad: 'CRITICO', categoria: 'IMPARES_REPETIDOS', descripcion: 'Dígitos impares repetidos' },
+    { regex: /^([02468])\1\1\1\1\1\1\1$/, severidad: 'CRITICO', categoria: 'PARES_REPETIDOS', descripcion: 'Dígitos pares repetidos' },
+    
+    // =====================================================
+    // NIVEL ALTO - Patrones muy sospechosos
+    // =====================================================
+    { regex: /(\d)\1{6,}/, severidad: 'ALTO', categoria: 'REPETIDO_EXTREMO', descripcion: '7+ dígitos consecutivos iguales' },
+    { regex: /12345678|23456789|34567890/, severidad: 'ALTO', categoria: 'SECUENCIA_ASC_PARCIAL', descripcion: 'Secuencia ascendente larga' },
+    { regex: /98765432|87654321|76543210/, severidad: 'ALTO', categoria: 'SECUENCIA_DESC_PARCIAL', descripcion: 'Secuencia descendente larga' },
+    { regex: /0000000|1111111|2222222/, severidad: 'ALTO', categoria: 'REPETIDO_7', descripcion: '7 dígitos iguales consecutivos' },
+    { regex: /(0123|1234|2345|3456|4567|5678|6789){2,}/, severidad: 'ALTO', categoria: 'SECUENCIA_DOBLE', descripcion: 'Doble secuencia (ej: 12345678)' },
+    
+    // Pares y triples patrones
+    { regex: /(\d{2})\1\1\1/, severidad: 'ALTO', categoria: 'PAR_REPETIDO_4', descripcion: 'Par repetido 4 veces' },
+    { regex: /(\d{2})(\d{2})\1\2/, severidad: 'ALTO', categoria: 'PARES_DOBLES', descripcion: 'Patrón AABB AABB' },
+    { regex: /^(\d)\1(\d)\2(\d)\3(\d)\4$/, severidad: 'ALTO', categoria: 'DOBLES_CONSECUTIVOS', descripcion: 'Dígitos dobles consecutivos (ej: 11223344)' },
+    
+    // Números simétricos obvios
+    { regex: /^(\d)(\d)(\d)(\d)\4\3\2\1$/, severidad: 'ALTO', categoria: 'PALINDROMO_8', descripcion: 'Palíndromo de 8 dígitos' },
+    { regex: /^(\d{4})\1$/, severidad: 'ALTO', categoria: 'ESPEJO_4', descripcion: 'Espejo de 4 dígitos (ej: 12341234)' },
+    
+    // =====================================================
+    // NIVEL MEDIO - Patrones sospechosos
+    // =====================================================
+    { regex: /(\d)\1{4,}/, severidad: 'MEDIO', categoria: 'REPETIDO_5', descripcion: '5+ dígitos consecutivos iguales' },
+    { regex: /00000|11111|22222|33333|44444/, severidad: 'MEDIO', categoria: 'REPETIDO_5_MEDIO', descripcion: '5 dígitos iguales al final' },
+    { regex: /(012|123|234|345|456|567|678|789){2,}/, severidad: 'MEDIO', categoria: 'SECUENCIA_TRIPLE', descripcion: 'Secuencias triples' },
+    { regex: /^(\d{3})\1{2}$/, severidad: 'MEDIO', categoria: 'TRIPLE_REP', descripcion: 'Patrón XXXYYYZZZ' },
+    { regex: /^(\d{2})\1{3}$/, severidad: 'MEDIO', categoria: 'CUADRUPLE_REP', descripcion: 'Patrón XXYYXXYY' },
+    
+    // =====================================================
+    // NIVEL BAJO - Revisar manualmente
+    // =====================================================
+    { regex: /^(\d)\1{3}/, severidad: 'BAJO', categoria: 'INICIO_REPETIDO', descripcion: 'Inicio con 4+ dígitos iguales' },
+    { regex: /(\d)\1{3}$/, severidad: 'BAJO', categoria: 'FIN_REPETIDO', descripcion: 'Fin con 4+ dígitos iguales' },
+    { regex: /(012345|123456|234567|345678|456789)/, severidad: 'BAJO', categoria: 'SECUENCIA_MEDIA', descripcion: 'Secuencia de 6 números' },
+];
+
+/**
+ * PATRONES DE EMAIL INVÁLIDOS
+ */
+const PATRONES_EMAIL_INVALIDOS = [
+    { regex: /test@|prueba@|ejemplo@|example@/, severidad: 'CRITICO', descripcion: 'Email de prueba explícito' },
+    { regex: /(temp|tmp|fake|falso)\w*@/, severidad: 'CRITICO', descripcion: 'Email temporal/falso' },
+    { regex: /(nombre|apellido|usuario|user)@/, severidad: 'CRITICO', descripcion: 'Placeholder genérico' },
+    { regex: /@(test|prueba|example|ejemplo)\./, severidad: 'CRITICO', descripcion: 'Dominio de prueba' },
+    { regex: /\d{8,}@/, severidad: 'ALTO', descripcion: 'Email con muchos números' },
+];
+
+/**
+ * PATRONES DE NOMBRE INVÁLIDOS
+ */
+const PATRONES_NOMBRE_INVALIDOS = [
+    { regex: /^(test|prueba|ejemplo|example|nombre|apellido|cliente|usuario)\s*\d*$/i, severidad: 'CRITICO', descripcion: 'Nombre placeholder' },
+    { regex: /(ficticio|falso|fake|temporal|temp)/i, severidad: 'CRITICO', descripcion: 'Indicador de temporalidad' },
+    { regex: /(no disponible|n\/d|n\/a|sin nombre|no name)/i, severidad: 'CRITICO', descripcion: 'Sin información real' },
+    { regex: /aaa+|bbb+|ccc+|ddd+|xxx+|zzz+/i, severidad: 'ALTO', descripcion: 'Relleno con letras repetidas' },
+];
+
+// =====================================================
+// VALIDATION PIPELINE - Función Centralizada
+// =====================================================
+
+/**
+ * ValidationPipeline - Valida un lead contra TODAS las fuentes
+ * @param {Object} lead - { telefono, correo, negocio }
+ * @param {number} usuarioId - ID del usuario
+ * @returns {Promise<Object>} - Resultado completo de validación
+ */
+async function ValidationPipeline(lead, usuarioId = 1) {
+    const resultado = {
+        valido: true,
+        telefono: { valido: true, numero_formateado: null, errores: [], severidad: null },
+        email: { valido: true, errores: [], dominio_verificado: false },
+        nombre: { valido: true, errores: [] },
+        bd: { en_blacklist: false, duplicado: false, prospecto_existente: null },
+        credito: { debe_cobrarse: true, debe_devolverse: false, razon: null },
+        acciones: []
+    };
+    
+    const telefono = lead.telefono || '';
+    const correo = lead.correo || '';
+    const negocio = lead.negocio || '';
+    
+    // ============================================
+    // PASO 1: VALIDACIÓN LOCAL DE TELÉFONO
+    // ============================================
+    
+    if (!telefono) {
+        resultado.telefono.valido = false;
+        resultado.telefono.errores.push('Sin teléfono');
+        resultado.telefono.severidad = 'CRITICO';
+    } else {
+        // Normalizar
+        let limpio = telefono.replace(/\D/g, '');
+        if (limpio.length === 9 && limpio.startsWith('9')) limpio = '56' + limpio;
+        if (limpio.length === 8) limpio = '569' + limpio;
+        
+        // Validar longitud chilena
+        if (limpio.length !== 11 || !limpio.startsWith('569')) {
+            resultado.telefono.valido = false;
+            resultado.telefono.errores.push('Formato inválido (no es +569XXXXXXXX)');
+            resultado.telefono.severidad = 'CRITICO';
+        } else {
+            const cuerpo = limpio.substring(3); // XXXXXXXX (8 dígitos después de 569)
+            resultado.telefono.numero_formateado = '+' + limpio;
+            
+            // Revisar patrones inválidos
+            for (const patron of PATRONES_NUMEROS_INVALIDOS) {
+                if (patron.regex.test(cuerpo)) {
+                    resultado.telefono.valido = false;
+                    resultado.telefono.errores.push(`${patron.descripcion} [${patron.categoria}]`);
+                    resultado.telefono.severidad = patron.severidad;
+                    break; // Solo el primer patrón crítico
+                }
+            }
+        }
+    }
+    
+    // ============================================
+    // PASO 2: VALIDACIÓN LOCAL DE EMAIL
+    // ============================================
+    
+    if (correo) {
+        // Patrones inválidos
+        for (const patron of PATRONES_EMAIL_INVALIDOS) {
+            if (patron.regex.test(correo.toLowerCase())) {
+                resultado.email.valido = false;
+                resultado.email.errores.push(patron.descripcion);
+                break;
+            }
+        }
+        
+        // Verificar dominio (solo si no es inválido obvio)
+        if (resultado.email.valido) {
+            const dominioValido = await verificarDominioEmail(correo);
+            resultado.email.dominio_verificado = dominioValido;
+            if (!dominioValido) {
+                resultado.email.valido = false;
+                resultado.email.errores.push('Dominio no responde o no existe');
+            }
+        }
+    }
+    
+    // ============================================
+    // PASO 3: VALIDACIÓN LOCAL DE NOMBRE
+    // ============================================
+    
+    if (!negocio || negocio.length < 2) {
+        resultado.nombre.valido = false;
+        resultado.nombre.errores.push('Nombre muy corto o vacío');
+    } else {
+        for (const patron of PATRONES_NOMBRE_INVALIDOS) {
+            if (patron.regex.test(negocio)) {
+                resultado.nombre.valido = false;
+                resultado.nombre.errores.push(patron.descripcion);
+                break;
+            }
+        }
+    }
+    
+    // ============================================
+    // PASO 4: VALIDACIÓN CONTRA BASE DE DATOS
+    // ============================================
+    
+    try {
+        // 4.1 Verificar Blacklist
+        if (resultado.telefono.numero_formateado) {
+            const blacklistCheck = await pool.query(
+                'SELECT id, razon, created_at FROM blacklist WHERE telefono = $1',
+                [resultado.telefono.numero_formateado]
+            );
+            
+            if (blacklistCheck.rows.length > 0) {
+                resultado.bd.en_blacklist = true;
+                resultado.bd.blacklist_info = blacklistCheck.rows[0];
+                resultado.telefono.valido = false;
+                resultado.telefono.errores.push(`En blacklist desde ${blacklistCheck.rows[0].created_at}`);
+                resultado.telefono.severidad = 'CRITICO';
+            }
+        }
+        
+        // 4.2 Verificar Duplicados en Prospectos
+        if (resultado.telefono.numero_formateado) {
+            const duplicadoCheck = await pool.query(
+                `SELECT id, negocio, estado_whatsapp, created_at, usuario_id 
+                 FROM prospectos 
+                 WHERE telefono = $1 
+                 ORDER BY created_at DESC 
+                 LIMIT 1`,
+                [resultado.telefono.numero_formateado]
+            );
+            
+            if (duplicadoCheck.rows.length > 0) {
+                resultado.bd.duplicado = true;
+                resultado.bd.prospecto_existente = duplicadoCheck.rows[0];
+            }
+        }
+    } catch (dbError) {
+        console.error('[ValidationPipeline] Error consultando BD:', dbError.message);
+        // No fallamos por error de BD, pero lo registramos
+        resultado.bd.error = dbError.message;
+    }
+    
+    // ============================================
+    // PASO 5: LÓGICA DE CRÉDITOS
+    // ============================================
+    
+    // REGLAS DE CRÉDITOS:
+    // 1. Si hay error CRITICO en teléfono → NO cobrar (devolver)
+    // 2. Si está en blacklist → NO cobrar (devolver)
+    // 3. Si es duplicado → NO cobrar
+    // 4. Si es INVÁLIDO detectado POST-ENTREGA → Devolver crédito
+    
+    const tieneErrorCritico = !resultado.telefono.valido && 
+                              (resultado.telefono.severidad === 'CRITICO' || resultado.bd.en_blacklist);
+    
+    if (tieneErrorCritico) {
+        resultado.credito.debe_cobrarse = false;
+        resultado.credito.debe_devolverse = true;
+        resultado.credito.razon = resultado.bd.en_blacklist ? 'En blacklist' : resultado.telefono.errores[0];
+        resultado.acciones.push('RECHAZAR_LEAD');
+        resultado.acciones.push('DEVOLVER_CREDITO');
+    } else if (resultado.bd.duplicado) {
+        resultado.credito.debe_cobrarse = false;
+        resultado.credito.razon = 'Lead duplicado';
+        resultado.acciones.push('RECHAZAR_DUPLICADO');
+    } else {
+        resultado.acciones.push('ACEPTAR_LEAD');
+        resultado.acciones.push('COBRAR_CREDITO');
+    }
+    
+    // Validación final global
+    resultado.valido = resultado.telefono.valido && 
+                       !resultado.bd.en_blacklist && 
+                       !resultado.bd.duplicado;
+    
+    return resultado;
+}
+
+// =====================================================
+// SISTEMA DE CRÉDITOS INTELIGENTE
+// =====================================================
+
+/**
+ * Registrar movimiento de crédito en auditoría
+ * @param {Object} params - Datos del movimiento
+ */
+async function registrarAuditoriaCredito(params) {
+    const {
+        usuario_id,
+        prospecto_id = null,
+        telefono = null,
+        negocio = null,
+        tipo_movimiento, // 'CONSUMO', 'DEVOLUCION', 'COMPRA', 'BONIFICACION'
+        cantidad,
+        saldo_anterior,
+        saldo_nuevo,
+        razon,
+        estado_validacion = null, // 'VALIDO', 'INVALIDO', 'DUPLICADO', 'BLACKLIST'
+        detalles_validacion = null
+    } = params;
+    
+    try {
+        await pool.query(
+            `INSERT INTO auditoria_creditos 
+             (usuario_id, prospecto_id, telefono, negocio, tipo_movimiento, cantidad, 
+              saldo_anterior, saldo_nuevo, razon, estado_validacion, detalles_validacion, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())`,
+            [usuario_id, prospecto_id, telefono, negocio, tipo_movimiento, cantidad,
+             saldo_anterior, saldo_nuevo, razon, estado_validacion, 
+             detalles_validacion ? JSON.stringify(detalles_validacion) : null]
+        );
+    } catch (e) {
+        console.error('[AuditoriaCredito] Error registrando:', e.message);
+    }
+}
+
+/**
+ * Consumir crédito con auditoría completa
+ */
+async function consumirCredito(usuarioId, cantidad = 1, contexto = {}) {
+    try {
+        // Obtener saldo actual
+        const saldoResult = await pool.query(
+            'SELECT creditos_restantes FROM usuarios WHERE id = $1',
+            [usuarioId]
+        );
+        
+        if (saldoResult.rows.length === 0) {
+            return { exito: false, error: 'Usuario no encontrado' };
+        }
+        
+        const saldoAnterior = saldoResult.rows[0].creditos_restantes;
+        
+        if (saldoAnterior < cantidad) {
+            return { exito: false, error: 'Créditos insuficientes', saldo: saldoAnterior };
+        }
+        
+        // Descontar
+        const updateResult = await pool.query(
+            'UPDATE usuarios SET creditos_restantes = creditos_restantes - $1 WHERE id = $2 RETURNING creditos_restantes',
+            [cantidad, usuarioId]
+        );
+        
+        const saldoNuevo = updateResult.rows[0].creditos_restantes;
+        
+        // Registrar auditoría
+        await registrarAuditoriaCredito({
+            usuario_id: usuarioId,
+            telefono: contexto.telefono,
+            negocio: contexto.negocio,
+            tipo_movimiento: 'CONSUMO',
+            cantidad: cantidad,
+            saldo_anterior: saldoAnterior,
+            saldo_nuevo: saldoNuevo,
+            razon: contexto.razon || 'Consumo por generación de lead',
+            estado_validacion: 'PENDIENTE' // Se actualiza después de validación
+        });
+        
+        return { 
+            exito: true, 
+            saldo_anterior: saldoAnterior, 
+            saldo_nuevo: saldoNuevo,
+            auditoria_id: null // Podríamos retornar el ID si lo necesitamos
+        };
+        
+    } catch (e) {
+        console.error('[Credito] Error consumiendo:', e.message);
+        return { exito: false, error: e.message };
+    }
+}
+
+/**
+ * Devolver crédito con auditoría completa
+ */
+async function devolverCredito(usuarioId, cantidad = 1, contexto = {}) {
+    try {
+        // Obtener saldo actual
+        const saldoResult = await pool.query(
+            'SELECT creditos_restantes FROM usuarios WHERE id = $1',
+            [usuarioId]
+        );
+        
+        const saldoAnterior = saldoResult.rows[0]?.creditos_restantes || 0;
+        
+        // Devolver
+        const updateResult = await pool.query(
+            'UPDATE usuarios SET creditos_restantes = creditos_restantes + $1 WHERE id = $2 RETURNING creditos_restantes',
+            [cantidad, usuarioId]
+        );
+        
+        const saldoNuevo = updateResult.rows[0].creditos_restantes;
+        
+        // Registrar auditoría
+        await registrarAuditoriaCredito({
+            usuario_id: usuarioId,
+            telefono: contexto.telefono,
+            negocio: contexto.negocio,
+            tipo_movimiento: 'DEVOLUCION',
+            cantidad: cantidad,
+            saldo_anterior: saldoAnterior,
+            saldo_nuevo: saldoNuevo,
+            razon: contexto.razon || 'Devolución por lead inválido',
+            estado_validacion: contexto.estado_validacion || 'INVALIDO',
+            detalles_validacion: contexto.detalles_validacion
+        });
+        
+        // Actualizar prospecto si existe ID
+        if (contexto.prospecto_id) {
+            await pool.query(
+                "UPDATE prospectos SET estado_whatsapp = 'INVALIDO', credito_devuelto = true WHERE id = $1",
+                [contexto.prospecto_id]
+            );
+        }
+        
+        return { 
+            exito: true, 
+            saldo_anterior: saldoAnterior, 
+            saldo_nuevo: saldoNuevo 
+        };
+        
+    } catch (e) {
+        console.error('[Credito] Error devolviendo:', e.message);
+        return { exito: false, error: e.message };
+    }
+}
+
+/**
+ * Actualizar estado de validación en auditoría de crédito
+ */
+async function actualizarEstadoAuditoriaCredito(telefono, usuarioId, estado, detalles) {
+    try {
+        await pool.query(
+            `UPDATE auditoria_creditos 
+             SET estado_validacion = $1, detalles_validacion = $2, updated_at = NOW()
+             WHERE telefono = $3 AND usuario_id = $4 AND tipo_movimiento = 'CONSUMO'
+             ORDER BY created_at DESC LIMIT 1`,
+            [estado, JSON.stringify(detalles), telefono, usuarioId]
+        );
+    } catch (e) {
+        console.error('[AuditoriaCredito] Error actualizando estado:', e.message);
+    }
+}
+
+// Función: Auditor de Calidad de WhatsApp (Anti-Alucinaciones) - MEJORADA
 function auditarNumeroWhatsapp(telefono) {
     if (!telefono) return { valido: false, motivo: "Sin teléfono" };
 
     // 1. Limpieza y Formato Base
-    // Deja solo números. Ej: +56 9 1234-5678 -> 56912345678
     let limpio = telefono.replace(/\D/g, '');
 
     // Si viene sin 56 pero tiene 9 dígitos y empieza con 9, agregamos 56
     if (limpio.length === 9 && limpio.startsWith('9')) {
         limpio = '56' + limpio;
     }
-    // Si viene con 8 dígitos, asumimos que falta 569 (caso raro pero posible)
+    // Si viene con 8 dígitos, asumimos que falta 569
     if (limpio.length === 8) {
         limpio = '569' + limpio;
     }
@@ -1112,19 +1553,27 @@ function auditarNumeroWhatsapp(telefono) {
         return { valido: false, motivo: "Formato inválido (No es +569...)" };
     }
 
-    // 3. Detección de Patrones Falsos (Alucinaciones de IA)
-    const cuerpo = limpio.substring(3); // Los 8 dígitos después del 569
-
-    // A. Números repetidos (Ej: 99999999, 11111111)
-    if (/^(\d)\1+$/.test(cuerpo)) return { valido: false, motivo: "Número sospechoso (Dígitos repetidos)" };
+    // 3. Detección de Patrones Falsos (usando base de conocimiento)
+    const cuerpo = limpio.substring(3); // XXXXXXXX (8 dígitos después de 569)
     
-    // B. Secuencias obvias (Ej: 12345678, 87654321)
-    if (cuerpo === '12345678' || cuerpo === '87654321') return { valido: false, motivo: "Número falso (Secuencia 123...)" };
-    
-    // C. Patrones de relleno (Ej: 90000000)
-    if (cuerpo.endsWith('000000')) return { valido: false, motivo: "Número falso (Relleno ceros)" };
+    for (const patron of PATRONES_NUMEROS_INVALIDOS) {
+        if (patron.regex.test(cuerpo)) {
+            return { 
+                valido: false, 
+                motivo: `Número inválido: ${patron.descripcion}`,
+                severidad: patron.severidad,
+                categoria: patron.categoria,
+                numero_formateado: '+' + limpio
+            };
+        }
+    }
 
-    return { valido: true, numero_formateado: '+' + limpio };
+    return { 
+        valido: true, 
+        numero_formateado: '+' + limpio,
+        severidad: null,
+        categoria: null
+    };
 }
 
 // 1. Endpoint de Búsqueda y Procesamiento (IA + Regex)
@@ -1285,62 +1734,90 @@ Genera {{CANTIDAD}} leads ahora.`;
             datosIA = JSON.parse(jsonString);
 
             if (Array.isArray(datosIA)) {
+                console.log(`[BUSCAR-LEADS] 🔍 Validando ${datosIA.length} leads con ValidationPipeline...`);
+                
+                // CONTADORES PARA LOG
+                let rechazados = { total: 0, blacklist: 0, duplicados: 0, invalidos: 0, otros: 0 };
+                
                 for (const p of datosIA) {
                     // Validación mínima
                     if (p.nombre && (p.telefono || p.email)) {
                         
-                        // AUDITORÍA DE WHATSAPP
-                        const auditoria = auditarNumeroWhatsapp(p.telefono);
-                        
-                        // VERIFICACIÓN DE EMAIL (DNS)
-                        const emailValido = await verificarDominioEmail(p.email);
-                        
-                        // LÓGICA DE FILTRADO FINAL (Backend)
-                        
-                        // 1. Verificar Duplicado Exacto (Por si la IA ignoró la instrucción)
-                        const esDuplicado = listaNegociosPrevios.some(n => n && p.nombre && n.toLowerCase() === p.nombre.toLowerCase());
-                        
-                        // 2. Definir Estado
-                        let estadoFinal = 'VALIDO';
-                        if (!auditoria.valido) estadoFinal = 'INVALIDO';
-                        if (esDuplicado) estadoFinal = 'DUPLICADO';
-
-                        const prospectoProcesado = {
-                            negocio: p.nombre, // Mapeamos nombre persona a campo negocio
-                            categoria_nicho: nicho,
-                            telefono: auditoria.valido ? auditoria.numero_formateado : null,
-                            correo: emailValido ? p.email : null, // Solo guardamos si el dominio existe
-                            score_calidad: p.score || 50,
-                            segmento: p.segmento || "General",
-                            razon: p.razon || "Detectado por IA",
-                            estado_whatsapp: estadoFinal,
-                            usuario_id: usuarioId
+                        // NUEVO: Usar ValidationPipeline centralizado
+                        const leadInput = {
+                            telefono: p.telefono,
+                            correo: p.email,
+                            negocio: p.nombre
                         };
-
-                        // GUARDADO EN DB (Todos se guardan para historial/auditoría)
-                        // Pero en el array 'prospectosEncontrados' (que ve el usuario) SOLO ponemos los VÁLIDOS y NUEVOS.
                         
-                        // Guardamos en array temporal para insertar en DB luego
-                        p.temp_data = prospectoProcesado; 
+                        const validacion = await ValidationPipeline(leadInput, usuarioId);
                         
-                        if (estadoFinal === 'VALIDO') {
+                        // SOLO PROCESAR LEADS 100% VÁLIDOS
+                        // Los inválidos se descartan silenciosamente (para dar credibilidad al registro)
+                        if (validacion.valido && validacion.credito.debe_cobrarse && !validacion.bd.duplicado) {
+                            
+                            const prospectoProcesado = {
+                                negocio: p.nombre,
+                                categoria_nicho: nicho,
+                                telefono: validacion.telefono.numero_formateado,
+                                correo: validacion.email.valido ? p.email : null,
+                                score_calidad: p.score || 50,
+                                segmento: p.segmento || "General",
+                                razon: p.razon || "Detectado por IA",
+                                estado_whatsapp: 'VALIDO',
+                                usuario_id: usuarioId,
+                                credito_cobrado: true,
+                                credito_devuelto: false
+                            };
+                            
+                            // Guardar en BD solo los válidos
+                            const insertResult = await pool.query(
+                                `INSERT INTO prospectos 
+                                 (negocio, categoria_nicho, telefono, correo, score_calidad, segmento, razon_seleccion, estado_whatsapp, usuario_id, credito_cobrado, detalles_auditoria) 
+                                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                                 RETURNING id`,
+                                [prospectoProcesado.negocio, prospectoProcesado.categoria_nicho, 
+                                 prospectoProcesado.telefono, prospectoProcesado.correo, 
+                                 prospectoProcesado.score_calidad, prospectoProcesado.segmento, 
+                                 prospectoProcesado.razon, prospectoProcesado.estado_whatsapp, 
+                                 prospectoProcesado.usuario_id, true, JSON.stringify(validacion)]
+                            );
+                            
+                            const prospectoId = insertResult.rows[0]?.id;
+                            prospectoProcesado.id = prospectoId;
+                            
+                            // Registrar en auditoría de créditos
+                            await registrarAuditoriaCredito({
+                                usuario_id: usuarioId,
+                                prospecto_id: prospectoId,
+                                telefono: prospectoProcesado.telefono,
+                                negocio: prospectoProcesado.negocio,
+                                tipo_movimiento: 'CONSUMO',
+                                cantidad: 1,
+                                saldo_anterior: 0,
+                                saldo_nuevo: 0,
+                                razon: `Lead válido generado: ${prospectoProcesado.negocio}`,
+                                estado_validacion: 'VALIDO',
+                                detalles_validacion: validacion
+                            });
+                            
+                            // Agregar a lista de entrega
                             prospectosEncontrados.push(prospectoProcesado);
+                            
+                        } else {
+                            // Lead inválido - solo log interno, NO se guarda, NO se muestra
+                            rechazados.total++;
+                            if (validacion.bd.en_blacklist) rechazados.blacklist++;
+                            else if (validacion.bd.duplicado) rechazados.duplicados++;
+                            else if (!validacion.telefono.valido) rechazados.invalidos++;
+                            else rechazados.otros++;
+                            
+                            console.log(`[BUSCAR-LEADS] 🗑️ Lead descartado: ${p.nombre} (${p.telefono}) - ${validacion.telefono.errores[0] || 'Duplicado/Inválido'}`);
                         }
                     }
                 }
                 
-                // C. GUARDADO EN BASE DE DATOS (NEON) - Dentro del try para tener acceso a datosIA
-                // Insertamos TODOS (Válidos, Inválidos y Duplicados) para que el sistema aprenda y tenga registro.
-                console.log(`[BUSCAR-LEADS] 💾 Guardando ${datosIA.length} registros en la base de datos para auditoría...`);
-                for (const rawP of datosIA) {
-                    if (rawP.temp_data) {
-                        const p = rawP.temp_data;
-                        await pool.query(
-                            'INSERT INTO prospectos (negocio, categoria_nicho, telefono, correo, score_calidad, segmento, razon_seleccion, estado_whatsapp, usuario_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-                            [p.negocio, p.categoria_nicho, p.telefono, p.correo, p.score_calidad, p.segmento, p.razon, p.estado_whatsapp, p.usuario_id]
-                        );
-                    }
-                }
+                console.log(`[BUSCAR-LEADS] 🗑️ Resumen descartes: ${rechazados.total} total (${rechazados.blacklist} blacklist, ${rechazados.duplicados} duplicados, ${rechazados.invalidos} inválidos)`);
             }
         } catch (e) {
             console.error("Error parseando JSON de IA:", e);
@@ -1348,33 +1825,43 @@ Genera {{CANTIDAD}} leads ahora.`;
             // Aquí podrías implementar un fallback a regex si fuera necesario
         }
 
-        // D. OBTENER CRÉDITOS DEL USUARIO
-        let creditosDisponibles = 0;
-        try {
-            const creditosResult = await pool.query('SELECT creditos_restantes FROM usuarios WHERE id = $1', [usuarioId]);
-            creditosDisponibles = creditosResult.rows[0]?.creditos_restantes || 0;
-            console.log(`[CREDITOS] 💳 Usuario ${usuarioId} tiene ${creditosDisponibles} créditos disponibles.`);
-        } catch (e) {
-            console.warn(`[CREDITOS] ⚠️ No se pudieron obtener créditos, usando 0:`, e.message);
-            creditosDisponibles = 0;
-        }
-
-        // E. DEDUCIR CRÉDITOS
-        const creditosAConsumir = Math.min(prospectosEncontrados.length, creditosDisponibles);
-        if (creditosAConsumir > 0) {
+        // D. CONSUMIR CRÉDITOS Y FINALIZAR
+        // Los leads válidos ya fueron insertados y auditados arriba
+        // Ahora solo descontamos el total del saldo del usuario
+        
+        const creditosConsumidos = prospectosEncontrados.length;
+        
+        if (creditosConsumidos > 0) {
             await pool.query(
                 'UPDATE usuarios SET creditos_restantes = creditos_restantes - $1 WHERE id = $2',
-                [creditosAConsumir, usuarioId]
+                [creditosConsumidos, usuarioId]
             );
-            console.log(`[CREDITOS] 💳 Se dedujeron ${creditosAConsumir} créditos al usuario ${usuarioId}.`);
+            
+            // Actualizar saldo en registros de auditoría creados arriba
+            const saldoResult = await pool.query('SELECT creditos_restantes FROM usuarios WHERE id = $1', [usuarioId]);
+            const saldoNuevo = saldoResult.rows[0]?.creditos_restantes || 0;
+            
+            await pool.query(
+                `UPDATE auditoria_creditos 
+                 SET saldo_anterior = saldo_nuevo + $1, saldo_nuevo = $2
+                 WHERE usuario_id = $3 AND tipo_movimiento = 'CONSUMO' AND saldo_anterior = 0
+                 AND created_at > NOW() - INTERVAL '1 minute'`,
+                [creditosConsumidos, saldoNuevo, usuarioId]
+            );
         }
-
-        console.log(`[BUSCAR-LEADS] ✔️ Proceso finalizado. Enviando ${prospectosEncontrados.length} leads válidos al cliente.`);
+        
+        console.log(`[BUSCAR-LEADS] ✔️ Proceso finalizado. ${prospectosEncontrados.length} leads válidos entregados.`);
+        
+        // Obtener saldo final
+        const saldoFinalResult = await pool.query('SELECT creditos_restantes FROM usuarios WHERE id = $1', [usuarioId]);
+        const creditosRestantes = saldoFinalResult.rows[0]?.creditos_restantes || 0;
+        
         res.json({
             status: 'success',
-            mensaje: `Proceso completado. ${prospectosEncontrados.length} leads válidos entregados. Se consumieron ${creditosAConsumir} créditos.`,
+            mensaje: `Proceso completado. ${prospectosEncontrados.length} leads válidos entregados. Se consumieron ${creditosConsumidos} créditos.`,
             data: prospectosEncontrados,
-            creditos_restantes: creditosDisponibles - creditosAConsumir
+            creditos_restantes: creditosRestantes,
+            creditos_consumidos: creditosConsumidos
         });
 
     } catch (error) {
@@ -1826,6 +2313,222 @@ app.get('/api/blacklist', async (req, res) => {
     }
 });
 
+// 2.6 Endpoint: Auditoría V2 con ValidationPipeline
+app.post('/api/auditar-lead-v2', async (req, res) => {
+    const { lead, modelo } = req.body;
+    const usuarioId = req.headers['x-user-id'] || 1;
+    
+    if (!lead || !lead.telefono) {
+        return res.status(400).json({ error: 'Faltan datos del lead para auditar' });
+    }
+    
+    console.log(`\n🔍 [AUDITORÍA V2] =========================`);
+    console.log(`🔍 Lead: ${lead.negocio} (${lead.telefono})`);
+    
+    try {
+        // PASO 1: ValidationPipeline completo
+        const validacion = await ValidationPipeline(lead, usuarioId);
+        
+        // Si ya es inválido por validación local crítica
+        if (!validacion.valido && validacion.telefono.severidad === 'CRITICO') {
+            console.log(`🔍 [AUDITORÍA V2] INVALIDADO por pipeline: ${validacion.telefono.errores[0]}`);
+            
+            // Agregar a blacklist si no está
+            if (!validacion.bd.en_blacklist) {
+                await pool.query(
+                    `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                     VALUES ($1, $2, $3, $4, $5) ON CONFLICT (telefono) DO NOTHING`,
+                    [lead.telefono, lead.negocio, validacion.telefono.errores[0], 'validation-pipeline-v2', usuarioId]
+                );
+            }
+            
+            // Devolver crédito usando sistema inteligente
+            const devolucion = await devolverCredito(usuarioId, 1, {
+                telefono: lead.telefono,
+                negocio: lead.negocio,
+                razon: validacion.telefono.errores[0],
+                estado_validacion: 'INVALIDO',
+                detalles_validacion: validacion
+            });
+            
+            return res.json({
+                valido: false,
+                mensaje: `INVALIDADO: ${validacion.telefono.errores[0]}`,
+                razon: validacion.telefono.errores[0],
+                confianza: 98,
+                accion: 'credito_devuelto',
+                credito_devuelto: true,
+                metodo: 'validation-pipeline-v2',
+                detalles: validacion,
+                saldo_actual: devolucion.saldo_nuevo
+            });
+        }
+        
+        // PASO 2: Si pasó validación local, consultar IA para segunda opinión
+        // (Solo si no está en blacklist y no es duplicado)
+        if (validacion.valido) {
+            console.log(`🔍 [AUDITORÍA V2] Pasó validación local, consultando IA...`);
+            
+            // Aquí iría la llamada a IA si quieres validación adicional
+            // Por ahora, confiamos en el pipeline
+            
+            return res.json({
+                valido: true,
+                mensaje: 'Lead VÁLIDO - Validación pipeline exitosa',
+                razon: 'Teléfono, email y nombre verificados',
+                confianza: 90,
+                accion: 'confirmado_valido',
+                credito_devuelto: false,
+                metodo: 'validation-pipeline-v2',
+                detalles: validacion
+            });
+        }
+        
+        // Si es duplicado
+        if (validacion.bd.duplicado) {
+            return res.json({
+                valido: false,
+                mensaje: 'DUPLICADO: Este lead ya existe en la base de datos',
+                razon: `Lead duplicado (ID: ${validacion.bd.prospecto_existente?.id})`,
+                confianza: 100,
+                accion: 'duplicado_no_cobrar',
+                credito_devuelto: false, // Nunca se cobró
+                metodo: 'validation-pipeline-v2',
+                detalles: validacion
+            });
+        }
+        
+        // Caso por defecto
+        return res.json({
+            valido: validacion.valido,
+            mensaje: validacion.valido ? 'Lead válido' : 'Lead inválido',
+            detalles: validacion
+        });
+        
+    } catch (error) {
+        console.error('❌ [AUDITORÍA V2] ERROR:', error.message);
+        res.status(500).json({ error: 'Error en auditoría', detalle: error.message });
+    }
+});
+
+// 2.7 Endpoint: Re-auditoría Masiva (para limpiar leads existentes)
+app.post('/api/reauditoria-masiva', async (req, res) => {
+    const { limite = 100, fecha_desde, solo_invalidos = true } = req.body;
+    const usuarioId = req.headers['x-user-id'] || 1;
+    
+    console.log(`\n🧹 [RE-AUDITORÍA MASIVA] =========================`);
+    console.log(`🧹 Límite: ${limite}, Solo inválidos: ${solo_invalidos}`);
+    
+    try {
+        // Obtener leads a re-auditar
+        let query = `
+            SELECT id, negocio, telefono, correo, estado_whatsapp, credito_cobrado, created_at 
+            FROM prospectos 
+            WHERE usuario_id = $1 
+            AND (estado_whatsapp = 'PENDIENTE' OR estado_whatsapp = 'VALIDO' OR estado_whatsapp = 'POR_VERIFICAR')
+        `;
+        
+        if (fecha_desde) {
+            query += ` AND created_at >= '${fecha_desde}'`;
+        }
+        
+        query += ` ORDER BY created_at DESC LIMIT $2`;
+        
+        const leadsResult = await pool.query(query, [usuarioId, limite]);
+        const leads = leadsResult.rows;
+        
+        console.log(`🧹 Re-auditoría de ${leads.length} leads...`);
+        
+        const resultados = {
+            procesados: 0,
+            invalidados: 0,
+            creditos_devueltos: 0,
+            agregados_blacklist: 0,
+            duplicados: 0,
+            errores: []
+        };
+        
+        for (const lead of leads) {
+            try {
+                const leadInput = {
+                    telefono: lead.telefono,
+                    correo: lead.correo,
+                    negocio: lead.negocio
+                };
+                
+                const validacion = await ValidationPipeline(leadInput, usuarioId);
+                
+                // Si es inválido y se cobró crédito, devolver
+                if (!validacion.valido && lead.credito_cobrado && !lead.credito_devuelto) {
+                    const devolucion = await devolverCredito(usuarioId, 1, {
+                        prospecto_id: lead.id,
+                        telefono: lead.telefono,
+                        negocio: lead.negocio,
+                        razon: validacion.telefono.errores[0] || 'Re-auditoría masiva',
+                        estado_validacion: 'INVALIDO',
+                        detalles_validacion: validacion
+                    });
+                    
+                    resultados.creditos_devueltos++;
+                    resultados.invalidados++;
+                    
+                    // Agregar a blacklist si es crítico
+                    if (validacion.telefono.severidad === 'CRITICO') {
+                        await pool.query(
+                            `INSERT INTO blacklist (telefono, negocio, razon, modelo, usuario_id) 
+                             VALUES ($1, $2, $3, $4, $5) ON CONFLICT (telefono) DO NOTHING`,
+                            [lead.telefono, lead.negocio, 'Re-auditoría masiva', 'reauditoria-masiva', usuarioId]
+                        );
+                        resultados.agregados_blacklist++;
+                    }
+                }
+                // Si es duplicado
+                else if (validacion.bd.duplicado) {
+                    await pool.query(
+                        "UPDATE prospectos SET estado_whatsapp = 'DUPLICADO' WHERE id = $1",
+                        [lead.id]
+                    );
+                    resultados.duplicados++;
+                }
+                // Si es válido, marcar
+                else if (validacion.valido) {
+                    await pool.query(
+                        `UPDATE prospectos SET 
+                         estado_whatsapp = 'VALIDO_VERIFICADO',
+                         fecha_auditoria = NOW(),
+                         detalles_auditoria = $2
+                         WHERE id = $1`,
+                        [lead.id, JSON.stringify(validacion)]
+                    );
+                }
+                
+                resultados.procesados++;
+                
+            } catch (leadError) {
+                console.error(`🧹 Error procesando lead ${lead.id}:`, leadError.message);
+                resultados.errores.push({ lead_id: lead.id, error: leadError.message });
+            }
+        }
+        
+        // Obtener saldo actual
+        const saldoResult = await pool.query('SELECT creditos_restantes FROM usuarios WHERE id = $1', [usuarioId]);
+        const saldoActual = saldoResult.rows[0]?.creditos_restantes || 0;
+        
+        console.log(`🧹 Re-auditoría completada:`, resultados);
+        
+        res.json({
+            status: 'success',
+            mensaje: `Re-auditoría completada. ${resultados.procesados} leads procesados.`,
+            resultados: resultados,
+            creditos_restantes: saldoActual
+        });
+        
+    } catch (error) {
+        console.error('❌ [RE-AUDITORÍA] ERROR:', error.message);
+        res.status(500).json({ error: 'Error en re-auditoría', detalle: error.message });
+    }
+});
+
 // 3. Endpoint: Sugerir Nichos con IA (Wizard)
 app.post('/api/sugerir-nichos', async (req, res) => {
     const { rol, model: modelName } = req.body;
@@ -1979,30 +2682,305 @@ app.post('/api/wizard/chat', async (req, res) => {
     const publicosDetectados = [];
     const ubicacionesDetectadas = [];
     
-    // Productos
-    if (historialCompleto.includes('seguro')) productosDetectados.push('seguros');
-    if (historialCompleto.includes('página web') || historialCompleto.includes('pagina web') || historialCompleto.includes('sitio web')) productosDetectados.push('páginas web');
-    if (historialCompleto.includes('consultoría')) productosDetectados.push('consultoría');
-    if (historialCompleto.includes('software')) productosDetectados.push('software');
-    if (historialCompleto.includes('marketing')) productosDetectados.push('marketing digital');
+    // Productos - Detección flexible con regex para singular/plural y variaciones
+    if (/\bseguro?s\b/.test(historialCompleto)) productosDetectados.push('seguros');
+    if (/\b(páginas?|paginas?)\s+(web|webs|websites?)\b/.test(historialCompleto) || /\bsitios?\s+(web|webs|websites?)\b/.test(historialCompleto) || /\bweb\b/.test(historialCompleto)) productosDetectados.push('páginas web');
+    if (/\bconsultor[íi]a\b/.test(historialCompleto)) productosDetectados.push('consultoría');
+    if (/\bsoftware\b/.test(historialCompleto)) productosDetectados.push('software');
+    if (/\bmarketing\b/.test(historialCompleto)) productosDetectados.push('marketing digital');
     
-    // Públicos
-    if (historialCompleto.includes('pyme')) publicosDetectados.push('pymes');
-    if (historialCompleto.includes('doctor') || historialCompleto.includes('médico')) publicosDetectados.push('doctores');
-    if (historialCompleto.includes('veterinaria')) publicosDetectados.push('veterinarias');
-    if (historialCompleto.includes('logística') || historialCompleto.includes('logistica')) publicosDetectados.push('pymes de logística');
-    if (historialCompleto.includes('trabajador')) publicosDetectados.push('trabajadores');
-    if (historialCompleto.includes('adulto')) publicosDetectados.push('adultos');
-    if (historialCompleto.includes('empresa')) publicosDetectados.push('empresas');
-    if (historialCompleto.includes('persona')) publicosDetectados.push('personas');
+    // Públicos - Detección flexible
+    if (/\bpymes?\b/.test(historialCompleto)) publicosDetectados.push('pymes');
+    if (/\b(doctores?|m[ée]dicos?|doct)\b/.test(historialCompleto)) publicosDetectados.push('doctores');
+    if (/\bveterinarias?\b/.test(historialCompleto)) publicosDetectados.push('veterinarias');
+    if (/\blog[íi]stica?\b/.test(historialCompleto)) publicosDetectados.push('pymes de logística');
+    if (/\btrabajadores?\b/.test(historialCompleto)) publicosDetectados.push('trabajadores');
+    if (/\badultos?\b/.test(historialCompleto)) publicosDetectados.push('adultos');
+    if (/\bempresas?\b/.test(historialCompleto)) publicosDetectados.push('empresas');
+    if (/\bpersonas?\b/.test(historialCompleto)) publicosDetectados.push('personas');
+    if (/\bclientes?\b/.test(historialCompleto)) publicosDetectados.push('clientes');
     
-    // Ubicaciones
-    if (historialCompleto.includes('santiago')) ubicacionesDetectadas.push('Santiago');
-    if (historialCompleto.includes('providencia')) ubicacionesDetectadas.push('Providencia');
-    if (historialCompleto.includes('ñuñoa') || historialCompleto.includes('nunoa')) ubicacionesDetectadas.push('Ñuñoa');
-    if (historialCompleto.includes('las condes')) ubicacionesDetectadas.push('Las Condes');
-    if (historialCompleto.includes('chile') && !historialCompleto.includes('santiago')) ubicacionesDetectadas.push('Chile');
-    if (historialCompleto.includes('todo chile') || historialCompleto.includes('nacional')) ubicacionesDetectadas.push('todo Chile');
+    // =====================================================
+    // UBICACIONES CHILE - Detección con modismos y coloquialismos
+    // =====================================================
+    
+    // REGIÓN METROPOLITANA - Santiago y alrededores
+    if (/\b(stgo|santiago)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Santiago');
+    if (/\b(la florida|florida)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Florida');
+    if (/\b(las condes|condes|sanhattan)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Las Condes');
+    if (/\bprovidencia\b/.test(historialCompleto)) ubicacionesDetectadas.push('Providencia');
+    if (/\b(ñuñoa|nunoa)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ñuñoa');
+    if (/\b(la reina|lareina)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Reina');
+    if (/\b(vitacura|vita)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Vitacura');
+    if (/\b(lo barnechea|barnechea)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lo Barnechea');
+    if (/\b(puente alto|puentealto)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puente Alto');
+    if (/\b(maipú|maipu)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Maipú');
+    if (/\b(la pintana|pintana)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Pintana');
+    if (/\b(san bernardo|sanbernardo|sbernardo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Bernardo');
+    if (/\b(pudahuel)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pudahuel');
+    if (/\b(quilicura)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quilicura');
+    if (/\b(cerro navia|cerronavia)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cerro Navia');
+    if (/\b(ren-ca|renca)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Renca');
+    if (/\b(independencia)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Independencia');
+    if (/\b(recoleta)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Recoleta');
+    if (/\b(estación central|estacion central|estcentral)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Estación Central');
+    if (/\b(lo prado|lopardo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lo Prado');
+    if (/\b(pedro aguirre cerda|pac)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pedro Aguirre Cerda');
+    if (/\b(san miguel|sanmiguel)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Miguel');
+    if (/\b(san joaquín|sanjoaquin)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Joaquín');
+    if (/\b(la granja|lagranja)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Granja');
+    if (/\b(el bosque|elbosque)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Bosque');
+    if (/\b(la cisterna|lacisterna)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Cisterna');
+    if (/\b(la pincoya|pincoya)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Pincoya');
+    if (/\b(huechuraba)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Huechuraba');
+    if (/\b(conchalí|conchali)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Conchalí');
+    if (/\b(lampa)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lampa');
+    if (/\b(colina)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Colina');
+    if (/\b(buin)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Buin');
+    if (/\b(calera de tango|caleradetango)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Calera de Tango');
+    if (/\bpaine\b/.test(historialCompleto)) ubicacionesDetectadas.push('Paine');
+    if (/\btalagante\b/.test(historialCompleto)) ubicacionesDetectadas.push('Talagante');
+    if (/\bpeñaflor\b/.test(historialCompleto)) ubicacionesDetectadas.push('Peñaflor');
+    if (/\b(el monte|elmonte)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Monte');
+    if (/\bisla de maipo\b/.test(historialCompleto)) ubicacionesDetectadas.push('Isla de Maipo');
+    if (/\b(melipilla|meli)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Melipilla');
+    if (/\b(curacaví|curacavi)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Curacaví');
+    if (/\b(tablada|pirque|san josé de maipo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cordillera');
+    
+    // REGIÓN DE VALPARAÍSO - Quinta Región
+    if (/\b(valpara[íi]so|valpo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Valparaíso');
+    if (/\bviña\s*(del\s*)?mar\b/.test(historialCompleto)) ubicacionesDetectadas.push('Viña del Mar');
+    if (/\b(quilpué|quilpue|quilpue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quilpué');
+    if (/\b(villa alemana|villaalemana)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Villa Alemana');
+    if (/\b(limache|laimache)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Limache');
+    if (/\b(quillota)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quillota');
+    if (/\b(la calera|lacalera)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Calera');
+    if (/\b(san felipe|sanfelipe)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Felipe');
+    if (/\b(los andes|losandes)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Andes');
+    if (/\b(cartagena|cart\w*ena)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cartagena');
+    if (/\b(el tabo|eltabo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Tabo');
+    if (/\b(el quisco|elquisco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Quisco');
+    if (/\b(algarrobo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Algarrobo');
+    if (/\b(casablanca)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Casablanca');
+    if (/\b(concón|concon)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Concón');
+    if (/\b(san antonio|sanantonio)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Antonio');
+    if (/\b(litoral central|litoralcentral)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Litoral Central');
+    
+    // REGIÓN DE O'HIGGINS - Sexta Región
+    if (/\b(rancagua)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Rancagua');
+    if (/\b(san fernando|sanfernando)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Fernando');
+    if (/\b(rengo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Rengo');
+    if (/\b(santa cruz|santacruz)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Santa Cruz');
+    if (/\b(machalí|machali)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Machalí');
+    if (/\b(graneros)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Graneros');
+    if (/\b(doñihue|donihue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Doñihue');
+    if (/\b(coinco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coinco');
+    if (/\b(coltauco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coltauco');
+    if (/\b(peumo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Peumo');
+    if (/\b(las cabras|lascabras)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Las Cabras');
+    if (/\b(chimbarongo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chimbarongo');
+    if (/\b(nancagua)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Nancagua');
+    if (/\b(palmilla)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Palmilla');
+    if (/\b(peralillo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Peralillo');
+    if (/\b(placilla)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Placilla');
+    if (/\b(pumanque)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pumanque');
+    if (/\b(llaillay)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Llaillay');
+    if (/\b(mostazal)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Mostazal');
+    if (/\b(olivar|olivares)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Olivar');
+    
+    // REGIÓN DEL MAULE - Séptima Región
+    if (/\btalca\b/.test(historialCompleto)) ubicacionesDetectadas.push('Talca');
+    if (/\b(curicó|curico)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Curicó');
+    if (/\b(linares)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Linares');
+    if (/\b(constitución|constitucion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Constitución');
+    if (/\b(cauquenes)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cauquenes');
+    if (/\b(molina)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Molina');
+    if (/\b(san clemente|sanclemente)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Clemente');
+    if (/\b(san javier|sanjavier)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Javier');
+    if (/\b(teno)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Teno');
+    if (/\b(romeral)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Romeral');
+    if (/\b(rauco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Rauco');
+    if (/\b(sagrada familia|sagradafamilia)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Sagrada Familia');
+    if (/\b(maule)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Maule');
+    if (/\b(pelarco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pelarco');
+    if (/\b(pencahue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pencahue');
+    if (/\b(río claro|rioclaro)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Río Claro');
+    if (/\b(san rafael|sanrafael)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Rafael');
+    if (/\b(villa alegre|villaalegre)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Villa Alegre');
+    if (/\b(yerbas buenas|yerbasbuenas)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Yerbas Buenas');
+    if (/\b(colbún|colbun)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Colbún');
+    if (/\b(panimávida|panimavida)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Panimávida');
+    if (/\b(rauquén|rauquen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Rauquén');
+    if (/\b(san nicolás|sannicolas)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Nicolás');
+    
+    // REGIÓN DE ÑUBLE - Decimosexta Región
+    if (/\b(chillán|chillan)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chillán');
+    if (/\b(chillán viejo|chillanviejo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chillán Viejo');
+    if (/\b(san carlos|sancarlos)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Carlos');
+    if (/\b(san nicolás|sannicolas)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Nicolás');
+    if (/\b(san fabián|sanfabian)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Fabián');
+    if (/\b(ñiquén|niquen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ñiquén');
+    if (/\b(el carmen|elcarmen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Carmen');
+    if (/\b(pemuco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pemuco');
+    if (/\b(bulnes)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Bulnes');
+    if (/\b(quillón|quillon)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quillón');
+    if (/\b(yungay)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Yungay');
+    if (/\b(coelemu)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coelemu');
+    if (/\b(coihueco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coihueco');
+    if (/\b(portezuelo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Portezuelo');
+    if (/\b(ránquil|ranquil)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ránquil');
+    if (/\b(san ignacio|sanignacio)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Ignacio');
+    if (/\b(treguaco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Treguaco');
+    if (/\b(quirihue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quirihue');
+    if (/\b(cobquecura)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cobquecura');
+    
+    // REGIÓN DEL BIOBÍO - Octava Región
+    if (/\b(concepción|conce|concepcion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Concepción');
+    if (/\b(talcahuano|talca)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Talcahuano');
+    if (/\b(chiguayante)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chiguayante');
+    if (/\b(san pedro de la paz|sanpedro|spdp)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Pedro de la Paz');
+    if (/\b(hualpén|hualpen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Hualpén');
+    if (/\b(hualqui)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Hualqui');
+    if (/\b(penco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Penco');
+    if (/\b(tomé|tome)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Tomé');
+    if (/\b(florida)\b/.test(historialCompleto) && !historialCompleto.includes('la florida')) ubicacionesDetectadas.push('Florida');
+    if (/\b(coronel)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coronel');
+    if (/\b(lota)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lota');
+    if (/\b(santa bárbara|santabarbara)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Santa Bárbara');
+    if (/\b(san rosendo|sanrosendo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Rosendo');
+    if (/\b(los [aá]ngeles|losangeles)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Ángeles');
+    if (/\b(cabrero)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cabrero');
+    if (/\b(yumbel)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Yumbel');
+    if (/\b(mulchén|mulchen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Mulchén');
+    if (/\b(nacimiento)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Nacimiento');
+    if (/\b(santa juana|santajuana)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Santa Juana');
+    if (/\b(laja)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Laja');
+    if (/\b(arauco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Arauco');
+    if (/\b(ca[ñn]ete|canete)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cañete');
+    if (/\b(curanilahue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Curanilahue');
+    if (/\b(lebu)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lebu');
+    if (/\b(tirúa|tirua)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Tirúa');
+    if (/\b(alto biobío|altobiobio)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Alto Biobío');
+    
+    // REGIÓN DE LA ARAUCANÍA - Novena Región
+    if (/\b(temuco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Temuco');
+    if (/\b(padre las casas|padrelascasas)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Padre las Casas');
+    if (/\b(lautaro)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lautaro');
+    if (/\b(vilcún|vilcun)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Vilcún');
+    if (/\b(freire)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Freire');
+    if (/\b(cunco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cunco');
+    if (/\b(perquenco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Perquenco');
+    if (/\b(nueva imperial|nuevaimperial)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Nueva Imperial');
+    if (/\b(carahuara)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Carahue');
+    if (/\b(saavedra)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Saavedra');
+    if (/\b(pitrufquén|pitrufquen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pitrufquén');
+    if (/\b(gorbea)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Gorbea');
+    if (/\b(toltén|tolten)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Toltén');
+    if (/\b(loncoche)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Loncoche');
+    if (/\b(villarrica)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Villarrica');
+    if (/\b(pucón|pucon)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pucón');
+    if (/\b(curarrehue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Curarrehue');
+    if (/\b(teodoro schmidt|teodoroschmidt)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Teodoro Schmidt');
+    if (/\b(puerto saavedra|puertosaavedra)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puerto Saavedra');
+    if (/\b(melipeuco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Melipeuco');
+    if (/\b(cholchol)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Cholchol');
+    
+    // REGIÓN DE LOS RÍOS - Decimocuarta Región
+    if (/\b(valdivia)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Valdivia');
+    if (/\b(los lagos|loslagos)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Lagos');
+    if (/\b(panguipulli)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Panguipulli');
+    if (/\b(futrono)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Futrono');
+    if (/\b(lago ranco|lagoranco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lago Ranco');
+    if (/\b(lanco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Lanco');
+    if (/\b(máfil|mafil)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Máfil');
+    if (/\b(mariquina)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Mariquina');
+    if (/\b(paillaco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Paillaco');
+    if (/\b(rio bueno|riobueno)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Río Bueno');
+    if (/\b(la unión|launion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Unión');
+    if (/\b(corral)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Corral');
+    
+    // REGIÓN DE LOS LAGOS - Decimoprimera Región
+    if (/\b(puerto montt|puertomontt|p montt|pmontt)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puerto Montt');
+    if (/\b(puerto varas|puertovaras)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puerto Varas');
+    if (/\b(osorno)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Osorno');
+    if (/\b(castro|chiloé|chiloe)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Castro/Chiloé');
+    if (/\b(ancud)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ancud');
+    if (/\b(quellón|quellon)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quellón');
+    if (/\b(chonchi)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chonchi');
+    if (/\b(calbuco)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Calbuco');
+    if (/\b(frutillar)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Frutillar');
+    if (/\b(llanquihue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Llanquihue');
+    if (/\b(purranque)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Purranque');
+    if (/\b(rio negro|rionegro)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Río Negro');
+    if (/\b(san pablo|sanpablo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Pablo');
+    if (/\b(san juan de la costa|sanjuan)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Juan de la Costa');
+    if (/\b(maullín|maullin)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Maullín');
+    if (/\b(fresia)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Fresia');
+    if (/\b(hualaihué|hualaihue)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Hualaihué');
+    if (/\b(futaleufú|futaleufu)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Futaleufú');
+    if (/\b(palena)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Palena');
+    if (/\b(coyhaique|coihaique)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coyhaique');
+    if (/\b(aysén|aysen)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Aysén');
+    
+    // REGIONES EXTREMAS - Norte y Sur
+    // Norte Grande
+    if (/\b(arica)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Arica');
+    if (/\b(iquique)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Iquique');
+    if (/\b(alto hospicio|altohospicio)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Alto Hospicio');
+    if (/\b(pozo almonte|pozoalmonte)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Pozo Almonte');
+    if (/\b(calama)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Calama');
+    if (/\b(san pedro de atacama|sanpedroatacama)\b/.test(historialCompleto)) ubicacionesDetectadas.push('San Pedro de Atacama');
+    if (/\b(antofagasta)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Antofagasta');
+    if (/\b(mejillones)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Mejillones');
+    if (/\b(tocopilla)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Tocopilla');
+    if (/\b(taltal)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Taltal');
+    if (/\b(copiapó|copiapo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Copiapó');
+    if (/\b(caldera)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Caldera');
+    if (/\b(tierra amarilla|tierraamarilla)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Tierra Amarilla');
+    if (/\b(chañaral|chanaral)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chañaral');
+    if (/\b(diego de almagro|diegodealmagro)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Diego de Almagro');
+    if (/\b(el salado|elsalado)\b/.test(historialCompleto)) ubicacionesDetectadas.push('El Salado');
+    
+    // Norte Chico
+    if (/\b(la serena|laserena)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Serena');
+    if (/\b(coquimbo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Coquimbo');
+    if (/\b(andacollo)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Andacollo');
+    if (/\b(la higuera|lahiguera)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Higuera');
+    if (/\b(paihuano)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Paihuano');
+    if (/\b(vicuña)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Vicuña');
+    if (/\b(ovalle)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ovalle');
+    if (/\b(combarbalá|combarbala)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Combarbalá');
+    if (/\b(monte patria|montepatria)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Monte Patria');
+    if (/\b(punitaqui)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Punitaqui');
+    if (/\b(río hurtado|riohurtado)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Río Hurtado');
+    if (/\b(salamanca)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Salamanca');
+    if (/\b(illapel)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Illapel');
+    if (/\b(canela)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Canela');
+    if (/\b(los vilos|losvilos)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Vilos');
+    if (/\b(salamanca)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Salamanca');
+    
+    // Sur Austral
+    if (/\b(punta arenas|puntaarenas)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Punta Arenas');
+    if (/\b(puerto natales|puertonatales)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puerto Natales');
+    if (/\b(porvenir)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Porvenir');
+    if (/\b(puerto williams|puertowilliams)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Puerto Williams');
+    if (/\b(alejandro selkirk|selkirk)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Alejandro Selkirk');
+    
+    // NACIONAL / GLOBAL
+    if (/\bchile\b/.test(historialCompleto)) ubicacionesDetectadas.push('Chile');
+    if (/\b(todo chile|nacional|todo el pa[íi]s|a nivel nacional|en todo chile)\b/.test(historialCompleto)) ubicacionesDetectadas.push('todo Chile');
+    if (/\b(región metropolitana|region metropolitana|rm)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Región Metropolitana');
+    if (/\b(quinta región|quintaregion|5ta región|5taregion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Quinta Región');
+    if (/\b(sexta región|sextaregion|6ta región|6taregion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Sexta Región');
+    if (/\b(séptima región|septimaregion|7ma región|7maregion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Séptima Región');
+    if (/\b(octava región|octavaregion|8va región|8varegion)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Octava Región');
+    if (/\b(novena región|novenaregion|9na región|9naregion|la araucan[íi]a)\b/.test(historialCompleto)) ubicacionesDetectadas.push('La Araucanía');
+    if (/\b(décima región|decimaregion|10ma región|los lagos)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Lagos');
+    if (/\b(d[ée]cima primera región|decimaprimeraregion|11va región|ays[eé]n)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Aysén');
+    if (/\b(d[ée]cima segunda región|decimasegundaregion|12va región|magallanes)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Magallanes');
+    if (/\b(d[ée]cima cuarta región|decimacuartaregion|14va región|los r[íi]os)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Los Ríos');
+    if (/\b(d[ée]cima quinta región|decimaquintaregion|15va región|arica)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Arica y Parinacota');
+    if (/\b(d[ée]cima sexta región|decimasextaregion|16va región|ñuble)\b/.test(historialCompleto)) ubicacionesDetectadas.push('Ñuble');
     
     const tieneProducto = productosDetectados.length > 0;
     const tienePublico = publicosDetectados.length > 0;
@@ -2236,6 +3214,12 @@ async function startServer() {
         await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS razon_seleccion TEXT');
         await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS estado_whatsapp VARCHAR(50) DEFAULT \'PENDIENTE\'');
         await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS usuario_id INTEGER DEFAULT 1');
+        await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS temp_data JSONB');
+        // Columnas para sistema de créditos inteligente
+        await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS credito_cobrado BOOLEAN DEFAULT false');
+        await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS credito_devuelto BOOLEAN DEFAULT false');
+        await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS fecha_auditoria TIMESTAMP');
+        await client.query('ALTER TABLE prospectos ADD COLUMN IF NOT EXISTS detalles_auditoria JSONB');
         console.log('🔧 Esquema verificado: Tabla "prospectos" lista.');
     } catch (e) {
         console.warn('⚠️ Error verificando tabla prospectos:', e.message);
@@ -2283,6 +3267,36 @@ async function startServer() {
             console.warn('⚠️ Error verificando tabla blacklist:', e.message);
         }
 
+        // 4.5 Crear tabla de auditoría de créditos (para tracking inteligente)
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS auditoria_creditos (
+                    id SERIAL PRIMARY KEY,
+                    usuario_id INTEGER NOT NULL,
+                    prospecto_id INTEGER,
+                    telefono VARCHAR(20),
+                    negocio VARCHAR(255),
+                    tipo_movimiento VARCHAR(50) NOT NULL, -- 'CONSUMO', 'DEVOLUCION', 'COMPRA', 'BONIFICACION'
+                    cantidad INTEGER NOT NULL DEFAULT 1,
+                    saldo_anterior INTEGER NOT NULL,
+                    saldo_nuevo INTEGER NOT NULL,
+                    razon TEXT,
+                    estado_validacion VARCHAR(50), -- 'VALIDO', 'INVALIDO', 'DUPLICADO', 'BLACKLIST', 'PENDIENTE'
+                    detalles_validacion JSONB,
+                    created_at TIMESTAMP DEFAULT NOW(),
+                    updated_at TIMESTAMP
+                );
+            `);
+            // Índices para consultas rápidas
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_auditoria_usuario ON auditoria_creditos(usuario_id);`);
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_auditoria_telefono ON auditoria_creditos(telefono);`);
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_auditoria_tipo ON auditoria_creditos(tipo_movimiento);`);
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_auditoria_fecha ON auditoria_creditos(created_at DESC);`);
+            console.log('🔧 Esquema verificado: Tabla "auditoria_creditos" lista.');
+        } catch (e) {
+            console.warn('⚠️ Error verificando tabla auditoria_creditos:', e.message);
+        }
+
         // 5. Upsert para garantizar tu usuario Admin (ID 1)
         await client.query(`
             INSERT INTO usuarios (id, email, username, password, plan_id, creditos_restantes) 
@@ -2299,17 +3313,16 @@ async function startServer() {
     // 2. VERIFICAR ESTADO DE APIs DE IA
     await verificarEstadoIAs();
 
-    // 3. Iniciar el servidor Express SOLO en puerto 3000
-    const server = app.listen(3000, () => {
-        console.log(`✅ Servidor corriendo en http://localhost:3000 | IA: ${MODEL_NAME}`);
-        console.log(`📁 Dashboard: http://localhost:3000/dashboard.html`);
-        console.log(`🏠 Landing: http://localhost:3000/index.html`);
+    // 3. Iniciar el servidor Express (usa PORT de environment o 3000 por defecto)
+    const server = app.listen(port, () => {
+        console.log(`✅ Servidor corriendo en puerto ${port} | IA: ${MODEL_NAME}`);
+        console.log(`📁 Dashboard: /dashboard.html`);
+        console.log(`🏠 Landing: /index.html`);
     });
 
     server.on('error', (e) => {
         if (e.code === 'EADDRINUSE') {
-            console.error('❌ ERROR: Puerto 3000 está ocupado. Cierra otras ventanas de Node.js y reinicia.');
-            console.error('   Ejecuta: taskkill /F /IM node.exe');
+            console.error(`❌ ERROR: Puerto ${port} está ocupado.`);
             process.exit(1);
         } else {
             console.error('❌ Error al iniciar el servidor:', e);

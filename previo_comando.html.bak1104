@@ -168,51 +168,6 @@
     </style>
 </head>
 <body class="min-h-screen lg:h-screen flex flex-col lg:flex-row p-2 lg:p-4 gap-4 overflow-y-auto lg:overflow-hidden font-sans text-teal-900 bg-emerald-50">
-    <div id="top"></div>
-
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 z-[9999] bg-gradient-to-br from-teal-900 via-teal-800 to-emerald-900 flex items-center justify-center">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4 relative overflow-hidden">
-            <!-- Decoración -->
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600"></div>
-            <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-100 rounded-full opacity-50"></div>
-            <div class="absolute -left-10 -bottom-10 w-24 h-24 bg-teal-100 rounded-full opacity-50"></div>
-            
-            <div class="relative z-10">
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg mb-4">
-                        <i class="fa-solid fa-rocket text-white text-2xl"></i>
-                    </div>
-                    <h1 class="text-2xl font-bold text-teal-800 mb-1">TuSitioYa OS</h1>
-                    <p class="text-sm text-teal-500">Sistema de Gestión High Velocity</p>
-                </div>
-
-                <form onsubmit="App.auth.login(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-teal-600 uppercase tracking-wider mb-2">Contraseña de Acceso</label>
-                        <div class="relative">
-                            <input type="password" id="login-password" 
-                                class="w-full bg-emerald-50 border-2 border-emerald-100 rounded-xl py-3 px-4 text-teal-800 font-bold focus:border-emerald-400 focus:ring-0 outline-none transition-colors"
-                                placeholder="••••••••••" autocomplete="off">
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400">
-                                <i class="fa-solid fa-lock"></i>
-                            </div>
-                        </div>
-                        <p id="login-error" class="text-red-500 text-xs mt-2 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Contraseña incorrecta</p>
-                    </div>
-
-                    <button type="submit" 
-                        class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                        <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i> Ingresar al Sistema
-                    </button>
-                </form>
-
-                <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-[10px] text-slate-400">Acceso exclusivo para administradores</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <aside id="sidebar-left" class="w-full lg:w-[300px] flex-shrink-0 main-panel p-4 lg:p-5 z-20 transition-all duration-500 h-auto lg:h-full order-2 lg:order-1">
         
@@ -220,14 +175,9 @@
             <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1 1h2v2H1V1zm4 0h2v2H5V1zm4 0h2v2H9V1z\' fill=\'%2310b981\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');"></div>
             <div class="relative z-10 flex justify-between items-center">
                 <h1 class="text-xl font-bold text-teal-700 tracking-tight">TuSitioYa <span class="text-teal-400 text-xs font-normal">OS v2.0</span></h1>
-                <div class="flex items-center gap-2">
-                    <button onclick="App.auth.logout()" class="text-red-400 hover:text-red-600 transition-colors" title="Cerrar Sesión">
-                        <i class="fa-solid fa-power-off"></i>
-                    </button>
-                    <button onclick="App.ui.toggleZenMode()" class="text-teal-400 hover:text-emerald-600 transition-colors" title="Activar Modo Zen">
-                        <i class="fa-solid fa-spa"></i>
-                    </button>
-                </div>
+                <button onclick="App.ui.toggleZenMode()" class="text-teal-400 hover:text-emerald-600 transition-colors" title="Activar Modo Zen">
+                    <i class="fa-solid fa-spa"></i>
+                </button>
             </div>
         </div>
 
@@ -363,50 +313,15 @@
         </div>
     </aside>
 
-    <aside id="sidebar-right" class="w-full lg:w-[260px] flex-shrink-0 main-panel flex flex-col p-4 lg:p-6 transition-all duration-500 h-auto lg:h-full order-3 relative">
+    <aside id="sidebar-right" class="w-full lg:w-[260px] flex-shrink-0 main-panel flex flex-col items-center p-4 lg:p-6 text-center transition-all duration-500 h-auto lg:h-full order-3 relative">
         <div id="confetti-container" class="absolute inset-0 pointer-events-none z-50"></div>
-        <div class="zen-hidden w-full text-left mb-2">
+        <div class="zen-hidden w-full text-left mb-4">
             <h2 class="text-xl font-bold text-teal-700 tracking-tight">Información Operativa</h2>
         </div>
-
-        <!-- META MENSUAL $ (Círculo de progreso) -->
-        <div class="w-full bg-gradient-to-br from-teal-800 to-emerald-800 rounded-xl p-4 border border-teal-600 shadow-lg mb-3 relative overflow-hidden text-white shrink-0">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-            <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="text-[10px] font-bold text-teal-200 uppercase tracking-wider mb-1">Meta del Mes</h3>
-                    <p class="text-2xl font-black">$<span id="meta-monto-objetivo">100.000</span></p>
-                    <p class="text-[10px] text-teal-300 mt-1">Vas $<span id="meta-monto-actual">0</span></p>
-                </div>
-                <div class="relative w-16 h-16 flex items-center justify-center">
-                    <!-- Círculo de progreso SVG -->
-                    <svg class="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="text-teal-600" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"/>
-                        <path id="meta-circulo-progreso" class="text-yellow-400 transition-all duration-1000 ease-out" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                    </svg>
-                    <span id="meta-porcentaje" class="absolute text-xs font-black">0%</span>
-                </div>
-            </div>
-            <div class="mt-3 pt-2 border-t border-teal-600/50 flex justify-between items-center">
-                <span class="text-[9px] text-teal-300">Quedan <span id="meta-dias-restantes">0</span> días</span>
-                <span id="meta-estado" class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300">🔥 En marcha</span>
-            </div>
-        </div>
-
-        <!-- LOGROS / TROFEOS (Compacto) -->
-        <div class="w-full bg-white rounded-xl p-3 border border-emerald-100 shadow-sm mb-3 relative overflow-hidden text-left group shrink-0">
-            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
-            <div class="flex items-center justify-between pl-2">
-                <h3 class="text-xs font-bold text-teal-800 uppercase tracking-wider">🏆 Sala de Trofeos</h3>
-                <div id="logros-container" class="flex gap-2">
-                    <!-- JS Generated -->
-                </div>
-            </div>
-        </div>
         
-        <!-- ÚLTIMOS MOVIMIENTOS (Expandido para ocupar el resto) -->
-        <div class="zen-hidden w-full flex-1 bg-white rounded-xl p-4 border border-emerald-100 shadow-sm relative overflow-hidden flex flex-col min-h-0">
-             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2 shrink-0">
+        <!-- ÚLTIMOS MOVIMIENTOS (Reemplaza al Reloj) -->
+        <div class="zen-hidden w-full mb-6 bg-white rounded-xl p-4 border border-emerald-100 shadow-sm relative overflow-hidden group flex flex-col h-64">
+             <div class="flex justify-between items-center mb-3 border-b border-slate-100 pb-2">
                 <h3 class="text-xs font-bold text-teal-800 uppercase tracking-wider"><i class="fa-solid fa-list-ul mr-2"></i> Últimos Movimientos</h3>
                 <span class="text-[9px] bg-teal-50 text-teal-600 px-2 py-0.5 rounded-full font-bold">Hoy</span>
             </div>
@@ -414,54 +329,98 @@
                 <p class="text-[10px] text-slate-400 text-center italic mt-4">No hay movimientos recientes.</p>
             </div>
         </div>
+
+        <!-- LOGROS / TROFEOS -->
+        <div class="w-full bg-white rounded-xl p-4 border border-emerald-100 shadow-sm mb-6 relative overflow-hidden text-left group">
+            <div class="absolute top-0 left-0 w-1 h-full bg-yellow-400"></div>
+            <div class="absolute -right-6 -top-6 text-8xl text-yellow-50 opacity-50 pointer-events-none"><i class="fa-solid fa-trophy"></i></div>
+            <h3 class="text-xs font-bold text-teal-800 mb-4 uppercase tracking-wider pl-2">🏆 Sala de Trofeos</h3>
+            <div id="logros-container" class="flex justify-between items-center px-2">
+                <!-- JS Generated -->
+            </div>
+        </div>
+
+        <div class="zen-hidden w-full text-left mt-6">
+            <div class="flex flex-col gap-2 mb-3">
+                <h2 class="text-lg font-bold text-teal-800">Conversión Global</h2>
+                <div id="conversion-filtros" class="flex bg-emerald-100 p-1 rounded-lg border border-emerald-200 self-start">
+                    <button onclick="App.conversion.cambiarPeriodo('hoy')" class="conversion-btn-filtro active">Hoy</button>
+                    <button onclick="App.conversion.cambiarPeriodo('ayer')" class="conversion-btn-filtro">Ayer</button>
+                    <button onclick="App.conversion.cambiarPeriodo('semana')" class="conversion-btn-filtro">Semana</button>
+                    <button onclick="App.conversion.cambiarPeriodo('mes')" class="conversion-btn-filtro">Mes</button>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="card-white p-3">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Efectividad vs. Total Leads</span><span id="conv-vs-total" class="text-lg font-black text-emerald-600">0%</span></div>
+                    <p id="conv-vs-total-detalle" class="text-[9px] text-slate-400">0 cerrados de 0 nuevos</p>
+                    <div id="chart-conv-total" class="h-8 w-full mt-2"></div>
+                </div>
+                <div class="card-white p-3">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Programados vs. Recibidos Hoy</span><span id="conv-vs-programados" class="text-lg font-black text-teal-600">0%</span></div>
+                    <p id="conv-vs-programados-detalle" class="text-[9px] text-slate-400">0 programados de 0 recibidos</p>
+                    <div id="chart-conv-programados" class="h-8 w-full mt-2"></div>
+                </div>
+                <div class="card-white p-3">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Meta Mensual de Cierres</span><span id="conv-vs-meta" class="text-lg font-black text-emerald-600">0%</span></div>
+                    <p id="conv-vs-meta-detalle" class="text-[9px] text-slate-400">0 cerrados de 3 este mes</p>
+                    <div id="chart-conv-meta" class="h-8 w-full mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="zen-hidden w-full space-y-3 mt-4">
+            <div class="card-white p-2 flex justify-between items-center"><span class="text-xs font-bold text-teal-600">Leads Totales</span><span id="metric-total" class="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-1 rounded-md">0</span></div>
+            <div class="card-white p-2 flex justify-between items-center"><span class="text-xs font-bold text-cyan-600">En Conversación</span><span id="metric-validos" class="bg-cyan-100 text-cyan-700 text-xs font-black px-2 py-1 rounded-md">0</span></div>
+        </div>
     </aside>
 
     <main class="flex-1 flex flex-col gap-4 w-full h-auto lg:h-full overflow-visible lg:overflow-hidden order-1 lg:order-2">
-        <!-- DASHBOARD FINANCIERO -->
+        <!-- DASHBOARD FINANCIERO COMPLETO -->
         <div class="main-panel p-4 lg:p-6 transition-all duration-300" id="dashboard-panel">
             <div class="flex justify-between items-center cursor-pointer mb-4" onclick="App.ui.toggleDashboard()">
                 <div class="flex items-center gap-3">
                     <h2 class="text-xl font-bold text-teal-700 tracking-tight">Dashboard Financiero</h2>
-                    <span id="balance-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">Balance: $0</span>
+                    <span id="balance-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        Balance: $0
+                    </span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="event.stopPropagation(); App.finanzas.abrirModalGasto()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-200 flex items-center gap-2 transition-colors"><i class="fa-solid fa-minus"></i> Gasto</button>
+                    <button onclick="event.stopPropagation(); App.finanzas.abrirModalGasto()" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-bold border border-red-200 flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-minus"></i> Gasto
+                    </button>
                     <i id="dashboard-chevron" class="fa-solid fa-chevron-up text-teal-400 transition-transform ml-2"></i>
                 </div>
             </div>
             
             <div id="dashboard-content" class="overflow-hidden transition-all duration-300">
-                <!-- RESUMEN -->
+                <!-- RESUMEN GENERAL -->
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                    <!-- INGRESOS MES -->
                     <div class="card-white p-4 flex flex-col justify-between border-l-4 border-l-emerald-500 relative overflow-hidden">
                         <div class="absolute right-0 bottom-0 text-7xl text-emerald-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-arrow-trend-up"></i></div>
                         <p class="text-[9px] font-bold text-emerald-600/70 uppercase tracking-wider">INGRESOS MES</p>
                         <p id="finanza-ingresos-mes" class="text-2xl font-bold text-emerald-900 relative z-10">$0</p>
-                        <!-- Mini gráfico comparativo -->
-                        <div class="mt-2 mb-1">
-                            <div class="flex items-end gap-1 h-8 w-full">
-                                <div id="barra-ingreso" class="bg-emerald-500 rounded-t transition-all duration-500" style="width: 50%; height: 0%"></div>
-                                <div id="barra-gasto" class="bg-red-400 rounded-t transition-all duration-500" style="width: 50%; height: 0%"></div>
-                            </div>
-                            <div class="flex justify-between text-[8px] text-slate-400 mt-1">
-                                <span class="text-emerald-600">Ingreso</span>
-                                <span class="text-red-500">Gasto</span>
-                            </div>
-                        </div>
-                        <p class="text-[9px] text-emerald-500 font-bold" id="finanza-ingresos-count">0 pagos</p>
+                        <p class="text-[9px] text-emerald-500 font-bold" id="finanza-ingresos-count">0 pagos recibidos</p>
                     </div>
+                    
+                    <!-- GASTOS MES -->
                     <div class="card-white p-4 flex flex-col justify-between border-l-4 border-l-red-500 relative overflow-hidden">
                         <div class="absolute right-0 bottom-0 text-7xl text-red-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-arrow-trend-down"></i></div>
                         <p class="text-[9px] font-bold text-red-600/70 uppercase tracking-wider">GASTOS MES</p>
                         <p id="finanza-gastos-mes" class="text-2xl font-bold text-red-900 relative z-10">$0</p>
                         <p class="text-[9px] text-red-500 font-bold" id="finanza-gastos-count">0 transacciones</p>
                     </div>
+                    
+                    <!-- BALANCE MES -->
                     <div class="card-white p-4 flex flex-col justify-between border-l-4 border-l-blue-500 relative overflow-hidden">
                         <div class="absolute right-0 bottom-0 text-7xl text-blue-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-scale-balanced"></i></div>
                         <p class="text-[9px] font-bold text-blue-600/70 uppercase tracking-wider">BALANCE MES</p>
                         <p id="finanza-balance-mes" class="text-2xl font-bold text-blue-900 relative z-10">$0</p>
                         <p class="text-[9px] text-blue-500 font-bold" id="finanza-balance-porcentaje">0% margen</p>
                     </div>
+                    
+                    <!-- CAJA ACUMULADA -->
                     <div class="card-white p-4 flex flex-col justify-between border-l-4 border-l-purple-500 relative overflow-hidden">
                         <div class="absolute right-0 bottom-0 text-7xl text-purple-100 opacity-60 pointer-events-none -mb-2 -mr-2"><i class="fa-solid fa-piggy-bank"></i></div>
                         <p class="text-[9px] font-bold text-purple-600/70 uppercase tracking-wider">CAJA TOTAL</p>
@@ -470,59 +429,135 @@
                     </div>
                 </div>
                 
-                <!-- GASTOS -->
+                <!-- DETALLE DE GASTOS CON DESPLEGABLES -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <!-- SERVICIOS -->
+                    <!-- SERVICIOS & INFRAESTRUCTURA -->
                     <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
                         <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
-                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-server text-blue-500"></i> Servicios & Infraestructura</h3>
+                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-server text-blue-500"></i> Servicios & Infraestructura
+                            </h3>
                             <span id="total-servicios" class="text-xs font-bold text-slate-500">$0/mes</span>
                         </div>
+                        
+                        <!-- Desplegable de opciones -->
                         <div class="p-3 border-b border-slate-100">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Seleccionar servicio</label>
                             <select id="select-servicio" class="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-blue-200 outline-none" onchange="App.finanzas.mostrarInputServicio()">
-                                <option value="">-- Selecciona servicio --</option>
-                                <optgroup label="Hosting"><option value="Render">Render</option><option value="Vercel">Vercel Pro</option><option value="Cloudflare">Cloudflare Pro</option><option value="Neon">Neon Database</option></optgroup>
-                                <optgroup label="Dominios"><option value="NIC.cl">NIC.cl</option><option value="Namecheap">Namecheap</option></optgroup>
-                                <optgroup label="IA"><option value="Kimi AI">Kimi AI</option><option value="Groq">Groq API</option><option value="Gemini">Gemini API</option><option value="OpenRouter">OpenRouter</option><option value="Copilot">GitHub Copilot</option></optgroup>
-                                <option value="otro">+ Otro...</option>
+                                <option value="">-- Selecciona un servicio --</option>
+                                <optgroup label="Hosting & Infraestructura">
+                                    <option value="Render">Render (Hosting)</option>
+                                    <option value="Vercel Pro">Vercel Pro</option>
+                                    <option value="Cloudflare Pro">Cloudflare Pro</option>
+                                    <option value="Neon Database">Neon Database</option>
+                                </optgroup>
+                                <optgroup label="Dominios">
+                                    <option value="NIC.cl">NIC.cl (Dominios .cl)</option>
+                                    <option value="Namecheap">Namecheap (Dominios .com)</option>
+                                    <option value="GoDaddy">GoDaddy</option>
+                                </optgroup>
+                                <optgroup label="Inteligencia Artificial">
+                                    <option value="Kimi AI">Kimi AI (Moonshot)</option>
+                                    <option value="Groq API">Groq API</option>
+                                    <option value="Gemini API">Gemini API</option>
+                                    <option value="OpenRouter">OpenRouter</option>
+                                    <option value="GitHub Copilot">GitHub Copilot</option>
+                                </optgroup>
+                                <optgroup label="Herramientas">
+                                    <option value="GitHub Pro">GitHub Pro</option>
+                                    <option value="Figma Pro">Figma Pro</option>
+                                    <option value="Notion">Notion</option>
+                                    <option value="Slack">Slack</option>
+                                </optgroup>
+                                <option value="otro">+ Agregar otro servicio...</option>
                             </select>
+                            
+                            <!-- Input para monto (aparece al seleccionar) -->
                             <div id="input-servicio-container" class="mt-3 hidden">
                                 <div class="flex gap-2">
-                                    <input type="text" id="input-servicio-otro" class="flex-1 p-2 rounded-lg border border-slate-200 text-sm hidden" placeholder="Nombre...">
+                                    <input type="text" id="input-servicio-otro" class="flex-1 p-2 rounded-lg border border-slate-200 text-sm hidden" placeholder="Nombre del servicio...">
                                     <input type="number" id="input-servicio-monto" class="w-32 p-2 rounded-lg border border-slate-200 text-sm" placeholder="$">
-                                    <button onclick="App.finanzas.agregarGastoServicio()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-plus"></i></button>
+                                    <button onclick="App.finanzas.agregarGastoServicio()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Solo muestra el último gasto -->
                         <div id="lista-servicios" class="p-3 bg-slate-50 min-h-[60px]">
-                            <p class="text-xs text-slate-400 text-center italic">No hay gastos</p>
+                            <p class="text-xs text-slate-400 text-center italic">No hay gastos registrados</p>
                         </div>
                     </div>
                     
-                    <!-- PUBLICIDAD -->
+                    <!-- PUBLICIDAD & ADS -->
                     <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
                         <div class="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 border-b border-orange-200 flex justify-between items-center">
-                            <h3 class="text-sm font-bold text-orange-800 flex items-center gap-2"><i class="fa-solid fa-bullhorn text-orange-500"></i> Publicidad & Ads</h3>
+                            <h3 class="text-sm font-bold text-orange-800 flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-orange-500"></i> Publicidad & Ads
+                            </h3>
                             <span id="total-ads" class="text-xs font-bold text-orange-600">$0/mes</span>
                         </div>
+                        
+                        <!-- Desplegable de opciones -->
                         <div class="p-3 border-b border-orange-100">
+                            <label class="text-[10px] font-bold text-orange-400 uppercase block mb-2">Seleccionar plataforma</label>
                             <select id="select-ads" class="w-full p-2.5 rounded-lg border border-orange-200 text-sm focus:ring-2 focus:ring-orange-200 outline-none" onchange="App.finanzas.mostrarInputAds()">
-                                <option value="">-- Selecciona plataforma --</option>
-                                <optgroup label="Meta"><option value="Facebook Ads">Facebook Ads</option><option value="Instagram Ads">Instagram Ads</option><option value="Messenger Ads">Messenger</option></optgroup>
-                                <optgroup label="Google"><option value="Google Search">Google Search</option><option value="Google Display">Display</option><option value="YouTube Ads">YouTube</option></optgroup>
-                                <optgroup label="Otros"><option value="LinkedIn Ads">LinkedIn</option><option value="TikTok Ads">TikTok</option><option value="Twitter Ads">Twitter/X</option></optgroup>
-                                <option value="otro">+ Otra...</option>
+                                <option value="">-- Selecciona una plataforma --</option>
+                                <optgroup label="Meta (Facebook) Ads">
+                                    <option value="Facebook Ads">Facebook Ads</option>
+                                    <option value="Instagram Ads">Instagram Ads</option>
+                                    <option value="Messenger Ads">Messenger Ads</option>
+                                    <option value="Audience Network">Audience Network</option>
+                                </optgroup>
+                                <optgroup label="Google Ads">
+                                    <option value="Google Search">Google Search</option>
+                                    <option value="Google Display">Google Display</option>
+                                    <option value="YouTube Ads">YouTube Ads</option>
+                                    <option value="Google Shopping">Google Shopping</option>
+                                </optgroup>
+                                <optgroup label="Otros">
+                                    <option value="LinkedIn Ads">LinkedIn Ads</option>
+                                    <option value="TikTok Ads">TikTok Ads</option>
+                                    <option value="Twitter/X Ads">Twitter/X Ads</option>
+                                    <option value="Pinterest Ads">Pinterest Ads</option>
+                                    <option value="Snapchat Ads">Snapchat Ads</option>
+                                </optgroup>
+                                <option value="otro">+ Agregar otra plataforma...</option>
                             </select>
+                            
+                            <!-- Input para monto (aparece al seleccionar) -->
                             <div id="input-ads-container" class="mt-3 hidden">
                                 <div class="flex gap-2">
-                                    <input type="text" id="input-ads-otro" class="flex-1 p-2 rounded-lg border border-orange-200 text-sm hidden" placeholder="Nombre...">
+                                    <input type="text" id="input-ads-otro" class="flex-1 p-2 rounded-lg border border-orange-200 text-sm hidden" placeholder="Nombre de la plataforma...">
                                     <input type="number" id="input-ads-monto" class="w-32 p-2 rounded-lg border border-orange-200 text-sm" placeholder="$">
-                                    <button onclick="App.finanzas.agregarGastoAds()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-plus"></i></button>
+                                    <button onclick="App.finanzas.agregarGastoAds()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Solo muestra el último gasto -->
                         <div id="lista-ads" class="p-3 bg-orange-50 min-h-[60px]">
-                            <p class="text-xs text-orange-400 text-center italic">No hay gastos</p>
+                            <p class="text-xs text-orange-400 text-center italic">No hay gastos registrados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- GASTO PERSONALIZADO RÁPIDO -->
+                <div class="mt-4 bg-white rounded-xl border border-slate-200 p-4">
+                    <div class="flex items-center gap-3">
+                        <button onclick="App.finanzas.abrirModalGasto('otro')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 w-10 h-10 rounded-lg flex items-center justify-center transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <div>
+                            <p class="text-xs font-bold text-slate-700">Agregar gasto personalizado</p>
+                            <p class="text-[10px] text-slate-400">Para gastos que no están en las listas</p>
+                        </div>
+                        <div class="ml-auto text-right">
+                            <p class="text-xs font-bold text-slate-500">Último gasto:</p>
+                            <p id="ultimo-gasto-global" class="text-sm font-bold text-red-600">-</p>
                         </div>
                     </div>
                 </div>
@@ -538,17 +573,19 @@
                 </div>
                 <div class="p-6 space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tipo</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Tipo de Gasto</label>
                         <select id="gasto-tipo" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none" onchange="App.finanzas.actualizarOpcionesGasto()">
-                            <option value="servicio">Servicio / Infraestructura</option>
-                            <option value="ads">Publicidad / Ads</option>
+                            <option value="recurrente">Recurrente (Infraestructura)</option>
+                            <option value="publicidad">Publicidad / Marketing</option>
                             <option value="otro">Otro</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Concepto</label>
-                        <select id="gasto-concepto" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none"></select>
-                        <input type="text" id="gasto-concepto-otro" class="w-full mt-2 p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none hidden" placeholder="Especifica...">
+                        <select id="gasto-concepto" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none">
+                            <!-- Opciones dinámicas -->
+                        </select>
+                        <input type="text" id="gasto-concepto-otro" class="w-full mt-2 p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none hidden" placeholder="Especifica el concepto...">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Monto ($)</label>
@@ -557,6 +594,10 @@
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Fecha</label>
                         <input type="date" id="gasto-fecha" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nota (opcional)</label>
+                        <textarea id="gasto-nota" class="w-full p-3 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-red-200 outline-none resize-none" rows="2" placeholder="Detalles adicionales..."></textarea>
                     </div>
                     <button onclick="App.finanzas.guardarGasto()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
                         <i class="fa-solid fa-save"></i> Guardar Gasto
@@ -568,10 +609,7 @@
         <div class="main-panel flex-1 p-6 relative flex flex-col overflow-hidden">
             <div class="absolute inset-0 opacity-30 pointer-events-none" style="background-image: linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px); background-size: 40px 40px;"></div>
             <div class="flex justify-between items-start mb-4 relative z-10">
-                <div>
-                    <h2 class="text-xl font-bold text-slate-800">Monitor de Proyectos</h2>
-                    <p class="text-xs text-slate-500">Estado de servidores en tiempo real <span id="monitor-count" class="ml-2 text-emerald-600 font-bold"></span></p>
-                </div>
+                <div><h2 class="text-xl font-bold text-slate-800">Monitor de Proyectos</h2><p class="text-xs text-slate-500">Estado de servidores en tiempo real</p></div>
                 <div class="flex items-center gap-2">
                     <button onclick="App.calendario.abrir()" class="bg-white text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-slate-200 flex items-center gap-2 hover:bg-slate-50"><i class="fa-regular fa-calendar-days text-purple-500"></i> Calendario</button>
                     <button id="monitor-mute-btn" onclick="App.monitor.toggleMute()" class="bg-white text-slate-600 w-9 h-8 rounded-lg text-xs font-bold shadow-sm border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-colors"></button>
@@ -723,7 +761,7 @@
                                 <label class="text-[9px] font-bold text-slate-400 uppercase block mb-1">Pagado (Adelanto)</label>
                                 <div class="relative">
                                     <input type="number" id="ficha-monto-pagado" onchange="App.cliente.actualizarCampo('monto_pagado', this.value)" class="w-full bg-emerald-50 border border-emerald-200 rounded-lg pl-2 pr-6 py-2 text-xs font-bold text-emerald-600 outline-none focus:ring-2 focus:ring-emerald-500/20">
-                                    <button onclick="App.cliente.eliminarPago()" class="absolute right-1 top-1.5 text-slate-300 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-100 transition-colors" title="Eliminar pago"><i class="fa-solid fa-trash text-xs"></i></button>
+                                    <button onclick="document.getElementById('ficha-monto-pagado').value = ''; App.cliente.actualizarCampo('monto_pagado', 0); document.getElementById('ficha-monto-pagado').focus();" class="absolute right-1 top-1.5 text-slate-300 hover:text-red-400 w-6 h-6 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors" title="Borrar pago (Resetear)"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
                             </div>
                             <div class="w-1/2">
@@ -1506,11 +1544,9 @@
                 }
                 
                 this.ui.renderizarListas(); // Esto ya llama a las demás actualizaciones
-                if (this.finanzas) this.finanzas.actualizarDesdeClientes(); // Actualizar dashboard financiero
+                this.finanzas.actualizarDesdeClientes(); // Actualizar dashboard financiero
                 this.monitor.init();
-                this.monitor.sincronizar(); // Sincronizar clientes con el monitor
                 this.conversion.init();
-                this.auth.init(); // Inicializar sistema de autenticación
 
                 // Listener para cerrar ficha con ESC
                 document.addEventListener('keydown', (e) => {
@@ -1519,45 +1555,6 @@
                         if (!modalFicha.classList.contains('hidden')) App.cliente.cerrarFicha();
                     }
                 });
-            },
-
-            auth: {
-                PASSWORD: 'Camilo1950$',
-                SESSION_KEY: 'tusitioya_session',
-                
-                init: function() {
-                    // Verificar si hay sesión activa
-                    if (sessionStorage.getItem(App.auth.SESSION_KEY) === 'active') {
-                        App.auth.mostrarApp();
-                    }
-                },
-                
-                login: function(e) {
-                    e.preventDefault();
-                    const input = document.getElementById('login-password');
-                    const error = document.getElementById('login-error');
-                    
-                    if (input.value === App.auth.PASSWORD) {
-                        sessionStorage.setItem(App.auth.SESSION_KEY, 'active');
-                        error.classList.add('hidden');
-                        App.auth.mostrarApp();
-                        input.value = '';
-                    } else {
-                        error.classList.remove('hidden');
-                        input.classList.add('border-red-300');
-                        setTimeout(() => input.classList.remove('border-red-300'), 2000);
-                    }
-                },
-                
-                logout: function() {
-                    sessionStorage.removeItem(App.auth.SESSION_KEY);
-                    location.reload();
-                },
-                
-                mostrarApp: function() {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.body.style.overflow = '';
-                }
             },
 
             util: {
@@ -1599,57 +1596,32 @@
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                     return now.toISOString().slice(0, 16);
                 },
-                fechaActualHistorial: () => new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                iniciarReloj: () => {
-                    const update = () => {
-                        const now = new Date();
-                        const time = now.toLocaleTimeString('es-CL', { hour12: false });
-                        const date = now.toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
-                        document.getElementById('reloj-sistema').innerText = time;
-                        document.getElementById('fecha-sistema').innerText = date;
                 fechaActualHistorial: () => new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             },
 
-            movimientos: {
-                lista: JSON.parse(localStorage.getItem('movimientos_log')) || [],
-                agregar: (tipo, descripcion, monto = null) => {
-                    const mov = {
-                        tipo, // 'pago', 'gasto', 'interaccion', 'venta'
-                        descripcion,
-                        monto,
-                        hora: new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'}),
-                        fecha: new Date().toLocaleDateString('es-CL', {day: '2-digit', month: 'short'})
-                    };
-                    setInterval(update, 1000);
-                    update();
-                    this.util.iniciarReloj();
-                    App.movimientos.lista.unshift(mov);
-                    if (App.movimientos.lista.length > 30) App.movimientos.lista.pop();
-                    localStorage.setItem('movimientos_log', JSON.stringify(App.movimientos.lista));
-                    App.movimientos.render();
+            gastos: {
+                lista: JSON.parse(localStorage.getItem('gastos_operativos')) || [
+                    { id: 1, nombre: 'Render (Infraestructura)', monto: 12000 },
+                    { id: 2, nombre: 'Publicidad (Meta Ads)', monto: 50000 },
+                    { id: 3, nombre: 'APIs (OpenAI/Kimi)', monto: 20000 }
+                ],
+                guardar: () => {
+                    localStorage.setItem('gastos_operativos', JSON.stringify(App.gastos.lista));
+                    App.ui.actualizarFinanzas();
+                    App.ui.renderizarGastos();
                 },
-                render: () => {
-                    const container = document.getElementById('activity-log-container');
-                    if (!container) return;
-                    if (App.movimientos.lista.length === 0) {
-                        container.innerHTML = '<p class="text-[10px] text-slate-400 text-center italic mt-4">No hay movimientos recientes.</p>';
-                        return;
+                agregar: () => {
+                    const nombre = document.getElementById('nuevo-gasto-nombre').value;
+                    const monto = document.getElementById('nuevo-gasto-monto').value;
+                    if(nombre && monto) {
+                        App.gastos.lista.push({ id: Date.now(), nombre, monto: parseInt(monto) });
+                        App.gastos.guardar();
+                        document.getElementById('nuevo-gasto-nombre').value = '';
+                        document.getElementById('nuevo-gasto-monto').value = '';
                     }
-                    container.innerHTML = App.movimientos.lista.map(m => {
-                        let icon = 'fa-circle', color = 'text-slate-400', bg = 'bg-slate-50';
-                        if (m.tipo === 'pago') { icon = 'fa-sack-dollar'; color = 'text-emerald-500'; bg = 'bg-emerald-50'; }
-                        else if (m.tipo === 'gasto') { icon = 'fa-money-bill-transfer'; color = 'text-red-500'; bg = 'bg-red-50'; }
-                        else if (m.tipo === 'interaccion') { icon = 'fa-comments'; color = 'text-blue-500'; bg = 'bg-blue-50'; }
-                        else if (m.tipo === 'venta') { icon = 'fa-trophy'; color = 'text-yellow-500'; bg = 'bg-yellow-50'; }
-                        const montoHtml = m.monto ? `<span class="font-bold ${color} ml-auto text-[10px]">$${parseInt(m.monto).toLocaleString('es-CL')}</span>` : '';
-                        return `
-                            <div class="flex items-center gap-2 p-2 rounded-lg ${bg} border border-transparent hover:border-slate-200 transition-all">
-                                <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm ${color} text-[10px]"><i class="fa-solid ${icon}"></i></div>
-                                <div class="flex-1 min-w-0"><p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p><p class="text-[8px] text-slate-400">${m.fecha} ${m.hora}</p></div>
-                                ${montoHtml}
-                            </div>`;
-                    }).join('');
-                }
+                },
+                eliminar: (id) => { App.gastos.lista = App.gastos.lista.filter(g => g.id !== id); App.gastos.guardar(); },
+                editar: (id, valor) => { const g = App.gastos.lista.find(g => g.id === id); if(g) { g.monto = parseInt(valor) || 0; App.gastos.guardar(); } }
             },
 
             api: {
@@ -1709,6 +1681,57 @@
                             analysis.innerHTML = `Latencia: ${Math.floor(Math.random()*50)+10}ms.`;
                         }
                     }, 800);
+                }
+            },
+
+            movimientos: {
+                lista: [],
+                agregar: (tipo, descripcion, monto = null) => {
+                    const mov = {
+                        tipo, // 'pago', 'gasto', 'interaccion', 'sistema', 'venta'
+                        descripcion,
+                        monto,
+                        hora: new Date().toLocaleTimeString('es-CL', {hour: '2-digit', minute:'2-digit'})
+                    };
+                    App.movimientos.lista.unshift(mov);
+                    if (App.movimientos.lista.length > 20) App.movimientos.lista.pop(); // Keep last 20
+                    App.movimientos.render();
+                },
+                render: () => {
+                    const container = document.getElementById('activity-log-container');
+                    if (!container) return;
+                    
+                    if (App.movimientos.lista.length === 0) {
+                        container.innerHTML = '<p class="text-[10px] text-slate-400 text-center italic mt-4">No hay movimientos recientes.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = App.movimientos.lista.map(m => {
+                        let icon = 'fa-circle';
+                        let color = 'text-slate-400';
+                        let bg = 'bg-slate-50';
+                        
+                        if (m.tipo === 'pago') { icon = 'fa-sack-dollar'; color = 'text-emerald-500'; bg = 'bg-emerald-50'; }
+                        else if (m.tipo === 'gasto') { icon = 'fa-money-bill-transfer'; color = 'text-red-500'; bg = 'bg-red-50'; }
+                        else if (m.tipo === 'interaccion') { icon = 'fa-comments'; color = 'text-blue-500'; bg = 'bg-blue-50'; }
+                        else if (m.tipo === 'sistema') { icon = 'fa-gear'; color = 'text-slate-500'; bg = 'bg-slate-100'; }
+                        else if (m.tipo === 'venta') { icon = 'fa-trophy'; color = 'text-yellow-500'; bg = 'bg-yellow-50'; }
+
+                        const montoHtml = m.monto ? `<span class="font-bold ${color} ml-auto text-[10px]">$${parseInt(m.monto).toLocaleString('es-CL')}</span>` : '';
+
+                        return `
+                            <div class="flex items-center gap-2 p-2 rounded-lg ${bg} border border-transparent hover:border-slate-200 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm ${color} text-[10px]">
+                                    <i class="fa-solid ${icon}"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-[10px] font-bold text-slate-700 truncate">${m.descripcion}</p>
+                                    <p class="text-[9px] text-slate-400">${m.hora}</p>
+                                </div>
+                                ${montoHtml}
+                            </div>
+                        `;
+                    }).join('');
                 }
             },
 
@@ -1973,21 +1996,17 @@
                             const pagado = parseInt(document.getElementById('ficha-monto-pagado').value) || 0;
                             const saldo = Math.max(0, total - pagado);
                             document.getElementById('ficha-saldo-pendiente').value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
-                            
-                            // Actualizar dashboard financiero y meta mensual
-                            if (App.finanzas) App.finanzas.actualizarDesdeClientes();
-                            if (App.logros) App.logros.actualizarMetaMensual();
+                        }
+                        
+                        // Actualizar Dashboard Financiero en tiempo real
+                        if (campo === 'monto_total' || campo === 'monto_pagado') {
+                            App.ui.actualizarFinanzas();
+                            if (campo === 'monto_pagado') App.movimientos.agregar('pago', `Pago: ${lead.negocio}`, valor);
                         }
 
                         // Enviar al servidor (PUT)
                         try {
-                            const body = {}; 
-                            body[campo] = valor;
-                            // Si es un pago, guardar también la fecha
-                            if (campo === 'monto_pagado' && valor > 0) {
-                                body.fecha_pago = new Date().toISOString();
-                                lead.fecha_pago = body.fecha_pago;
-                            }
+                            const body = {}; body[campo] = valor;
                             await fetch(`/api/clientes/${lead.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
                             if(campo === 'negocio') document.getElementById('header-negocio').innerText = valor;
                         } catch(e) { console.error("Error guardando campo raíz", e); }
@@ -2026,56 +2045,6 @@
                         container.classList.add('hidden');
                     }
                 },
-                
-                eliminarPago: async function() {
-                    if (App.clienteActivoIndex === null) return;
-                    const lead = App.datos.leads[App.clienteActivoIndex];
-                    
-                    const montoActual = parseInt(lead.monto_pagado) || 0;
-                    if (montoActual === 0) {
-                        App.ui.notificar('Este cliente no tiene pagos registrados', 'Sin pagos', 'error');
-                        return;
-                    }
-                    
-                    if (!confirm(`¿Eliminar el pago de $${montoActual.toLocaleString()}?\n\nEsta acción no se puede deshacer.`)) return;
-                    
-                    try {
-                        // Enviar al servidor: poner monto_pagado a 0 y limpiar fecha_pago
-                        await fetch(`/api/clientes/${lead.id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                monto_pagado: 0,
-                                fecha_pago: null
-                            })
-                        });
-                        
-                        // Actualizar localmente
-                        lead.monto_pagado = 0;
-                        lead.fecha_pago = null;
-                        
-                        // Actualizar UI
-                        document.getElementById('ficha-monto-pagado').value = 0;
-                        
-                        // Recalcular saldo
-                        const total = parseInt(document.getElementById('ficha-monto-total').value) || 0;
-                        const saldo = total;
-                        document.getElementById('ficha-saldo-pendiente').value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
-                        
-                        // Agregar nota al historial
-                        App.cliente.agregarNotaHistorial(`❌ PAGO ELIMINADO. Monto anterior: $${montoActual.toLocaleString()}`);
-                        
-                        // Actualizar dashboard financiero y meta mensual
-                        if (App.finanzas) App.finanzas.actualizarDesdeClientes();
-                        if (App.logros) App.logros.actualizarMetaMensual();
-                        
-                        App.ui.notificar(`Pago eliminado: $${montoActual.toLocaleString()}`, 'Pago Eliminado', 'exito');
-                    } catch (e) {
-                        console.error('Error eliminando pago:', e);
-                        App.ui.notificar('Error al eliminar el pago', 'Error', 'error');
-                    }
-                },
-                
                 guardarEncuestaWeb: async () => {
                     if (App.clienteActivoIndex === null) return;
                     const lead = App.datos.leads[App.clienteActivoIndex];
@@ -2471,17 +2440,11 @@
                     const montoPagado = parseInt(formData.get('monto_pagado'));
 
                     try {
-                        const fechaHoy = new Date().toISOString();
-                        
-                        // 1. Actualizar Montos + fecha de pago
+                        // 1. Actualizar Montos
                         await fetch(`/api/clientes/${id}`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ 
-                                monto_total: montoTotal, 
-                                monto_pagado: montoPagado,
-                                fecha_pago: fechaHoy
-                            })
+                            body: JSON.stringify({ monto_total: montoTotal, monto_pagado: montoPagado })
                         });
 
                         // 2. Cambiar Estado a 'cliente' (cerrado)
@@ -2497,13 +2460,12 @@
                             lead.estado = 'cerrados';
                             lead.monto_total = montoTotal;
                             lead.monto_pagado = montoPagado;
-                            lead.fecha_pago = fechaHoy;
                             App.cliente.agregarNotaHistorial(`🚀 VENTA CERRADA. Total: $${montoTotal} | Pagado: $${montoPagado}`);
+                            
+                            // Registrar movimientos
+                            App.movimientos.agregar('venta', `Venta: ${lead.negocio}`, montoTotal);
+                            if (montoPagado > 0) App.movimientos.agregar('pago', `Abono: ${lead.negocio}`, montoPagado);
                         }
-
-                        // 4. Actualizar Dashboard Financiero y Meta Mensual
-                        if (App.finanzas) App.finanzas.actualizarDesdeClientes();
-                        if (App.logros) App.logros.actualizarMetaMensual();
 
                         App.ui.toggleModal('modal-cierre-venta', false);
                         App.cliente.cerrarFicha();
@@ -3463,18 +3425,11 @@ Responde SOLO en JSON estricto:
                     }
                 },
                 sincronizar: () => {
-                    // Obtener clientes activos con dominio (incluir varios estados posibles)
-                    const clientesActivos = App.datos.leads.filter(l => {
-                        const esCliente = l.estado === 'cerrados' || l.estado === 'cliente' || l.estado === 'activo';
-                        const tieneDominio = l.dominio && l.dominio.trim() !== '';
-                        return esCliente && tieneDominio;
-                    });
-                    
-                    console.log(`[Monitor] Clientes activos con dominio: ${clientesActivos.length}`, clientesActivos.map(c => ({ nombre: c.negocio, dominio: c.dominio })));
-                    
+                    // Obtener clientes activos con dominio
+                    const clientesActivos = App.datos.leads.filter(l => l.estado === 'cerrados' && l.dominio);
                     const sitiosClientes = clientesActivos.map(c => ({
                         url: c.dominio,
-                        name: c.negocio || 'Sin nombre',
+                        name: c.negocio,
                         status: 'pending'
                     }));
 
@@ -3490,27 +3445,7 @@ Responde SOLO en JSON estricto:
                 },
                 render: () => {
                     const container = document.getElementById('monitor-sites-list');
-                    const countEl = document.getElementById('monitor-count');
                     if (!container) return;
-                    
-                    // Actualizar contador
-                    if (countEl) {
-                        const clientesCount = App.monitor.sites.filter(s => !App.monitor.staticSites.some(static => static.url === s.url)).length;
-                        countEl.textContent = clientesCount > 0 ? `(${clientesCount} clientes)` : '';
-                    }
-                    
-                    // Verificar si hay sitios para mostrar
-                    if (App.monitor.sites.length === 0) {
-                        container.innerHTML = `
-                            <div class="col-span-full text-center py-10 text-slate-400">
-                                <i class="fa-solid fa-server text-4xl mb-3 opacity-30"></i>
-                                <p class="text-sm">No hay sitios para monitorear</p>
-                                <p class="text-xs mt-1">Los clientes activos con dominio aparecerán aquí</p>
-                            </div>
-                        `;
-                        return;
-                    }
-                    
                     container.innerHTML = App.monitor.sites.map(site => {
                         let statusClass = 'bg-slate-100 border-slate-200 text-slate-400';
                         let statusVisual = '<i class="fa-solid fa-circle-notch fa-spin text-lg mb-1"></i>';
@@ -3700,129 +3635,19 @@ Responde SOLO en JSON estricto:
                     { id: 'gold', cantidad: 20, icono: 'fa-trophy', color: 'text-yellow-400', titulo: 'Vendedor Oro' },
                     { id: 'diamond', cantidad: 50, icono: 'fa-gem', color: 'text-blue-400', titulo: 'Leyenda' }
                 ],
-                
-                // Metas mensuales en $ basadas en investigación de agencias chilenas
-                // Análisis: TuSitioYa tiene planes de $72k-$280k. Meta realista para agencia pequeña en Chile
-                // Crece progresivamente según estacionalidad del negocio digital
-                metasMensuales: {
-                    // Meses 0-11 (Enero=0, Diciembre=11)
-                    0: { meta: 150000, nombre: 'Año Nuevo - Renovemos Energías' },    // Enero: Post-navidad, bajo
-                    1: { meta: 250000, nombre: 'Vuelta al Trabajo' },                // Febrero: Recuperación
-                    2: { meta: 350000, nombre: 'Mes del Emprendedor' },              // Marzo: Peak pymes
-                    3: { meta: 400000, nombre: 'Impuestos Listos' },                 // Abril: Plata disponible
-                    4: { meta: 500000, nombre: 'Día de la Madre' },                  // Mayo: Comercio activo
-                    5: { meta: 550000, nombre: 'Cierre Semestre' },                  // Junio: Peak 1er semestre
-                    6: { meta: 300000, nombre: 'Vacaciones de Invierno' },           // Julio: Baja estacional
-                    7: { meta: 450000, nombre: 'Mes del Emprendedor' },              // Agosto: Reactivación
-                    8: { meta: 600000, nombre: 'Fiestas Patrias' },                  // Septiembre: Consumo alto
-                    9: { meta: 650000, nombre: 'CyberDay / Hot Sale' },              // Octubre: E-commerce
-                    10: { meta: 800000, nombre: 'Black Friday' },                    // Noviembre: Peak máximo
-                    11: { meta: 500000, nombre: 'Navidad Web' }                      // Diciembre: Medio (corta)
-                },
-                
-                getMetaMes: function() {
-                    const mes = new Date().getMonth();
-                    return this.metasMensuales[mes];
-                },
-                
-                calcularVentasMes: function() {
-                    const hoy = new Date();
-                    const mesActual = hoy.getMonth();
-                    const anioActual = hoy.getFullYear();
-                    
-                    // Sumar monto_pagado de leads con pago real (monto_pagado > 0)
-                    // Considerar cualquier estado siempre que haya un pago registrado
-                    return App.datos.leads.reduce((total, lead) => {
-                        const monto = parseInt(lead.monto_pagado) || parseInt(lead.pagado) || 0;
-                        
-                        // Solo contar si hay un monto pagado > 0
-                        if (monto > 0) {
-                            // Determinar fecha del pago
-                            const fechaLead = lead.created_at ? new Date(lead.created_at) : null;
-                            const fechaPago = lead.fecha_pago ? new Date(lead.fecha_pago) : fechaLead;
-                            const fechaActualizacion = lead.updated_at ? new Date(lead.updated_at) : null;
-                            
-                            // Usar la primera fecha válida disponible
-                            const fechaReferencia = fechaPago || fechaActualizacion || fechaLead;
-                            
-                            if (fechaReferencia && fechaReferencia.getMonth() === mesActual && fechaReferencia.getFullYear() === anioActual) {
-                                return total + monto;
-                            }
-                        }
-                        return total;
-                    }, 0);
-                },
-                
-                calcularDiasRestantes: function() {
-                    const hoy = new Date();
-                    const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-                    return Math.ceil((finMes - hoy) / (1000 * 60 * 60 * 24));
-                },
-                
-                actualizarMetaMensual: function() {
-                    const metaData = this.getMetaMes();
-                    const metaMonto = metaData.meta;
-                    const ventasActuales = this.calcularVentasMes();
-                    const porcentaje = Math.min(Math.round((ventasActuales / metaMonto) * 100), 100);
-                    const diasRestantes = this.calcularDiasRestantes();
-                    
-                    // Actualizar DOM
-                    const elMeta = document.getElementById('meta-monto-objetivo');
-                    const elActual = document.getElementById('meta-monto-actual');
-                    const elPorcentaje = document.getElementById('meta-porcentaje');
-                    const elCirculo = document.getElementById('meta-circulo-progreso');
-                    const elDias = document.getElementById('meta-dias-restantes');
-                    const elEstado = document.getElementById('meta-estado');
-                    
-                    if (elMeta) elMeta.textContent = metaMonto.toLocaleString();
-                    if (elActual) elActual.textContent = ventasActuales.toLocaleString();
-                    if (elPorcentaje) elPorcentaje.textContent = porcentaje + '%';
-                    if (elDias) elDias.textContent = diasRestantes;
-                    
-                    // Actualizar círculo SVG (stroke-dasharray: valor, 100)
-                    if (elCirculo) {
-                        elCirculo.setAttribute('stroke-dasharray', `${porcentaje}, 100`);
-                    }
-                    
-                    // Estado animado
-                    if (elEstado) {
-                        if (porcentaje >= 100) {
-                            elEstado.innerHTML = '🎉 ¡META LOGRADA!';
-                            elEstado.className = 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white';
-                        } else if (porcentaje >= 75) {
-                            elEstado.innerHTML = '🔥 Casi llegas';
-                            elEstado.className = 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-500/30 text-orange-300';
-                        } else if (porcentaje >= 50) {
-                            elEstado.innerHTML = '⚡ Más de la mitad';
-                            elEstado.className = 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-300';
-                        } else {
-                            elEstado.innerHTML = '🔥 En marcha';
-                            elEstado.className = 'text-[9px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300';
-                        }
-                    }
-                    
-                    // Notificación especial al alcanzar meta
-                    const metaAlcanzadaKey = `meta_alcanzada_${new Date().getMonth()}_${new Date().getFullYear()}`;
-                    if (porcentaje >= 100 && !sessionStorage.getItem(metaAlcanzadaKey)) {
-                        sessionStorage.setItem(metaAlcanzadaKey, 'true');
-                        App.ui.notificar(`¡Felicidades! Meta de $${metaMonto.toLocaleString()} alcanzada este mes 🎉`, 'Meta Mensual Lograda', 'exito');
-                        App.ui.lanzarConfeti();
-                    }
-                },
-                
                 verificar: () => {
-                    const ventas = App.datos.leads.filter(l => l.estado === 'cerrados').length;
                     const container = document.getElementById('logros-container');
                     if(!container) return;
+
+                    // Asegurar que leads existe antes de filtrar
+                    const leads = App.datos.leads || [];
+                    const ventas = leads.filter(l => l.estado === 'cerrados').length;
                     
                     container.innerHTML = App.logros.hitos.map(hito => {
                         const desbloqueado = ventas >= hito.cantidad;
                         const opacity = desbloqueado ? 'opacity-100 scale-110' : 'opacity-20 grayscale';
                         return `<div class="flex flex-col items-center gap-1 group/icon relative" title="${hito.titulo} (${hito.cantidad} ventas)"><i class="fa-solid ${hito.icono} ${hito.color} text-xl transition-all duration-500 ${opacity}"></i>${desbloqueado ? '<div class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>' : ''}</div>`;
                     }).join('');
-                    
-                    // Actualizar meta mensual en $
-                    App.logros.actualizarMetaMensual();
                     
                     const lastCount = parseInt(localStorage.getItem('last_sales_count') || 0);
                     if (ventas > lastCount) {
@@ -4047,11 +3872,21 @@ Responde SOLO en JSON estricto:
 
                     let totalVentasMes = 0; // Total Contratado (Mes)
                     let totalRecaudadoMes = 0; // Total Pagado (Mes)
+                    let totalGastosMes = 0; // Gastos (Mes)
+                    let totalGastosMes = App.gastos.lista.reduce((acc, curr) => acc + (parseInt(curr.monto) || 0), 0);
                     let totalProyeccion = 0; // Deuda Acumulada (Global)
                     let totalHistoricoVentas = 0;
                     let countVentasMes = 0;
                     let countHistoricoVentas = 0;
                     let countEntregasHoy = 0;
+
+                    // Datos para sparkline (últimos 7 días)
+                    const last7Days = Array.from({length: 7}, (_, i) => {
+                        const d = new Date();
+                        d.setDate(d.getDate() - (6 - i));
+                        return d.toISOString().split('T')[0];
+                    });
+                    const ventas7Dias = new Array(7).fill(0);
 
                     App.datos.leads.forEach(l => {
                         const montoTotal = Number(l.monto_total) || 0;
@@ -4060,7 +3895,13 @@ Responde SOLO en JSON estricto:
 
                         const fechaCreacion = new Date(l.created_at || new Date());
                         const esMesActual = fechaCreacion.getMonth() === mesActual && fechaCreacion.getFullYear() === anioActual;
+                        const fechaCreacionISO = fechaCreacion.toISOString().split('T')[0];
                         const fechaEntrega = l.fecha_proximo_pago ? l.fecha_proximo_pago.split('T')[0] : null;
+
+                        // FIX: Sumar recaudado de TODOS los leads para reflejar pagos inmediatos en Caja Real
+                        if (montoPagado > 0) {
+                            totalRecaudadoMes += montoPagado;
+                        }
 
                         if (l.estado === 'cerrados') {
                             // Proyección (Deuda Global - Pasa de mes)
@@ -4074,12 +3915,17 @@ Responde SOLO en JSON estricto:
                             // Métricas del Mes
                             if (esMesActual) {
                                 totalVentasMes += montoTotal;
-                                totalRecaudadoMes += montoPagado;
                                 countVentasMes++;
                             }
                             // Ticket Promedio
                             totalHistoricoVentas += montoTotal;
                             countHistoricoVentas++;
+
+                            // Sparkline Ventas
+                            const dayIndex = last7Days.indexOf(fechaCreacionISO);
+                            if (dayIndex !== -1) {
+                                ventas7Dias[dayIndex] += montoTotal;
+                            }
                         }
                     });
 
@@ -4088,7 +3934,17 @@ Responde SOLO en JSON estricto:
                     document.getElementById('finanza-proyeccion').innerText = formatter.format(totalProyeccion);
                     document.getElementById('finanza-entregas-hoy').innerText = countEntregasHoy;
                     document.getElementById('finanza-caja-real').innerText = formatter.format(totalRecaudadoMes);
+                    document.getElementById('finanza-gastos').innerText = formatter.format(totalGastosMes);
                     document.getElementById('finanza-ticket').innerText = formatter.format(countHistoricoVentas > 0 ? totalHistoricoVentas / countHistoricoVentas : 0);
+
+                    // Renderizar Sparklines
+                    App.ui.renderSparkline('sparkline-ventas', ventas7Dias, '#10b981'); // Ventas (Verde)
+                    // Gastos (Rojo) - Simulado en 0 por ahora ya que no hay módulo de gastos
+                    App.ui.renderSparkline('sparkline-gastos', new Array(7).fill(0), '#ef4444'); 
+                    
+                    // Gastos (Rojo) - Línea base de gasto diario promedio (Burn Rate)
+                    const gastoDiario = Math.round(totalGastosMes / 30);
+                    App.ui.renderSparkline('sparkline-gastos', new Array(7).fill(gastoDiario), '#ef4444'); 
                 },
                 lanzarConfeti: () => {
                     const container = document.getElementById('confetti-container');
@@ -4123,6 +3979,23 @@ Responde SOLO en JSON estricto:
                     }).join(' ');
 
                     container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full overflow-visible"><polyline fill="none" stroke="${color}" stroke-width="2" points="${points}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" /><circle cx="${points.split(' ').pop().split(',')[0]}" cy="${points.split(' ').pop().split(',')[1]}" r="3" fill="${color}" /></svg>`;
+                },
+                renderizarGastos: () => {
+                    const container = document.getElementById('lista-gastos');
+                    const totalEl = document.getElementById('total-gastos-modal');
+                    if(!container) return;
+                    
+                    let total = 0;
+                    container.innerHTML = App.gastos.lista.map(g => {
+                        total += parseInt(g.monto) || 0;
+                        return `
+                            <div class="flex items-center gap-2 bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                                <div class="flex-1"><p class="text-xs font-bold text-slate-700">${g.nombre}</p></div>
+                                <div class="flex items-center gap-1"><span class="text-xs text-slate-400">$</span><input type="number" value="${g.monto}" onchange="App.gastos.editar(${g.id}, this.value)" class="w-20 bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs font-bold text-slate-700 outline-none focus:ring-1 focus:ring-red-200"></div>
+                                <button onclick="App.gastos.eliminar(${g.id})" class="text-slate-300 hover:text-red-500 px-2"><i class="fa-solid fa-trash"></i></button>
+                            </div>`;
+                    }).join('');
+                    if(totalEl) totalEl.innerText = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(total);
                 },
                 notificar: (mensaje, titulo = "Notificación", tipo = "info", duracion = 0) => {
                     const modal = document.getElementById('modal-notificacion');
@@ -4278,31 +4151,55 @@ Responde SOLO en JSON estricto:
                 }
             },
             
-            // SISTEMA FINANCIERO
+            // ==========================================
+            // SISTEMA FINANCIERO COMPLETO
+            // ==========================================
             finanzas: {
                 data: {
-                    gastos: [],
-                    ultimoGasto: null
+                    gastos: [], // Array de {id, tipo: 'servicio'|'ads'|'otro', concepto, monto, fecha, nota}
+                    ultimoGasto: null,
+                    // Templates de servicios predefinidos
+                    serviciosTemplate: [
+                        { concepto: 'Render (Hosting)', categoria: 'infraestructura' },
+                        { concepto: 'Vercel Pro', categoria: 'infraestructura' },
+                        { concepto: 'Cloudflare Pro', categoria: 'infraestructura' },
+                        { concepto: 'Neon Database', categoria: 'infraestructura' },
+                        { concepto: 'NIC.cl (Dominios .cl)', categoria: 'dominios' },
+                        { concepto: 'Namecheap (Dominios .com)', categoria: 'dominios' },
+                        { concepto: 'GoDaddy', categoria: 'dominios' },
+                        { concepto: 'Kimi AI (Moonshot)', categoria: 'ia' },
+                        { concepto: 'Groq API', categoria: 'ia' },
+                        { concepto: 'Gemini API', categoria: 'ia' },
+                        { concepto: 'OpenRouter', categoria: 'ia' },
+                        { concepto: 'GitHub Copilot', categoria: 'ia' },
+                        { concepto: 'GitHub Pro', categoria: 'herramientas' },
+                        { concepto: 'Figma Pro', categoria: 'herramientas' },
+                        { concepto: 'Notion', categoria: 'herramientas' },
+                        { concepto: 'Slack', categoria: 'herramientas' }
+                    ],
+                    // Templates de ads predefinidos
+                    adsTemplate: [
+                        { concepto: 'Facebook Ads', plataforma: 'facebook' },
+                        { concepto: 'Instagram Ads', plataforma: 'instagram' },
+                        { concepto: 'Messenger Ads', plataforma: 'facebook' },
+                        { concepto: 'Audience Network', plataforma: 'facebook' },
+                        { concepto: 'Google Search', plataforma: 'google' },
+                        { concepto: 'Google Display', plataforma: 'google' },
+                        { concepto: 'YouTube Ads', plataforma: 'google' },
+                        { concepto: 'Google Shopping', plataforma: 'google' },
+                        { concepto: 'LinkedIn Ads', plataforma: 'linkedin' },
+                        { concepto: 'TikTok Ads', plataforma: 'tiktok' },
+                        { concepto: 'Twitter/X Ads', plataforma: 'twitter' },
+                        { concepto: 'Pinterest Ads', plataforma: 'pinterest' },
+                        { concepto: 'Snapchat Ads', plataforma: 'snapchat' }
+                    ]
                 },
                 
                 init: function() {
                     this.cargarDatos();
                     this.renderizar();
                     const hoy = new Date().toISOString().split('T')[0];
-                    const fechaInput = document.getElementById('gasto-fecha');
-                    if (fechaInput) fechaInput.value = hoy;
-                },
-                
-                cargarDatos: function() {
-                    const guardado = localStorage.getItem('finanzas_gastos');
-                    if (guardado) {
-                        this.data.gastos = JSON.parse(guardado);
-                        this.data.ultimoGasto = this.data.gastos[this.data.gastos.length - 1] || null;
-                    }
-                },
-                
-                guardarDatos: function() {
-                    localStorage.setItem('finanzas_gastos', JSON.stringify(this.data.gastos));
+                    document.getElementById('gasto-fecha').value = hoy;
                 },
                 
                 calcularIngresosDesdeClientes: function() {
@@ -4316,35 +4213,51 @@ Responde SOLO en JSON estricto:
                     let transaccionesMes = [];
                     
                     leads.forEach(cliente => {
-                        // Solo contar clientes que tienen un pago real (> 0)
-                        // Buscar en monto_pagado primero, luego en pagado
-                        let montoPagado = parseInt(cliente.monto_pagado) || 0;
-                        if (montoPagado === 0) {
-                            montoPagado = parseInt(cliente.pagado) || 0;
+                        if (cliente.seguimiento && Array.isArray(cliente.seguimiento)) {
+                            cliente.seguimiento.forEach(seg => {
+                                const nota = (seg.nota || '').toLowerCase();
+                                const fecha = new Date(seg.fecha);
+                                
+                                if (nota.includes('pago') || nota.includes('pagó') || nota.includes('abono') || nota.includes('transferencia')) {
+                                    const montoMatch = seg.nota.match(/\$[\d.,]+|[\d.,]+\s*(?:mil|k|pesos)/gi);
+                                    let monto = 0;
+                                    
+                                    if (montoMatch) {
+                                        const montoStr = montoMatch[0].replace(/[$.,\s]/g, '').replace(/k/i, '000');
+                                        monto = parseInt(montoStr) || 0;
+                                    }
+                                    
+                                    if (monto === 0 && cliente.estado === 'CERRADO') {
+                                        monto = parseInt(cliente.valor_total) || parseInt(cliente.monto_abono) || 0;
+                                    }
+                                    
+                                    if (monto > 0) {
+                                        totalHistorico += monto;
+                                        if (fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual) {
+                                            totalIngresos += monto;
+                                            transaccionesMes.push({
+                                                concepto: `Pago ${cliente.negocio}`,
+                                                monto: monto,
+                                                fecha: seg.fecha,
+                                                cliente: cliente.nombre,
+                                                tipo: 'ingreso'
+                                            });
+                                        }
+                                    }
+                                }
+                            });
                         }
                         
-                        // Solo procesar si hay un pago real
-                        if (montoPagado > 0) {
+                        const montoPagado = parseInt(cliente.monto_pagado) || parseInt(cliente.pagado) || 0;
+                        if (montoPagado > 0 && (!cliente.seguimiento || cliente.seguimiento.length === 0)) {
                             totalHistorico += montoPagado;
-                            
-                            // Determinar la fecha del pago
-                            // Prioridad: fecha_pago > updated_at > fecha_proximo_pago > created_at > HOY (fallback)
-                            let fechaPago = cliente.fecha_pago || cliente.updated_at || cliente.fecha_proximo_pago || cliente.created_at;
-                            
-                            // Si no hay ninguna fecha, asumir que el pago es de hoy (para registros legacy)
-                            if (!fechaPago) {
-                                fechaPago = new Date().toISOString();
-                            }
-                            
-                            const fecha = new Date(fechaPago);
-                            
-                            // Verificar si es del mes actual
-                            if (fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual) {
+                            const fechaCliente = new Date(cliente.created_at || cliente.fecha);
+                            if (fechaCliente.getMonth() === mesActual && fechaCliente.getFullYear() === anioActual) {
                                 totalIngresos += montoPagado;
                                 transaccionesMes.push({
-                                    concepto: `Pago ${cliente.negocio || cliente.nombre || 'Cliente'}`,
+                                    concepto: `Pago ${cliente.negocio}`,
                                     monto: montoPagado,
-                                    fecha: fechaPago,
+                                    fecha: cliente.created_at || new Date().toISOString(),
                                     cliente: cliente.nombre,
                                     tipo: 'ingreso'
                                 });
@@ -4355,6 +4268,131 @@ Responde SOLO en JSON estricto:
                     return { totalIngresos, totalHistorico, transaccionesMes };
                 },
                 
+                cargarDatos: function() {
+                    const gastosGuardados = localStorage.getItem('finanzas_gastos');
+                    const recurrentesGuardados = localStorage.getItem('finanzas_recurrentes');
+                    const publicidadGuardada = localStorage.getItem('finanzas_publicidad');
+                    
+                    if (gastosGuardados) this.data.gastos = JSON.parse(gastosGuardados);
+                    if (recurrentesGuardados) this.data.recurrentes = JSON.parse(recurrentesGuardados);
+                    if (publicidadGuardada) this.data.publicidad = JSON.parse(publicidadGuardada);
+                },
+                
+                guardarDatos: function() {
+                    localStorage.setItem('finanzas_gastos', JSON.stringify(this.data.gastos));
+                    localStorage.setItem('finanzas_recurrentes', JSON.stringify(this.data.recurrentes));
+                    localStorage.setItem('finanzas_publicidad', JSON.stringify(this.data.publicidad));
+                },
+                
+                abrirModalGasto: function(tipo = 'recurrente') {
+                    document.getElementById('modal-gasto').classList.remove('hidden');
+                    document.getElementById('gasto-tipo').value = tipo;
+                    this.actualizarOpcionesGasto();
+                    document.getElementById('gasto-fecha').value = new Date().toISOString().split('T')[0];
+                },
+                
+                cerrarModalGasto: function() {
+                    document.getElementById('modal-gasto').classList.add('hidden');
+                    this.limpiarFormularioGasto();
+                },
+                
+                limpiarFormularioGasto: function() {
+                    document.getElementById('gasto-monto').value = '';
+                    document.getElementById('gasto-nota').value = '';
+                    document.getElementById('gasto-concepto-otro').value = '';
+                    document.getElementById('gasto-concepto-otro').classList.add('hidden');
+                },
+                
+                actualizarOpcionesGasto: function() {
+                    const tipo = document.getElementById('gasto-tipo').value;
+                    const select = document.getElementById('gasto-concepto');
+                    const otroInput = document.getElementById('gasto-concepto-otro');
+                    
+                    select.innerHTML = '';
+                    otroInput.classList.add('hidden');
+                    
+                    if (tipo === 'recurrente') {
+                        // Servicios predefinidos
+                        this.data.serviciosTemplate.forEach(s => {
+                            const option = document.createElement('option');
+                            option.value = s.concepto;
+                            option.textContent = s.concepto;
+                            select.appendChild(option);
+                        });
+                        const otro = document.createElement('option');
+                        otro.value = 'otro';
+                        otro.textContent = '+ Otro servicio...';
+                        select.appendChild(otro);
+                    } else if (tipo === 'publicidad') {
+                        // Ads predefinidos
+                        this.data.adsTemplate.forEach(a => {
+                            const option = document.createElement('option');
+                            option.value = a.concepto;
+                            option.textContent = a.concepto;
+                            select.appendChild(option);
+                        });
+                        const otro = document.createElement('option');
+                        otro.value = 'otro';
+                        otro.textContent = '+ Otra plataforma...';
+                        select.appendChild(otro);
+                    } else {
+                        // Otros gastos
+                        const conceptos = ['Sueldos', 'Impuestos', 'Servicios (luz, agua)', 'Internet', 'Oficina', 'Capacitación', 'Viajes', 'Otros'];
+                        conceptos.forEach(c => {
+                            const option = document.createElement('option');
+                            option.value = c;
+                            option.textContent = c;
+                            select.appendChild(option);
+                        });
+                        const otro = document.createElement('option');
+                        otro.value = 'otro';
+                        otro.textContent = '+ Otro concepto...';
+                        select.appendChild(otro);
+                    }
+                    
+                    select.onchange = () => {
+                        if (select.value === 'otro') {
+                            otroInput.classList.remove('hidden');
+                            otroInput.focus();
+                        } else {
+                            otroInput.classList.add('hidden');
+                        }
+                    };
+                },
+                
+                guardarGasto: function() {
+                    const tipo = document.getElementById('gasto-tipo').value;
+                    const conceptoSelect = document.getElementById('gasto-concepto').value;
+                    const conceptoOtro = document.getElementById('gasto-concepto-otro').value;
+                    const concepto = conceptoSelect === 'otro' ? conceptoOtro : conceptoSelect;
+                    const monto = parseFloat(document.getElementById('gasto-monto').value);
+                    const fecha = document.getElementById('gasto-fecha').value;
+                    const nota = document.getElementById('gasto-nota').value;
+                    
+                    if (!concepto || !monto || !fecha) {
+                        alert('Completa concepto, monto y fecha');
+                        return;
+                    }
+                    
+                    const gasto = {
+                        id: Date.now(),
+                        tipo: tipo === 'otro' ? 'otro' : (tipo === 'recurrente' ? 'servicio' : 'ads'),
+                        categoria: tipo,
+                        concepto,
+                        monto,
+                        fecha,
+                        nota,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    this.data.gastos.push(gasto);
+                    this.data.ultimoGasto = gasto;
+                    this.guardarDatos();
+                    this.renderizar();
+                    this.cerrarModalGasto();
+                    this.mostrarNotificacion(`Gasto registrado: ${concepto} -$${monto.toLocaleString()}`, 'error');
+                },
+                
                 renderizar: function() {
                     const hoy = new Date();
                     const mesActual = hoy.getMonth();
@@ -4362,6 +4400,7 @@ Responde SOLO en JSON estricto:
                     
                     const ingresosData = this.calcularIngresosDesdeClientes();
                     const totalIngresosMes = ingresosData.totalIngresos;
+                    const totalIngresosHist = ingresosData.totalHistorico;
                     
                     const gastosMes = this.data.gastos.filter(g => {
                         const d = new Date(g.fecha);
@@ -4372,53 +4411,47 @@ Responde SOLO en JSON estricto:
                     const totalGastosHist = this.data.gastos.reduce((sum, g) => sum + g.monto, 0);
                     
                     const balanceMes = totalIngresosMes - totalGastosMes;
-                    const balanceTotal = ingresosData.totalHistorico - totalGastosHist;
+                    const balanceTotal = totalIngresosHist - totalGastosHist;
                     
-                    // Actualizar dashboard
-                    const ingresosEl = document.getElementById('finanza-ingresos-mes');
-                    if (ingresosEl) ingresosEl.textContent = `$${totalIngresosMes.toLocaleString()}`;
+                    document.getElementById('finanza-ingresos-mes').textContent = `$${totalIngresosMes.toLocaleString()}`;
+                    document.getElementById('finanza-ingresos-count').textContent = `${ingresosData.transaccionesMes.length} pagos recibidos`;
                     
-                    const ingresosCount = document.getElementById('finanza-ingresos-count');
-                    if (ingresosCount) ingresosCount.textContent = `${ingresosData.transaccionesMes.length} pagos`;
-                    
-                    const gastosEl = document.getElementById('finanza-gastos-mes');
-                    if (gastosEl) gastosEl.textContent = `$${totalGastosMes.toLocaleString()}`;
-                    
-                    const gastosCount = document.getElementById('finanza-gastos-count');
-                    if (gastosCount) gastosCount.textContent = `${gastosMes.length} transacciones`;
+                    document.getElementById('finanza-gastos-mes').textContent = `$${totalGastosMes.toLocaleString()}`;
+                    document.getElementById('finanza-gastos-count').textContent = `${gastosMes.length} transacciones`;
                     
                     const balanceEl = document.getElementById('finanza-balance-mes');
-                    if (balanceEl) {
-                        balanceEl.textContent = `$${balanceMes.toLocaleString()}`;
-                        balanceEl.className = `text-2xl font-bold relative z-10 ${balanceMes >= 0 ? 'text-blue-900' : 'text-red-900'}`;
-                    }
+                    balanceEl.textContent = `$${balanceMes.toLocaleString()}`;
+                    balanceEl.className = `text-2xl font-bold relative z-10 ${balanceMes >= 0 ? 'text-blue-900' : 'text-red-900'}`;
                     
                     const margen = totalIngresosMes > 0 ? Math.round((balanceMes / totalIngresosMes) * 100) : 0;
-                    const margenEl = document.getElementById('finanza-balance-porcentaje');
-                    if (margenEl) margenEl.textContent = `${margen}% margen`;
+                    document.getElementById('finanza-balance-porcentaje').textContent = `${margen}% margen`;
                     
                     const badge = document.getElementById('balance-badge');
-                    if (badge) {
-                        badge.textContent = `Balance: $${balanceMes.toLocaleString()}`;
-                        badge.className = `px-3 py-1 rounded-full text-xs font-bold border ${balanceMes >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200'}`;
-                    }
+                    badge.textContent = `Balance: $${balanceMes.toLocaleString()}`;
+                    badge.className = `px-3 py-1 rounded-full text-xs font-bold border ${balanceMes >= 0 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200'}`;
                     
-                    const cajaEl = document.getElementById('finanza-caja-total');
-                    if (cajaEl) cajaEl.textContent = `$${balanceTotal.toLocaleString()}`;
+                    document.getElementById('finanza-caja-total').textContent = `$${balanceTotal.toLocaleString()}`;
                     
-                    // Actualizar mini gráfico comparativo
-                    this.actualizarGraficoComparativo(totalIngresosMes, totalGastosMes);
-                    
+                    // Renderizar solo el último gasto de cada categoría
                     this.renderizarUltimoServicio();
                     this.renderizarUltimoAds();
+                    this.renderizarTotales();
+                    
+                    // Actualizar último gasto global
+                    if (this.data.ultimoGasto) {
+                        document.getElementById('ultimo-gasto-global').textContent = 
+                            `${this.data.ultimoGasto.concepto}: -$${this.data.ultimoGasto.monto.toLocaleString()}`;
+                    }
+                    
+                    // Actualizar movimientos en la tarjeta de Información Operativa
                     this.actualizarMovimientosOperativos(gastosMes, ingresosData.transaccionesMes);
                 },
                 
                 renderizarUltimoServicio: function() {
                     const container = document.getElementById('lista-servicios');
                     const totalEl = document.getElementById('total-servicios');
-                    if (!container || !totalEl) return;
                     
+                    // Filtrar gastos de servicios del mes
                     const hoy = new Date();
                     const mesActual = hoy.getMonth();
                     const anioActual = hoy.getFullYear();
@@ -4431,38 +4464,32 @@ Responde SOLO en JSON estricto:
                     const total = gastosServicios.reduce((sum, g) => sum + g.monto, 0);
                     totalEl.textContent = `$${total.toLocaleString()}/mes`;
                     
+                    // Mostrar solo el último
                     if (gastosServicios.length === 0) {
-                        container.innerHTML = `<p class="text-xs text-slate-400 text-center italic">No hay gastos</p>`;
+                        container.innerHTML = `<p class="text-xs text-slate-400 text-center italic">No hay gastos registrados</p>`;
                         return;
                     }
                     
-                    // Ordenar por fecha descendente (más reciente primero)
-                    gastosServicios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    const ultimo = gastosServicios[gastosServicios.length - 1];
+                    const fecha = new Date(ultimo.fecha).toLocaleDateString('es-CL');
                     
-                    container.innerHTML = gastosServicios.map(g => {
-                        const fecha = new Date(g.fecha).toLocaleDateString('es-CL');
-                        return `
-                            <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-slate-200 mb-2 group">
-                                <div class="flex-1">
-                                    <p class="text-xs font-bold text-slate-700">${g.concepto}</p>
-                                    <p class="text-[10px] text-slate-400">${fecha}</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-bold text-red-600">-$${g.monto.toLocaleString()}</span>
-                                    <button onclick="App.finanzas.eliminarGasto(${g.id})" class="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 text-red-500 flex items-center justify-center transition-colors" title="Eliminar gasto">
-                                        <i class="fa-solid fa-trash text-[10px]"></i>
-                                    </button>
-                                </div>
+                    container.innerHTML = `
+                        <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-slate-200">
+                            <div>
+                                <p class="text-xs font-bold text-slate-700">${ultimo.concepto}</p>
+                                <p class="text-[10px] text-slate-400">${fecha} ${ultimo.nota ? `• ${ultimo.nota}` : ''}</p>
                             </div>
-                        `;
-                    }).join('');
+                            <span class="text-sm font-bold text-red-600">-$${ultimo.monto.toLocaleString()}</span>
+                        </div>
+                        ${gastosServicios.length > 1 ? `<p class="text-[10px] text-slate-400 text-center mt-2">+${gastosServicios.length - 1} gastos más este mes</p>` : ''}
+                    `;
                 },
                 
                 renderizarUltimoAds: function() {
                     const container = document.getElementById('lista-ads');
                     const totalEl = document.getElementById('total-ads');
-                    if (!container || !totalEl) return;
                     
+                    // Filtrar gastos de ads del mes
                     const hoy = new Date();
                     const mesActual = hoy.getMonth();
                     const anioActual = hoy.getFullYear();
@@ -4475,47 +4502,42 @@ Responde SOLO en JSON estricto:
                     const total = gastosAds.reduce((sum, g) => sum + g.monto, 0);
                     totalEl.textContent = `$${total.toLocaleString()}/mes`;
                     
+                    // Mostrar solo el último
                     if (gastosAds.length === 0) {
-                        container.innerHTML = `<p class="text-xs text-orange-400 text-center italic">No hay gastos</p>`;
+                        container.innerHTML = `<p class="text-xs text-orange-400 text-center italic">No hay gastos registrados</p>`;
                         return;
                     }
                     
-                    // Ordenar por fecha descendente (más reciente primero)
-                    gastosAds.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    const ultimo = gastosAds[gastosAds.length - 1];
+                    const fecha = new Date(ultimo.fecha).toLocaleDateString('es-CL');
                     
-                    container.innerHTML = gastosAds.map(g => {
-                        const fecha = new Date(g.fecha).toLocaleDateString('es-CL');
-                        return `
-                            <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-orange-200 mb-2 group">
-                                <div class="flex-1">
-                                    <p class="text-xs font-bold text-slate-700">${g.concepto}</p>
-                                    <p class="text-[10px] text-slate-400">${fecha}</p>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-bold text-red-600">-$${g.monto.toLocaleString()}</span>
-                                    <button onclick="App.finanzas.eliminarGasto(${g.id})" class="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 text-red-500 flex items-center justify-center transition-colors" title="Eliminar gasto">
-                                        <i class="fa-solid fa-trash text-[10px]"></i>
-                                    </button>
-                                </div>
+                    container.innerHTML = `
+                        <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-orange-200">
+                            <div>
+                                <p class="text-xs font-bold text-slate-700">${ultimo.concepto}</p>
+                                <p class="text-[10px] text-slate-400">${fecha} ${ultimo.nota ? `• ${ultimo.nota}` : ''}</p>
                             </div>
-                        `;
-                    }).join('');
+                            <span class="text-sm font-bold text-red-600">-$${ultimo.monto.toLocaleString()}</span>
+                        </div>
+                        ${gastosAds.length > 1 ? `<p class="text-[10px] text-orange-400 text-center mt-2">+${gastosAds.length - 1} gastos más este mes</p>` : ''}
+                    `;
+                },
+                
+                renderizarTotales: function() {
+                    // Ya se calculan en renderizar(), aquí podemos agregar lógica adicional si es necesario
                 },
                 
                 actualizarMovimientosOperativos: function(gastos, ingresos) {
                     const container = document.getElementById('activity-log-container');
                     if (!container) return;
                     
-                    let items = [...ingresos.map(i => ({...i, tipoDisplay: 'ingreso'})), ...gastos.map(g => ({...g, tipoDisplay: 'gasto'}))];
-                    
-                    // Ordenar por fecha descendente (más reciente primero)
-                    items.sort((a, b) => {
-                        const fechaA = a.timestamp ? new Date(a.timestamp) : new Date(a.fecha);
-                        const fechaB = b.timestamp ? new Date(b.timestamp) : new Date(b.fecha);
-                        return fechaB - fechaA;
-                    });
-                    
-                    items = items.slice(0, 10);
+                    // Combinar y ordenar por fecha
+                    let items = [
+                        ...ingresos.map(i => ({...i, tipoDisplay: 'ingreso'})),
+                        ...gastos.map(g => ({...g, tipoDisplay: 'gasto'}))
+                    ];
+                    items.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    items = items.slice(0, 10); // Solo últimos 10
                     
                     if (items.length === 0) {
                         container.innerHTML = `<p class="text-[10px] text-slate-400 text-center italic mt-4">No hay movimientos recientes.</p>`;
@@ -4524,10 +4546,9 @@ Responde SOLO en JSON estricto:
                     
                     container.innerHTML = items.map(item => {
                         const esIngreso = item.tipoDisplay === 'ingreso';
-                        const fechaObj = item.timestamp ? new Date(item.timestamp) : new Date(item.fecha);
-                        const fecha = fechaObj.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
+                        const fecha = new Date(item.fecha).toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
                         return `
-                            <div class="flex items-center gap-2 p-2 rounded-lg ${esIngreso ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'} border">
+                            <div class="flex items-center gap-2 p-2 rounded-lg ${esIngreso ? 'bg-emerald-50' : 'bg-red-50'} border ${esIngreso ? 'border-emerald-100' : 'border-red-100'}">
                                 <div class="w-6 h-6 rounded-full ${esIngreso ? 'bg-emerald-200 text-emerald-700' : 'bg-red-200 text-red-700'} flex items-center justify-center text-xs">
                                     <i class="fa-solid ${esIngreso ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
                                 </div>
@@ -4535,20 +4556,33 @@ Responde SOLO en JSON estricto:
                                     <p class="text-[10px] font-bold text-slate-700 truncate">${item.concepto}</p>
                                     <p class="text-[9px] text-slate-400">${fecha}</p>
                                 </div>
-                                <span class="text-[10px] font-bold ${esIngreso ? 'text-emerald-600' : 'text-red-600'}">${esIngreso ? '+' : '-'}$${item.monto.toLocaleString()}</span>
+                                <span class="text-[10px] font-bold ${esIngreso ? 'text-emerald-600' : 'text-red-600'}">
+                                    ${esIngreso ? '+' : '-'}$${item.monto.toLocaleString()}
+                                </span>
                             </div>
                         `;
                     }).join('');
-                    
-                    // Scroll al inicio para mostrar el más reciente
-                    container.scrollTop = 0;
                 },
                 
+
+                
+                mostrarNotificacion: function(mensaje, tipo = 'success') {
+                    const toast = document.createElement('div');
+                    toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white text-sm font-bold z-[200] animate-fade-in ${tipo === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`;
+                    toast.innerHTML = `<i class="fa-solid ${tipo === 'success' ? 'fa-check' : 'fa-minus'} mr-2"></i> ${mensaje}`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                },
+                
+                actualizarDesdeClientes: function() {
+                    this.renderizar();
+                },
+                
+                // Funciones para desplegables de servicios
                 mostrarInputServicio: function() {
                     const select = document.getElementById('select-servicio');
                     const container = document.getElementById('input-servicio-container');
                     const inputOtro = document.getElementById('input-servicio-otro');
-                    if (!select || !container) return;
                     
                     if (select.value) {
                         container.classList.remove('hidden');
@@ -4572,25 +4606,39 @@ Responde SOLO en JSON estricto:
                     const concepto = select.value === 'otro' ? inputOtro.value : select.value;
                     const monto = parseFloat(inputMonto.value);
                     
-                    if (!concepto || !monto) { alert('Completa todos los campos'); return; }
+                    if (!concepto || !monto) {
+                        this.mostrarNotificacion('Completa el concepto y monto', 'error');
+                        return;
+                    }
                     
-                    const gasto = { id: Date.now(), tipo: 'servicio', concepto, monto, fecha: new Date().toISOString().split('T')[0], timestamp: new Date().toISOString() };
+                    const gasto = {
+                        id: Date.now(),
+                        tipo: 'servicio',
+                        concepto: concepto,
+                        monto: monto,
+                        fecha: new Date().toISOString().split('T')[0],
+                        timestamp: new Date().toISOString()
+                    };
+                    
                     this.data.gastos.push(gasto);
                     this.data.ultimoGasto = gasto;
                     this.guardarDatos();
                     this.renderizar();
                     
-                    select.value = ''; inputOtro.value = ''; inputMonto.value = '';
+                    // Limpiar formulario
+                    select.value = '';
+                    inputOtro.value = '';
+                    inputMonto.value = '';
                     document.getElementById('input-servicio-container').classList.add('hidden');
                     
-                    App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
+                    this.mostrarNotificacion(`Gasto registrado: ${concepto} -$${monto.toLocaleString()}`, 'error');
                 },
                 
+                // Funciones para desplegables de ads
                 mostrarInputAds: function() {
                     const select = document.getElementById('select-ads');
                     const container = document.getElementById('input-ads-container');
                     const inputOtro = document.getElementById('input-ads-otro');
-                    if (!select || !container) return;
                     
                     if (select.value) {
                         container.classList.remove('hidden');
@@ -4614,167 +4662,67 @@ Responde SOLO en JSON estricto:
                     const concepto = select.value === 'otro' ? inputOtro.value : select.value;
                     const monto = parseFloat(inputMonto.value);
                     
-                    if (!concepto || !monto) { alert('Completa todos los campos'); return; }
-                    
-                    const gasto = { id: Date.now(), tipo: 'ads', concepto, monto, fecha: new Date().toISOString().split('T')[0], timestamp: new Date().toISOString() };
-                    this.data.gastos.push(gasto);
-                    this.data.ultimoGasto = gasto;
-                    this.guardarDatos();
-                    this.renderizar();
-                    
-                    select.value = ''; inputOtro.value = ''; inputMonto.value = '';
-                    document.getElementById('input-ads-container').classList.add('hidden');
-                    
-                    App.ui.notificar(`Publicidad: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
-                },
-                
-                abrirModalGasto: function(tipo = 'otro') {
-                    const modal = document.getElementById('modal-gasto');
-                    if (modal) modal.classList.remove('hidden');
-                    const fechaInput = document.getElementById('gasto-fecha');
-                    if (fechaInput) fechaInput.value = new Date().toISOString().split('T')[0];
-                    this.actualizarOpcionesGasto();
-                },
-                
-                cerrarModalGasto: function() {
-                    const modal = document.getElementById('modal-gasto');
-                    if (modal) modal.classList.add('hidden');
-                },
-                
-                actualizarOpcionesGasto: function() {
-                    const tipo = document.getElementById('gasto-tipo');
-                    const select = document.getElementById('gasto-concepto');
-                    if (!tipo || !select) return;
-                    
-                    select.innerHTML = '';
-                    
-                    if (tipo.value === 'servicio') {
-                        ['Render', 'Vercel Pro', 'Cloudflare Pro', 'Neon Database', 'NIC.cl', 'Kimi AI', 'Groq API', 'Gemini API', 'OpenRouter', 'GitHub Copilot'].forEach(s => {
-                            const opt = document.createElement('option'); opt.value = s; opt.textContent = s; select.appendChild(opt);
-                        });
-                    } else if (tipo.value === 'ads') {
-                        ['Facebook Ads', 'Instagram Ads', 'Google Search', 'Google Display', 'YouTube Ads', 'LinkedIn Ads', 'TikTok Ads'].forEach(a => {
-                            const opt = document.createElement('option'); opt.value = a; opt.textContent = a; select.appendChild(opt);
-                        });
-                    } else {
-                        ['Sueldos', 'Impuestos', 'Servicios', 'Oficina', 'Otros'].forEach(o => {
-                            const opt = document.createElement('option'); opt.value = o; opt.textContent = o; select.appendChild(opt);
-                        });
-                    }
-                    const otro = document.createElement('option'); otro.value = 'otro'; otro.textContent = '+ Otro...'; select.appendChild(otro);
-                },
-                
-                guardarGasto: function() {
-                    const tipo = document.getElementById('gasto-tipo');
-                    const conceptoSelect = document.getElementById('gasto-concepto');
-                    const conceptoOtro = document.getElementById('gasto-concepto-otro');
-                    const montoInput = document.getElementById('gasto-monto');
-                    const fechaInput = document.getElementById('gasto-fecha');
-                    
-                    const concepto = conceptoSelect.value === 'otro' ? conceptoOtro.value : conceptoSelect.value;
-                    const monto = parseFloat(montoInput.value);
-                    const fecha = fechaInput.value;
-                    
-                    if (!concepto || !monto || !fecha) { alert('Completa todos los campos'); return; }
-                    
-                    const gasto = { id: Date.now(), tipo: tipo.value, concepto, monto, fecha, timestamp: new Date().toISOString() };
-                    this.data.gastos.push(gasto);
-                    this.data.ultimoGasto = gasto;
-                    this.guardarDatos();
-                    this.renderizar();
-                    this.cerrarModalGasto();
-                    
-                    App.ui.notificar(`Gasto: ${concepto} -$${monto.toLocaleString()}`, 'Gasto Registrado', 'error');
-                },
-                
-                eliminarGasto: function(id) {
-                    if (!confirm('¿Estás seguro de eliminar este gasto?')) return;
-                    
-                    const gastoIndex = this.data.gastos.findIndex(g => g.id === id);
-                    if (gastoIndex === -1) {
-                        App.ui.notificar('Gasto no encontrado', 'Error', 'error');
+                    if (!concepto || !monto) {
+                        this.mostrarNotificacion('Completa la plataforma y monto', 'error');
                         return;
                     }
                     
-                    const gastoEliminado = this.data.gastos[gastoIndex];
-                    this.data.gastos.splice(gastoIndex, 1);
+                    const gasto = {
+                        id: Date.now(),
+                        tipo: 'ads',
+                        concepto: concepto,
+                        monto: monto,
+                        fecha: new Date().toISOString().split('T')[0],
+                        timestamp: new Date().toISOString()
+                    };
                     
-                    // Actualizar último gasto si era el que eliminamos
-                    if (this.data.ultimoGasto && this.data.ultimoGasto.id === id) {
-                        this.data.ultimoGasto = this.data.gastos[this.data.gastos.length - 1] || null;
-                    }
-                    
+                    this.data.gastos.push(gasto);
+                    this.data.ultimoGasto = gasto;
                     this.guardarDatos();
                     this.renderizar();
                     
-                    // Actualizar meta mensual y dashboard
-                    if (App.logros) App.logros.actualizarMetaMensual();
+                    // Limpiar formulario
+                    select.value = '';
+                    inputOtro.value = '';
+                    inputMonto.value = '';
+                    document.getElementById('input-ads-container').classList.add('hidden');
                     
-                    App.ui.notificar(`Gasto eliminado: ${gastoEliminado.concepto} +$${gastoEliminado.monto.toLocaleString()}`, 'Gasto Eliminado', 'exito');
+                    this.mostrarNotificacion(`Publicidad registrada: ${concepto} -$${monto.toLocaleString()}`, 'error');
                 },
-                
-                actualizarDesdeClientes: function() {
-                    this.renderizar();
-                    // Actualizar también la meta mensual de ventas en $
-                    if (App.logros) App.logros.actualizarMetaMensual();
-                },
-                
-                actualizarGraficoComparativo: function(ingresos, gastos) {
-                    const barraIngreso = document.getElementById('barra-ingreso');
-                    const barraGasto = document.getElementById('barra-gasto');
-                    if (!barraIngreso || !barraGasto) return;
-                    
-                    const maximo = Math.max(ingresos, gastos, 1); // Evitar división por cero
-                    const alturaIngreso = Math.min((ingresos / maximo) * 100, 100);
-                    const alturaGasto = Math.min((gastos / maximo) * 100, 100);
-                    
-                    barraIngreso.style.height = `${alturaIngreso}%`;
-                    barraGasto.style.height = `${alturaGasto}%`;
-                    
-                    // Cambiar color si el gasto es mayor que el ingreso
-                    if (gastos > ingresos) {
-                        barraGasto.classList.remove('bg-red-400');
-                        barraGasto.classList.add('bg-red-600');
-                    } else {
-                        barraGasto.classList.remove('bg-red-600');
-                        barraGasto.classList.add('bg-red-400');
-                    }
-                }
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
             App.init();
-            if (App.finanzas) App.finanzas.init();
-            
-            // Forzar scroll al inicio al cargar la página
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
+            App.finanzas.init();
         });
-        
-        // Forzar scroll al inicio cuando la página termine de cargar completamente
-        window.onload = function() {
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-            document.documentElement.scrollTop = 0;
-            
-            // También cuando se muestra la app después del login
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.target.id === 'login-screen' && mutation.target.style.display === 'none') {
-                        window.scrollTo(0, 0);
-                        document.body.scrollTop = 0;
-                        document.documentElement.scrollTop = 0;
-                    }
-                });
-            });
-            
-            const loginScreen = document.getElementById('login-screen');
-            if (loginScreen) {
-                observer.observe(loginScreen, { attributes: true, attributeFilter: ['style'] });
-            }
-        };
     </script>
+
+    <!-- Modal Gastos Operativos -->
+    <div id="modal-gastos" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="p-6 border-b border-slate-100 bg-red-50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-red-800"><i class="fa-solid fa-money-bill-transfer mr-2"></i> Gastos Operativos</h3>
+                <button onclick="App.ui.toggleModal('modal-gastos', false)" class="text-red-400 hover:text-red-700"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto custom-scroll">
+                <div class="mb-4">
+                    <p class="text-xs text-slate-500 mb-2">Proyección de gastos mensuales (Recurrentes y Variables)</p>
+                    <div id="lista-gastos" class="space-y-3"></div>
+                </div>
+                <div class="pt-4 border-t border-slate-100">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase block mb-2">Agregar Nuevo Gasto</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="nuevo-gasto-nombre" placeholder="Nombre (Ej: Hosting)" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none">
+                        <input type="number" id="nuevo-gasto-monto" placeholder="$" class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none">
+                        <button onclick="App.gastos.agregar()" class="bg-red-500 text-white rounded-lg px-3 py-2 hover:bg-red-600"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-500">Total Proyectado: <span id="total-gastos-modal" class="font-bold text-red-600 text-lg ml-1">$0</span></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
