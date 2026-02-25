@@ -1366,7 +1366,7 @@ app.post('/api/encuesta', async (req, res) => {
     const query = `
       UPDATE clientes
       SET encuesta_data = COALESCE(encuesta_data, '{}'::jsonb) || $1
-      WHERE id = $2
+      WHERE id::text = $2 OR codigo_seguimiento = $2
     `;
     const result = await client.query(query, [datosParaGuardar, cliente_id]);
     
