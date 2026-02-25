@@ -62,13 +62,18 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false // Requerido para conexiones a Neon.tech y la mayoría de nubes
   },
+  max: 10, // Limitar conexiones simultáneas para estabilidad en plan gratuito
   // Configuración para mayor resiliencia con bases de datos en la nube
   connectionTimeoutMillis: 30000, // Aumentado a 30 segundos para conectar
-  idleTimeoutMillis: 600000,      // Aumentado a 10 minutos para cerrar una conexión inactiva
+  idleTimeoutMillis: 5000,        // Reducido a 5s: Cierra conexiones inactivas rápido para evitar que Neon las mate inesperadamente
 });
 
 // Manejo de errores del pool para evitar caídas por desconexiones inesperadas
 pool.on('error', (err, client) => {
+  // Filtrar el error común de desconexión en serverless para no alarmar innecesariamente
+  if (err.message && err.message.includes('Connection terminated unexpectedly')) {
+    return console.log('ℹ️ Aviso: Conexión inactiva cerrada por el servidor (Auto-reconexión activa).');
+  }
   console.error('❌ Error inesperado en cliente inactivo de la base de datos:', err);
   // No matamos el proceso, permitimos que el pool maneje la reconexión
 });
