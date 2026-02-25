@@ -920,7 +920,8 @@
                 <div class="w-full lg:w-[45%] p-5 bg-[#f0fdfa] overflow-y-auto flex flex-col border-r border-emerald-100 relative">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
                     
-                    <div class="mb-4 flex-1 flex flex-col">
+                    <!-- PANEL IA (Prospectos) -->
+                    <div id="panel-analisis-ia" class="mb-4 flex-1 flex flex-col">
 
                         <!-- HEADER MEJORADO -->
                         <div class="flex items-center justify-between mb-4">
@@ -1025,6 +1026,44 @@
                         <div id="analysis-result" class="hidden mt-4 bg-white p-4 rounded-xl border border-emerald-100 shadow-sm text-sm text-slate-600 flex-1 overflow-y-auto"></div>
                     </div>
 
+                    <!-- PANEL GESTIÓN (Clientes Activos) -->
+                    <div id="panel-herramientas-gestion-col2" class="hidden mb-4 flex-1 flex flex-col">
+                        <!-- Header Gestión -->
+                        <div class="flex items-center justify-between mb-4">
+                             <div class="flex items-center gap-2.5">
+                                <div class="bg-gradient-to-br from-indigo-500 to-blue-600 text-white p-2 rounded-xl shadow-md shadow-indigo-500/30">
+                                    <i class="fa-solid fa-toolbox text-base"></i>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-bold text-indigo-800 uppercase tracking-widest block leading-tight">Herramientas de Gestión</span>
+                                    <span class="text-[9px] text-indigo-500 font-mono">Panel de Cliente Activo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                             <button class="py-6 rounded-xl text-sm font-bold bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-all flex flex-col items-center gap-2 shadow-sm hover:shadow-md">
+                                <i class="fa-solid fa-file-invoice-dollar text-3xl"></i>
+                                <span>Facturación</span>
+                            </button>
+                            <button class="py-6 rounded-xl text-sm font-bold bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-all flex flex-col items-center gap-2 shadow-sm hover:shadow-md">
+                                <i class="fa-solid fa-chart-pie text-3xl"></i>
+                                <span>Reporte SEO</span>
+                            </button>
+                            <button class="py-6 rounded-xl text-sm font-bold bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-all flex flex-col items-center gap-2 shadow-sm hover:shadow-md">
+                                <i class="fa-solid fa-ticket text-3xl"></i>
+                                <span>Ticket Soporte</span>
+                            </button>
+                            <button class="py-6 rounded-xl text-sm font-bold bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition-all flex flex-col items-center gap-2 shadow-sm hover:shadow-md">
+                                <i class="fa-solid fa-server text-3xl"></i>
+                                <span>Status Server</span>
+                            </button>
+                        </div>
+                        
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 text-center mt-auto">
+                            <p class="text-xs text-indigo-400 italic">Herramientas en desarrollo</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- COLUMNA 3: SCRIPT Y ACCIONES (25%) -->
@@ -1112,6 +1151,11 @@
                         <button onclick="App.cliente.abrirSoporteWhatsApp()" class="py-3 bg-white border border-amber-200 text-amber-500 font-bold rounded-xl hover:bg-amber-50 transition-colors flex flex-col items-center justify-center gap-1" title="Contactar por WhatsApp">
                             <i class="fa-brands fa-whatsapp text-lg"></i>
                             <span class="text-[10px]">Soporte</span>
+                        </button>
+                        <!-- Botón Eliminar Cliente Activo -->
+                        <button onclick="App.cliente.eliminarClienteActivo()" class="col-span-3 mt-2 py-3 bg-white border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-colors flex flex-col items-center justify-center gap-1" title="Eliminar Cliente Activo">
+                            <i class="fa-solid fa-trash-can text-lg"></i>
+                            <span class="text-[10px]">Eliminar Cliente (Zona Peligrosa)</span>
                         </button>
                     </div>
                 </div>
@@ -1976,6 +2020,8 @@
                         const formatter = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
                         const fichaFinanciera = document.getElementById('ficha-financiera');
                         const fichaTactico = document.getElementById('ficha-estado-tactico');
+                        const panelAnalisisIA = document.getElementById('panel-analisis-ia');
+                        const panelGestion = document.getElementById('panel-herramientas-gestion-col2');
                         const accionesVenta = document.getElementById('acciones-venta');
                         const accionesCliente = document.getElementById('acciones-cliente');
 
@@ -1986,11 +2032,15 @@
                                 setText('ficha-pagado', formatter.format(lead.monto_pagado || 0));
                             }
                             if (fichaTactico) fichaTactico.classList.add('hidden'); // Ocultar táctica en clientes cerrados
+                            if (panelAnalisisIA) panelAnalisisIA.classList.add('hidden');
+                            if (panelGestion) panelGestion.classList.remove('hidden');
                             if (accionesVenta) accionesVenta.classList.add('hidden'); // Ocultar botones de venta
                             if (accionesCliente) accionesCliente.classList.remove('hidden'); // Mostrar botones de gestión
                         } else {
                             if (fichaFinanciera) fichaFinanciera.classList.add('hidden');
                             if (fichaTactico) fichaTactico.classList.remove('hidden'); // Mostrar táctica en prospectos
+                            if (panelAnalisisIA) panelAnalisisIA.classList.remove('hidden');
+                            if (panelGestion) panelGestion.classList.add('hidden');
                             if (accionesVenta) accionesVenta.classList.remove('hidden'); // Mostrar botones de venta
                             if (accionesCliente) accionesCliente.classList.add('hidden'); // Ocultar botones de gestión
                         }
@@ -2252,6 +2302,24 @@
                     } catch (e) {
                         console.error('Error eliminando pago:', e);
                         App.ui.notificar('Error al eliminar el pago', 'Error', 'error');
+                    }
+                },
+                
+                eliminarClienteActivo: async function() {
+                    if (App.clienteActivoIndex === null) return;
+                    const lead = App.datos.leads[App.clienteActivoIndex];
+                    
+                    if (!confirm(`⚠️ ADVERTENCIA CRÍTICA ⚠️\n\nEstás a punto de eliminar un CLIENTE ACTIVO: "${lead.negocio}".\n\nEsto moverá al cliente a la papelera, pero ten en cuenta que es un cliente que ya ha pagado o está en proceso.\n\n¿Estás absolutamente seguro?`)) return;
+                    
+                    try {
+                        await fetch(`/api/clientes/${lead.id}`, { method: 'DELETE' });
+                        App.datos.leads.splice(App.clienteActivoIndex, 1);
+                        App.ui.renderizarListas(); 
+                        App.ui.notificar("Cliente activo movido a la papelera.", "Eliminado", "info");
+                        App.cliente.cerrarFicha();
+                        if (App.finanzas) App.finanzas.actualizarDesdeClientes();
+                    } catch (e) {
+                        App.ui.notificar("Error al eliminar.", "Error", "error");
                     }
                 },
                 
