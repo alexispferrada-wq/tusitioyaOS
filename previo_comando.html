@@ -322,6 +322,7 @@
         <div class="zen-hidden grid grid-cols-2 gap-2 mb-4">
             <button onclick="App.ui.toggleModal('modal-nuevo-cliente', true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1"><i class="fa-solid fa-plus"></i> Nuevo</button>
             <button onclick="App.prospectorIA.abrir()" class="bg-teal-600 hover:bg-teal-700 text-white rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 shadow-lg shadow-teal-500/30"><i class="fa-solid fa-wand-magic-sparkles"></i> IA</button>
+            <button onclick="App.ui.toggleModal('modal-papelera', true); App.papelera.cargar();" class="col-span-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl py-2 text-xs font-bold transition-colors flex items-center justify-center gap-1"><i class="fa-solid fa-trash-arrow-up"></i> Papelera de Reciclaje</button>
         </div>
 
         <div class="flex-1 overflow-y-auto space-y-1 custom-scroll pr-1">
@@ -342,7 +343,7 @@
             <!-- BUSCADOR GLOBAL POTENTE -->
             <div class="mb-4 px-1 sticky top-0 z-10 bg-emerald-50 pb-2 pt-1">
                 <div class="relative group">
-                    <input type="text" id="buscador-global" onkeyup="App.ui.buscar(this.value)" placeholder="Buscar dominio, nombre, fono..." class="w-full bg-white border border-emerald-200 rounded-xl py-2.5 pl-9 pr-3 text-xs font-bold text-teal-800 outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm group-hover:shadow-md">
+                    <input type="text" id="buscador-global" onkeyup="App.ui.buscar(this.value)" onkeypress="if(event.key === 'Enter') App.ui.buscarExacto(this.value)" placeholder="Buscar dominio, nombre, fono..." class="w-full bg-white border border-emerald-200 rounded-xl py-2.5 pl-9 pr-3 text-xs font-bold text-teal-800 outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all shadow-sm group-hover:shadow-md">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-teal-400 text-xs group-hover:text-emerald-500 transition-colors"></i>
                 </div>
             </div>
@@ -1338,6 +1339,23 @@
         </div>
     </div>
 
+    <div id="modal-papelera" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-trash-can mr-2 text-slate-400"></i> Papelera de Reciclaje</h3>
+                    <p class="text-xs text-slate-500">Los elementos se eliminan permanentemente después de 10 días.</p>
+                </div>
+                <button onclick="App.ui.toggleModal('modal-papelera', false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 custom-scroll">
+                <div id="lista-papelera" class="space-y-3">
+                    <p class="text-center text-slate-400 text-sm py-10">Cargando elementos eliminados...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-motivo-descarte" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] hidden flex items-center justify-center p-4">
         <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
             <div class="flex justify-between items-center mb-4">
@@ -1570,6 +1588,39 @@
                         if (!modalFicha.classList.contains('hidden')) App.cliente.cerrarFicha();
                     }
                 });
+            },
+
+            papelera: {
+                cargar: async () => {
+                    const lista = document.getElementById('lista-papelera');
+                    lista.innerHTML = '<p class="text-center text-slate-400 text-sm py-10"><i class="fa-solid fa-circle-notch fa-spin"></i> Cargando...</p>';
+                    try {
+                        const res = await fetch('/api/papelera');
+                        const data = await res.json();
+                        
+                        if (data.length === 0) {
+                            lista.innerHTML = '<div class="text-center py-10"><i class="fa-regular fa-trash-can text-4xl text-slate-200 mb-3"></i><p class="text-slate-400 text-sm">La papelera está vacía.</p></div>';
+                            return;
+                        }
+
+                        lista.innerHTML = data.map(c => `
+                            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                <div>
+                                    <h4 class="font-bold text-slate-700">${c.negocio}</h4>
+                                    <p class="text-xs text-slate-500">Eliminado: ${new Date(c.deleted_at).toLocaleDateString()}</p>
+                                </div>
+                                <button onclick="App.papelera.restaurar(${c.id})" class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg hover:bg-emerald-200 transition-colors"><i class="fa-solid fa-rotate-left mr-1"></i> Restaurar</button>
+                            </div>
+                        `).join('');
+                    } catch (e) { lista.innerHTML = '<p class="text-red-500 text-center">Error al cargar papelera.</p>'; }
+                },
+                restaurar: async (id) => {
+                    if(!confirm('¿Restaurar este cliente?')) return;
+                    await fetch(`/api/clientes/${id}/restaurar`, { method: 'POST' });
+                    App.papelera.cargar();
+                    App.init(); // Recargar lista principal
+                    App.ui.notificar("Cliente restaurado exitosamente.", "Restaurado", "exito");
+                }
             },
 
             auth: {
@@ -2085,10 +2136,14 @@
                         
                         // Recalcular saldo visualmente si cambian montos
                         if (campo === 'monto_total' || campo === 'monto_pagado') {
-                            const total = parseInt(document.getElementById('ficha-monto-total').value) || 0;
-                            const pagado = parseInt(document.getElementById('ficha-monto-pagado').value) || 0;
+                            const elTotal = document.getElementById('ficha-monto-total');
+                            const elPagado = document.getElementById('ficha-monto-pagado');
+                            const elSaldo = document.getElementById('ficha-saldo-pendiente');
+                            
+                            const total = elTotal ? (parseInt(elTotal.value) || 0) : 0;
+                            const pagado = elPagado ? (parseInt(elPagado.value) || 0) : 0;
                             const saldo = Math.max(0, total - pagado);
-                            document.getElementById('ficha-saldo-pendiente').value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
+                            if (elSaldo) elSaldo.value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
                             
                             // Actualizar dashboard financiero y meta mensual
                             if (App.finanzas) App.finanzas.actualizarDesdeClientes();
@@ -2105,7 +2160,10 @@
                                 lead.fecha_pago = body.fecha_pago;
                             }
                             await fetch(`/api/clientes/${lead.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-                            if(campo === 'negocio') document.getElementById('header-negocio').innerText = valor;
+                            if(campo === 'negocio') {
+                                const elHeader = document.getElementById('header-negocio');
+                                if(elHeader) elHeader.innerText = valor;
+                            }
                         } catch(e) { console.error("Error guardando campo raíz", e); }
 
                     } else {
@@ -2125,21 +2183,24 @@
                     }
                 },
                 actualizarProyeccionMensual: () => {
-                    const dia = parseInt(document.getElementById('ficha-dia-pago').value);
-                    const monto = document.getElementById('ficha-monto-mantencion').value;
+                    const elDia = document.getElementById('ficha-dia-pago');
+                    const elMonto = document.getElementById('ficha-monto-mantencion');
+                    if(!elDia || !elMonto) return;
+
+                    const dia = parseInt(elDia.value);
+                    const monto = elMonto.value;
                     const container = document.getElementById('info-proxima-mensualidad');
                     const txt = document.getElementById('txt-proximo-cobro');
 
                     if (dia && dia > 0 && dia <= 31 && monto) {
                         const hoy = new Date();
-                        // Crear fecha para este mes con el día seleccionado
                         const fechaCobro = new Date(hoy.getFullYear(), hoy.getMonth(), dia);
                         
                         const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
-                        txt.innerText = fechaCobro.toLocaleDateString('es-CL', opciones);
-                        container.classList.remove('hidden');
+                        if(txt) txt.innerText = fechaCobro.toLocaleDateString('es-CL', opciones);
+                        if(container) container.classList.remove('hidden');
                     } else {
-                        container.classList.add('hidden');
+                        if(container) container.classList.add('hidden');
                     }
                 },
                 
@@ -2174,9 +2235,11 @@
                         document.getElementById('ficha-monto-pagado').value = 0;
                         
                         // Recalcular saldo
-                        const total = parseInt(document.getElementById('ficha-monto-total').value) || 0;
+                        const elTotal = document.getElementById('ficha-monto-total');
+                        const total = elTotal ? (parseInt(elTotal.value) || 0) : 0;
                         const saldo = total;
-                        document.getElementById('ficha-saldo-pendiente').value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
+                        const elSaldo = document.getElementById('ficha-saldo-pendiente');
+                        if (elSaldo) elSaldo.value = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(saldo);
                         
                         // Agregar nota al historial
                         App.cliente.agregarNotaHistorial(`❌ PAGO ELIMINADO. Monto anterior: $${montoActual.toLocaleString()}`);
@@ -2411,7 +2474,7 @@
                             await fetch(`/api/clientes/${lead.id}`, { method: 'DELETE' });
                             App.datos.leads.splice(App.clienteActivoIndex, 1);
                             App.ui.renderizarListas(); 
-                            App.ui.notificar("Prospecto eliminado.", "Eliminado", "info");
+                            App.ui.notificar("Prospecto movido a la papelera.", "Eliminado", "info");
                             App.cliente.cerrarFicha();
                         } catch (e) {
                             App.ui.notificar("Error al eliminar.", "Error", "error");
@@ -2522,7 +2585,7 @@
                             App.ui.actualizarBlacklistCount(); 
                             App.ui.renderizarListas(); 
                             App.cliente.cerrarFicha();
-                            App.ui.notificar("Cliente eliminado y agregado a la lista negra.", "Eliminado", "exito");
+                            App.ui.notificar("Cliente movido a la papelera.", "Eliminado", "info");
                             break;
                         case 'schedule':
                             const fecha = await App.ui.prompt("Selecciona fecha y hora:", "Agendar Lead", App.util.fechaHoraDefault(), "datetime-local");
@@ -3013,12 +3076,6 @@ Responde SOLO en JSON estricto:
                     const formData = new FormData(e.target);
                     const rut = formData.get('rut');
 
-                    // Validación de RUT Duplicado
-                    if (rut && App.datos.leads.some(l => l.rut === rut)) {
-                        App.ui.notificar("El RUT ingresado ya existe en la base de datos.", "RUT Duplicado", "error");
-                        return;
-                    }
-
                     const nuevoLead = {
                         negocio: formData.get('negocio'),
                         nombre: formData.get('nombre'),
@@ -3040,19 +3097,26 @@ Responde SOLO en JSON estricto:
                         });
                         
                         if (res.ok) {
-                            const leadGuardado = await res.json();
-                            leadGuardado.estado = 'nuevos';
-                            leadGuardado.propuesta = leadGuardado.propuesta_text || 'Cliente creado manualmente.';
-                            
-                            // 1. Agregar al inicio de la lista
-                            App.datos.leads.unshift(leadGuardado);
-                            // 2. Renderizar para que aparezca en el DOM
-                            App.ui.renderizarListas();
-                            // 3. Cerrar modal de creación
-                            App.ui.toggleModal('modal-nuevo-cliente', false);
-                            // 4. ABRIR LA FICHA INMEDIATAMENTE (Índice 0 porque hicimos unshift)
-                            App.cliente.abrir(0);
-                            e.target.reset();
+                            try {
+                                const leadGuardado = await res.json();
+                                leadGuardado.estado = 'nuevos';
+                                leadGuardado.propuesta = leadGuardado.propuesta_text || 'Cliente creado manualmente.';
+                                
+                                // 1. Agregar al inicio de la lista
+                                App.datos.leads.unshift(leadGuardado);
+                                // 2. Renderizar para que aparezca en el DOM
+                                try { App.ui.renderizarListas(); } catch(err) { console.error("Error renderizando listas:", err); }
+                                
+                                // 3. Cerrar modal de creación
+                                App.ui.toggleModal('modal-nuevo-cliente', false);
+                                // 4. ABRIR LA FICHA INMEDIATAMENTE (Índice 0 porque hicimos unshift)
+                                setTimeout(() => App.cliente.abrir(0), 100);
+                                
+                                e.target.reset();
+                            } catch (innerErr) {
+                                console.error("Error post-guardado (UI):", innerErr);
+                                // No mostramos error al usuario porque el guardado fue exitoso
+                            }
                         } else {
                             const errData = await res.json();
                             throw new Error(errData.error || "Error desconocido al guardar.");
@@ -3755,6 +3819,8 @@ Responde SOLO en JSON estricto:
                     this.render();
                 },
                 render: function() {
+                    const safeSetText = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+
                     const hoy = new Date();
                     hoy.setHours(0, 0, 0, 0);
                     let startDate, endDate = new Date();
@@ -3783,12 +3849,14 @@ Responde SOLO en JSON estricto:
 
                     const efectividadTotal = (nuevosEnPeriodo > 0) ? Math.round((cerradosEnPeriodo / nuevosEnPeriodo) * 100) : 0;
                     const elTotal = document.getElementById('conv-vs-total');
-                    elTotal.innerText = `${efectividadTotal}%`;
-                    // Alerta visual si es menor al 3%
-                    if (efectividadTotal < 3) elTotal.className = "text-lg font-black text-red-500";
-                    else elTotal.className = "text-lg font-black text-emerald-600";
+                    if (elTotal) {
+                        elTotal.innerText = `${efectividadTotal}%`;
+                        // Alerta visual si es menor al 3%
+                        if (efectividadTotal < 3) elTotal.className = "text-lg font-black text-red-500";
+                        else elTotal.className = "text-lg font-black text-emerald-600";
+                    }
                     
-                    document.getElementById('conv-vs-total-detalle').innerText = `${cerradosEnPeriodo} cerrados de ${nuevosEnPeriodo} nuevos`;
+                    safeSetText('conv-vs-total-detalle', `${cerradosEnPeriodo} cerrados de ${nuevosEnPeriodo} nuevos`);
 
                     // NUEVA MÉTRICA: % Programados vs Recibidos Hoy
                     const hoyISO = new Date().toISOString().split('T')[0];
@@ -3796,15 +3864,15 @@ Responde SOLO en JSON estricto:
                     const programadosHoy = App.datos.leads.filter(l => l.fecha_agendada && l.fecha_agendada.startsWith(hoyISO)).length;
                     const porcProgramados = recibidosHoy > 0 ? Math.round((programadosHoy / recibidosHoy) * 100) : 0;
 
-                    document.getElementById('conv-vs-programados').innerText = `${porcProgramados}%`;
-                    document.getElementById('conv-vs-programados-detalle').innerText = `${programadosHoy} programados de ${recibidosHoy} recibidos hoy`;
+                    safeSetText('conv-vs-programados', `${porcProgramados}%`);
+                    safeSetText('conv-vs-programados-detalle', `${programadosHoy} programados de ${recibidosHoy} recibidos hoy`);
 
                     const mesActual = new Date().getMonth(); const anioActual = new Date().getFullYear();
                     const metaMes = 3 + (mesActual - 1); // Meta 3 para Febrero (mes 1), 4 para Marzo, etc.
                     const cerradosEsteMes = App.datos.leads.filter(l => l.estado === 'cerrados' && l.created_at && new Date(l.created_at).getMonth() === mesActual && new Date(l.created_at).getFullYear() === anioActual).length;
                     const efectividadMeta = (metaMes > 0) ? Math.round((cerradosEsteMes / metaMes) * 100) : 0;
-                    document.getElementById('conv-vs-meta').innerText = `${efectividadMeta}%`;
-                    document.getElementById('conv-vs-meta-detalle').innerText = `${cerradosEsteMes} cerrados de ${metaMes} este mes`;
+                    safeSetText('conv-vs-meta', `${efectividadMeta}%`);
+                    safeSetText('conv-vs-meta-detalle', `${cerradosEsteMes} cerrados de ${metaMes} este mes`);
                 }
             },
 
@@ -3956,7 +4024,8 @@ Responde SOLO en JSON estricto:
                 toggleAccordion: (id) => { document.getElementById(`list-${id}`).classList.toggle('open'); },
                 toggleModal: (id, show) => { const el = document.getElementById(id); if(show) el.classList.remove('hidden'); else el.classList.add('hidden'); },
                 actualizarBlacklistCount: () => {
-                    document.getElementById('blacklist-count').innerText = App.datos.blacklist.length;
+                    const elCount = document.getElementById('blacklist-count');
+                    if(elCount) elCount.innerText = App.datos.blacklist.length;
                     const elExcepciones = document.getElementById('metric-excepciones');
                     if (elExcepciones) elExcepciones.innerText = App.datos.blacklist.length;
                     
@@ -3976,7 +4045,9 @@ Responde SOLO en JSON estricto:
                     }
                     
                     const worstEl = document.getElementById('blacklist-worst-model');
-                    if (worstModel) { worstEl.innerText = `Peor: ${worstModel} (${maxCount})`; worstEl.classList.remove('hidden'); } else { worstEl.classList.add('hidden'); }
+                    if (worstEl) {
+                        if (worstModel) { worstEl.innerText = `Peor: ${worstModel} (${maxCount})`; worstEl.classList.remove('hidden'); } else { worstEl.classList.add('hidden'); }
+                    }
 
                 },
                 mostrarEntregasHoy: () => {
@@ -4013,11 +4084,54 @@ Responde SOLO en JSON estricto:
                     App.ui.toggleModal('modal-entregas-hoy', true);
                 },
                 buscar: (termino) => {
+                    if (typeof termino !== 'string') termino = '';
                     App.filtroBusqueda = termino.toLowerCase().trim();
                     App.ui.renderizarListas();
                 },
+                buscarExacto: (termino) => {
+                    if (!termino) return;
+                    const term = termino.toLowerCase().trim();
+                    
+                    // 1. Búsqueda Exacta (Prioridad: Dominio, Código, ID)
+                    const exactMatchIndex = App.datos.leads.findIndex(l => {
+                        const dom = (l.dominio || '').toLowerCase();
+                        const cod = (l.codigo_seguimiento || '').toLowerCase();
+                        const id = String(l.id);
+                        return dom === term || cod === term || id === term;
+                    });
+
+                    if (exactMatchIndex !== -1) {
+                        App.cliente.abrir(exactMatchIndex);
+                        document.getElementById('buscador-global').value = '';
+                        App.ui.buscar('');
+                        return;
+                    }
+
+                    // 2. Búsqueda Aproximada (Si hay un solo resultado visible)
+                    const resultados = App.datos.leads.filter(lead => {
+                        const dataString = `${lead.negocio || ''} ${lead.nombre || ''} ${lead.whatsapp || ''} ${lead.dominio || ''} ${lead.codigo_seguimiento || ''}`.toLowerCase();
+                        return dataString.includes(term);
+                    });
+
+                    if (resultados.length === 1) {
+                        const realIndex = App.datos.leads.indexOf(resultados[0]);
+                        App.cliente.abrir(realIndex);
+                        document.getElementById('buscador-global').value = '';
+                        App.ui.buscar('');
+                    } else if (resultados.length > 1) {
+                        App.ui.notificar(`Hay ${resultados.length} coincidencias. Sé más específico.`, "Múltiples Resultados", "info");
+                    } else {
+                        App.ui.notificar(`No se encontró ningún cliente con: "${termino}"`, "Sin Resultados", "error");
+                    }
+                },
                 renderizarListas: () => {
-                    const estados = ['discador', 'nuevos', 'whatsapp_enviado', 'sin_respuesta', 'seguimiento', 'cerrados']; // 'descartados' y 'agendados' se manejan diferente
+                    try {
+                        if (!Array.isArray(App.datos.leads)) {
+                            console.warn("App.datos.leads no es un array, inicializando...");
+                            App.datos.leads = [];
+                        }
+
+                        const estados = ['discador', 'nuevos', 'whatsapp_enviado', 'sin_respuesta', 'seguimiento', 'cerrados']; 
                     const contadores = { discador: 0, nuevos: 0, whatsapp_enviado: 0, sin_respuesta: 0, seguimiento: 0, agendados: 0, cerrados: 0, descartados: 0 };
                     
                     // Limpiar contenedores
@@ -4031,7 +4145,7 @@ Responde SOLO en JSON estricto:
                         if (!App.filtroBusqueda) return true;
                         const term = App.filtroBusqueda;
                         // Búsqueda potente: concatena todo para buscar
-                        const dataString = `${lead.negocio} ${lead.nombre} ${lead.whatsapp} ${lead.dominio || ''}`.toLowerCase();
+                        const dataString = `${lead.negocio || ''} ${lead.nombre || ''} ${lead.whatsapp || ''} ${lead.dominio || ''}`.toLowerCase();
                         return dataString.includes(term);
                     });
 
@@ -4084,8 +4198,10 @@ Responde SOLO en JSON estricto:
                         }
                     });
                     
-                    document.getElementById('metric-total').innerText = App.datos.leads.length;
-                    document.getElementById('metric-validos').innerText = contadores.seguimiento + contadores.agendados; 
+                    const elMetricTotal = document.getElementById('metric-total');
+                    if (elMetricTotal) elMetricTotal.innerText = App.datos.leads.length;
+                    const elMetricValidos = document.getElementById('metric-validos');
+                    if (elMetricValidos) elMetricValidos.innerText = contadores.seguimiento + contadores.agendados; 
 
                     // Actualizar contador en el botón de Modo Focus (Total global de agendados)
                     const hoy = App.util.fechaHoy();
@@ -4102,21 +4218,27 @@ Responde SOLO en JSON estricto:
                         }
                     }
 
-                    // Si hay búsqueda activa, abrir automáticamente los acordeones que tengan resultados
-                    if (App.filtroBusqueda !== '') {
-                        estados.forEach(id => {
-                            if (contadores[id] > 0) {
-                                document.getElementById(`list-${id}`).classList.add('open');
-                            }
-                        });
-                    }
+                        // Si hay búsqueda activa, abrir automáticamente los acordeones que tengan resultados
+                        if (App.filtroBusqueda !== '') {
+                            estados.forEach(id => {
+                                if (contadores[id] > 0) {
+                                    const elList = document.getElementById(`list-${id}`);
+                                    if(elList) elList.classList.add('open');
+                                }
+                            });
+                        }
 
-                    App.ui.actualizarMetas();
-                    App.ui.actualizarFinanzas();
-                    App.conversion.render();
-                    App.logros.verificar();
+                        try { App.ui.actualizarMetas(); } catch(e) { console.warn("Error metas:", e); }
+                        try { App.ui.actualizarFinanzas(); } catch(e) { console.warn("Error finanzas:", e); }
+                        try { App.conversion.render(); } catch(e) { console.warn("Error conversion:", e); }
+                        try { App.logros.verificar(); } catch(e) { console.warn("Error logros:", e); }
+                    
+                    } catch (e) {
+                        console.error("Error fatal en renderizarListas:", e);
+                    }
                 },
                 actualizarMetas: () => {
+                    try {
                     const hoyISO = new Date().toISOString().split('T')[0];
                     const hoyLocale = new Date().toLocaleDateString();
                     
@@ -4127,8 +4249,10 @@ Responde SOLO en JSON estricto:
                     const elMetaLeadsActual = document.getElementById('meta-leads-actual');
                     if (elMetaLeadsActual) {
                         elMetaLeadsActual.innerText = leadsHoy;
-                        document.getElementById('meta-leads-total').innerText = metaLeads;
-                        document.getElementById('barra-meta-leads').style.width = `${Math.min((leadsHoy/metaLeads)*100, 100)}%`;
+                        const elTotal = document.getElementById('meta-leads-total');
+                        if (elTotal) elTotal.innerText = metaLeads;
+                        const elBarra = document.getElementById('barra-meta-leads');
+                        if (elBarra) elBarra.style.width = `${Math.min((leadsHoy/metaLeads)*100, 100)}%`;
                     }
 
                     // 2. Ventas Hoy (Estado 'cerrados' y (creado hoy O historial venta hoy))
@@ -4145,16 +4269,20 @@ Responde SOLO en JSON estricto:
                     const elMetaVentasActual = document.getElementById('meta-ventas-actual');
                     if (elMetaVentasActual) {
                         elMetaVentasActual.innerText = ventasHoy;
-                        document.getElementById('meta-ventas-total').innerText = metaVentas;
-                        document.getElementById('barra-meta-ventas').style.width = `${Math.min((ventasHoy/metaVentas)*100, 100)}%`;
+                        const elTotalVentas = document.getElementById('meta-ventas-total');
+                        if (elTotalVentas) elTotalVentas.innerText = metaVentas;
+                        const elBarraVentas = document.getElementById('barra-meta-ventas');
+                        if (elBarraVentas) elBarraVentas.style.width = `${Math.min((ventasHoy/metaVentas)*100, 100)}%`;
                     }
 
                     // Verificar si se cumplieron ambas metas para lanzar confeti
                     if (leadsHoy >= metaLeads && ventasHoy >= metaVentas) {
                         App.ui.lanzarConfeti();
                     }
+                    } catch(e) { console.error("Error en actualizarMetas:", e); }
                 },
                 actualizarFinanzas: () => {
+                    try {
                     const hoy = new Date();
                     const mesActual = hoy.getMonth();
                     const anioActual = hoy.getFullYear();
@@ -4199,12 +4327,15 @@ Responde SOLO en JSON estricto:
                         }
                     });
 
-                    document.getElementById('finanza-ventas-mes').innerText = formatter.format(totalVentasMes);
-                    document.getElementById('count-ventas-mes').innerText = countVentasMes;
-                    document.getElementById('finanza-proyeccion').innerText = formatter.format(totalProyeccion);
-                    document.getElementById('finanza-entregas-hoy').innerText = countEntregasHoy;
-                    document.getElementById('finanza-caja-real').innerText = formatter.format(totalRecaudadoMes);
-                    document.getElementById('finanza-ticket').innerText = formatter.format(countHistoricoVentas > 0 ? totalHistoricoVentas / countHistoricoVentas : 0);
+                    const safeSetText = (id, val) => { const el = document.getElementById(id); if(el) el.innerText = val; };
+
+                    safeSetText('finanza-ventas-mes', formatter.format(totalVentasMes));
+                    safeSetText('count-ventas-mes', countVentasMes);
+                    safeSetText('finanza-proyeccion', formatter.format(totalProyeccion));
+                    safeSetText('finanza-entregas-hoy', countEntregasHoy);
+                    safeSetText('finanza-caja-real', formatter.format(totalRecaudadoMes));
+                    safeSetText('finanza-ticket', formatter.format(countHistoricoVentas > 0 ? totalHistoricoVentas / countHistoricoVentas : 0));
+                    } catch(e) { console.error("Error en actualizarFinanzas:", e); }
                 },
                 lanzarConfeti: () => {
                     const container = document.getElementById('confetti-container');

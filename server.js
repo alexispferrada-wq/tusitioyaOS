@@ -337,7 +337,7 @@ app.get('/api/clientes', async (req, res) => {
   let client;
   try {
     client = await pool.connect();
-    const result = await client.query('SELECT * FROM clientes ORDER BY created_at DESC');
+    const result = await client.query('SELECT * FROM clientes WHERE deleted_at IS NULL ORDER BY created_at DESC');
     res.json(result.rows);
   } catch (err) {
     console.error('❌ Error en GET /api/clientes:', err);
@@ -711,14 +711,14 @@ app.delete('/api/clientes/:id', async (req, res) => {
   let client;
   try {
     client = await pool.connect();
-    const query = 'DELETE FROM clientes WHERE id = $1';
+    const query = 'UPDATE clientes SET deleted_at = NOW() WHERE id = $1 RETURNING *';
     const result = await client.query(query, [id]);
     
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Cliente no encontrado para eliminar' });
     }
 
-    res.status(204).send(); // Éxito, sin contenido
+    res.json({ message: 'Cliente movido a la papelera', client: result.rows[0] });
   } catch (err) {
     console.error('❌ Error en DELETE /api/clientes/:id :', err);
     res.status(500).json({ error: 'Error al eliminar el cliente.' });
@@ -727,6 +727,36 @@ app.delete('/api/clientes/:id', async (req, res) => {
   }
 });
 
+// A.6 Ver Papelera (Recycle Bin)
+app.get('/api/papelera', async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM clientes WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC");
+        res.json(result.rows);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al obtener papelera' });
+    }
+});
+
+// A.7 Restaurar Cliente
+app.post('/api/clientes/:id/restaurar', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query("UPDATE clientes SET deleted_at = NULL WHERE id = $1", [id]);
+        res.json({ status: 'success', message: 'Cliente restaurado exitosamente' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Error al restaurar cliente' });
+    }
+});
+
+// Job de limpieza automática (10 días)
+setInterval(async () => {
+    try {
+        const res = await pool.query("DELETE FROM clientes WHERE deleted_at < NOW() - INTERVAL '10 days'");
+        if (res.rowCount > 0) console.log(`🧹 Limpieza automática: ${res.rowCount} clientes eliminados permanentemente.`);
+    } catch (e) { console.error("Error en limpieza automática:", e); }
+}, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
 
 // B. Analizar Chat con Gemini
 app.post('/api/analizar-chat', async (req, res) => {
@@ -3517,7 +3547,8 @@ async function startServer() {
     // AUTO-FIX: Crear columna faltante si no existe
     try {
       await client.query('ALTER TABLE clientes ADD COLUMN IF NOT EXISTS codigo_seguimiento TEXT UNIQUE');
-      console.log('🔧 Esquema verificado: Columna "codigo_seguimiento" lista.');
+      await client.query('ALTER TABLE clientes ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP');
+      console.log('🔧 Esquema verificado: Columnas "codigo_seguimiento" y "deleted_at" listas.');
     } catch (e) {
       console.warn('⚠️ No se pudo verificar el esquema:', e.message);
     }
